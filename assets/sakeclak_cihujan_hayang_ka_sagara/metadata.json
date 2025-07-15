@@ -1,0 +1,8 @@
+{
+  "title": "Sakeclak Cihujan Hayang Ka Sagara",
+  "pages": [
+    {"image": "page1.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page1_objek.mp3", "x": 1172, "y": 793, "width": 155, "height": 205},
+    {"image": "page2.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page2_objek.mp3", "x": 87, "y": 1, "width": 249, "height": 296},
+    {"image": "page3.png", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120}
+  ]
+}
