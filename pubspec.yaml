@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  page_flip: ^0.2.5+1
+  just_audio: ^0.10.4
+  provider: ^6.0.5
 
   cupertino_icons: ^1.0.8
 
@@ -20,6 +23,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/dongeng_janiti/
+    - assets/sakeclak_cihujan/
+    - assets/metadata.json
   # example:
   # fonts:
   #   - family: Schyler

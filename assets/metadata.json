@@ -1,0 +1,36 @@
+{
+  "books": [
+    {
+      "id": "1",
+      "title": "Sakeclak Cihujan Hayang ka Sagara",
+      "description": "    Kania dan Gumiwang sedang bermain layangan di halaman rumah mereka. Langit mendung. Setetes air hujan mengenai hidung Kania.",
+      "author": "Toni Lesmana",
+      "illustrator": "RuhiArt",
+      "coverImagePath": "assets/sakeclak_cihujan/cover.jpg",
+      "pages": [
+        "assets/sakeclak_cihujan/page1.jpg",
+        "assets/sakeclak_cihujan/page2.jpg",
+        "assets/sakeclak_cihujan/page3.jpg",
+        "assets/sakeclak_cihujan/page4.jpg"
+      ],
+      "primaryColor": "#35B1FF",
+      "secondaryColor": "#80CFFF"
+    },
+    {
+      "id": "2",
+      "title": "Dongeng Janiti",
+      "description": "Janiti adalah anak perempuan berusia delapan tahun. Ibunya adalah seorang penjual bunga bernama Bunda Asri. Janiti punya seorang kakak perempuan bernama Alamanda. Bunda Asri adalah seorang perempuan yang sangat menyukai bunga-bungaan. Oleh karena itu, selain berjualan bunga di halaman rumahnya, Bunda Asri menamai kedua anaknya dengan nama bunga, Janiti dan Alamanda, Berjualan bunga tidak mudah. Terkadang ada bunga yang tidak laku, padahal bunga cepat layu. Salah satu bunga yang mudah layu adalah mawar. Alamanda merasa sedih apabila ada bunga mawar yang mulai layu. Dia ingin sekali membuat bunga-bunga itu awet. Alamanda punya ide! Mahkota bunga mawar yang gugur dan mengering diambilnya, lalu dijadikan pembatas buku. Sementara itu, Janiti punya cara sendiri untuk memanfaatkan mahkota bunga mawar yang gugur. Ia kemudian bisa melihat dunia-dunia yang dilewati oleh bunga tersebut. ",
+      "author": "Indah Eka Lestari",
+      "illustrator": "RuhiArt",
+      "coverImagePath": "assets/dongeng_janiti/cover.jpg",
+      "pages": [
+        "assets/dongeng_janiti/page1.jpg",
+        "assets/dongeng_janiti/page2.jpg",
+        "assets/dongeng_janiti/page3.jpg",
+        "assets/dongeng_janiti/page4.jpg"
+      ],
+      "primaryColor": "#39D447",
+      "secondaryColor": "#7CF287"
+    }
+  ]
+}
