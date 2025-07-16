@@ -22,7 +22,7 @@ class FlipbookConstants {
   static const int audioDelay = 500;
 }
 
-// Language options enum
+// Opsi bahasa
 enum Language {
   indonesia('indonesia', 'Bahasa Indonesia'),
   sunda('sunda', 'Bahasa Sunda'),
@@ -42,6 +42,7 @@ class FlipbookScreen extends StatefulWidget {
   State<FlipbookScreen> createState() => _FlipbookScreenState();
 }
 
+// Objek utama
 class _FlipbookScreenState extends State<FlipbookScreen> {
   late Future<Story> _storyFuture;
   final _controller = GlobalKey<PageFlipWidgetState>();
@@ -375,26 +376,85 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildNavigationRow() {
-    return Row(
-      children: [
-        _buildNavigationButton(Icons.arrow_back_ios, _goToPreviousPage),
-        const SizedBox(width: 12),
-        _buildPageAudioButton(),
-        const SizedBox(width: 12),
-        _buildNavigationButton(Icons.arrow_forward_ios, _goToNextPage),
-      ],
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: 50,
+      child: Stack(
+        clipBehavior: Clip.none, // Memungkinkan overflow
+        children: [
+          // Audio button di tengah
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: _buildPageAudioButton(),
+            ),
+          ),
+
+          // Previous button
+          Positioned(
+            left: -40,
+            top: 0,
+            bottom: 0,
+            child: _buildNavigationButton(
+              Icons.arrow_back_ios_new,
+              _goToPreviousPage,
+              isLeft: true,
+            ),
+          ),
+
+          // Next button
+          Positioned(
+            right: -40,
+            top: 0,
+            bottom: 0,
+            child: _buildNavigationButton(
+              Icons.arrow_forward_ios,
+              _goToNextPage,
+              isLeft: false,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildNavigationButton(IconData icon, VoidCallback onPressed) {
+// Button navigation yang menembus tepi layar seperti pada gambar
+  Widget _buildNavigationButton(IconData icon, VoidCallback onPressed, {required bool isLeft}) {
     return Container(
+      width: 100, // Lebar button
+      height: 48, // Tinggi sama dengan audio button
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(25), // Border radius penuh
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, color: FlipbookConstants.primaryColor),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.only(
+                // Offset icon sedikit ke arah dalam layar
+                left: isLeft ? 8 : 0,
+                right: isLeft ? 0 : 8,
+              ),
+              child: Icon(
+                icon,
+                color: FlipbookConstants.primaryColor,
+                size: 24,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
