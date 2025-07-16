@@ -33,3 +33,29 @@ class StoryPage {
     );
   }
 }
+
+// Language enum
+enum Language {
+  indonesia('indonesia', 'Bahasa Indonesia'),
+  sunda('sunda', 'Bahasa Sunda'),
+  keduanya('keduanya', 'Kedua Bahasa');
+
+  const Language(this.code, this.displayName);
+  final String code;
+  final String displayName;
+}
+
+// PageLayout data class
+class PageLayout {
+  final double interactiveLeft;
+  final double interactiveTop;
+  final double interactiveWidth;
+  final double interactiveHeight;
+
+  PageLayout({
+    required this.interactiveLeft,
+    required this.interactiveTop,
+    required this.interactiveWidth,
+    required this.interactiveHeight,
+  });
+}
