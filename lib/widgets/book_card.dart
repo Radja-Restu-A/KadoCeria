@@ -125,7 +125,7 @@ class BookCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 44,
+                          height: 50,
                           child: Align(
                             alignment: Alignment.bottomLeft,
                             child: Text(

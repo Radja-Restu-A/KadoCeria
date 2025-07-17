@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kado_ceria/views/splash_view.dart';
 import 'package:provider/provider.dart';
-import 'views/dashboard_view.dart';
+import 'views/splash_view.dart';
 import 'viewmodels/book_viewmodel.dart';
 
 void main() {
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Poppins',
         ),
-        home: DashboardView(),
+        home: SplashView(),
       ),
     );
   }

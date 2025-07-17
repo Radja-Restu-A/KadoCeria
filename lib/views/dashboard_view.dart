@@ -17,26 +17,24 @@ class DashboardView extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                Icons.book,
-                color: Color(0xFF4FC3F7),
-                size: 24,
+              child: Image.asset(
+                'assets/logo/hade.png',
+                width: 50,
+                height: 50,
               ),
             ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Balai Bahasa Provinsi Jawa Barat',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
+            Text(
+              'Balai Bahasa Provinsi Jawa Barat',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -89,7 +87,7 @@ class DashboardView extends StatelessWidget {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'No books available',
+                    'Tidak ada buku tersedia',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
