@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'views/screens/dashboard_view.dart';
+import 'views/screens/splash_view.dart';
 import 'models/app_state.dart';
 import 'services/navigation_service.dart';
 import 'config/app_config.dart';
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
-        home: DashboardView(),
+        home: SplashView(),
         debugShowCheckedModeBanner: AppConfig.enableDebugMode,
         showPerformanceOverlay: AppConfig.enablePerformanceOverlay,
       ),
