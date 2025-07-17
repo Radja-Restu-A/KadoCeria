@@ -1,5 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class AudioService {
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -9,8 +10,14 @@ class AudioService {
   Future<void> playAudio(String path) async {
     try {
       await _audioPlayer.stop();
-      await _audioPlayer.setAsset(path);
-      await _audioPlayer.play();
+
+      // Check if asset exists before trying to load it
+      if (await _assetExists(path)) {
+        await _audioPlayer.setAsset(path);
+        await _audioPlayer.play();
+      } else {
+        throw Exception('Audio asset not found: $path');
+      }
     } catch (e) {
       debugPrint('Error playing audio: $e');
       rethrow;
@@ -29,21 +36,44 @@ class AudioService {
 
       } catch (e) {
         debugPrint('Error in sequential audio playback: $e');
-        break;
+        // Continue to next audio file instead of breaking
+        continue;
       }
     }
   }
 
+  Future<bool> _assetExists(String path) async {
+    try {
+      await rootBundle.load(path);
+      return true;
+    } catch (e) {
+      debugPrint('Asset does not exist: $path');
+      return false;
+    }
+  }
+
   Future<void> stopAudio() async {
-    await _audioPlayer.stop();
+    try {
+      await _audioPlayer.stop();
+    } catch (e) {
+      debugPrint('Error stopping audio: $e');
+    }
   }
 
   Future<void> pauseAudio() async {
-    await _audioPlayer.pause();
+    try {
+      await _audioPlayer.pause();
+    } catch (e) {
+      debugPrint('Error pausing audio: $e');
+    }
   }
 
   Future<void> resumeAudio() async {
-    await _audioPlayer.play();
+    try {
+      await _audioPlayer.play();
+    } catch (e) {
+      debugPrint('Error resuming audio: $e');
+    }
   }
 
   Stream<PlayerState> get playerStateStream => _audioPlayer.playerStateStream;

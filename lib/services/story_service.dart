@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/story_model.dart';
+import '../models/book_model.dart';
+import '../services/book_service.dart';
 
 class StoryService {
+  static BookModel? _cachedBook;
 
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
     final imageRatio = page.widthImage / page.heightImage;
@@ -31,8 +33,10 @@ class StoryService {
     );
   }
 
-  List<String> generateAudioPaths(String storyId, int pageNumber, Language language) {
-    final basePath = 'assets/$storyId';
+  // Fixed: Make this method async and await the folder name
+  Future<List<String>> generateAudioPaths(String storyId, int pageNumber, Language language) async {
+    final folderName = await _getFolderNameById(storyId);
+    final basePath = 'assets/$folderName';
 
     switch (language) {
       case Language.indonesia:
@@ -47,12 +51,31 @@ class StoryService {
     }
   }
 
-  String generateObjectAudioPath(String storyId, String audioFile) {
-    return 'assets/$storyId/$audioFile';
+  Future<String> _getFolderNameById(String storyId) async {
+    // Implementasi untuk mendapatkan folderName dari metadata berdasarkan ID
+    if (_cachedBook != null && _cachedBook!.id == storyId) {
+      return _cachedBook!.folderName;
+    }
+
+    // Ambil data dari BookService
+    final book = await BookService.loadBookById(storyId);
+    if (book != null) {
+      _cachedBook = book; // Simpan ke cache
+      return book.folderName;
+    }
+
+    // Fallback jika tidak ditemukan
+    throw Exception('Book with ID $storyId not found');
   }
 
-  String generateImagePath(String storyId, String imageName) {
-    return 'assets/$storyId/$imageName';
+  Future<String> generateObjectAudioPath(String storyId, String audioFile) async {
+    final folderName = await _getFolderNameById(storyId);
+    return 'assets/$folderName/$audioFile';
+  }
+
+  Future<String> generateImagePath(String storyId, String imageName) async {
+    final folderName = await _getFolderNameById(storyId);
+    return 'assets/$folderName/$imageName';
   }
 
   bool isFirstPage(int currentPage) {

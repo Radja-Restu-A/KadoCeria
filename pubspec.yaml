@@ -44,4 +44,5 @@ flutter:
   assets:
     - assets/
     - assets/sakeclak_cihujan_hayang_ka_sagara/
+    - assets/dongeng_janiti/
   uses-material-design: true

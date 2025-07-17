@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'views/screens/flipbook_screen.dart';
+import 'views/screens/dashboard_view.dart';
 import 'models/app_state.dart';
 import 'services/navigation_service.dart';
 import 'config/app_config.dart';
+import 'viewmodels/book_viewmodel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => BookViewModel()),
       ],
       child: MaterialApp(
         title: AppConfig.appName,
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
-        home: const FlipbookScreen(storyId: 'sakeclak_cihujan_hayang_ka_sagara'),
+        home: DashboardView(),
         debugShowCheckedModeBanner: AppConfig.enableDebugMode,
         showPerformanceOverlay: AppConfig.enablePerformanceOverlay,
       ),

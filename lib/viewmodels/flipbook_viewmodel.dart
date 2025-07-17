@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-import '../models/story_model.dart';
+import '../models/book_model.dart';
 import '../services/audio_service.dart';
 import '../services/story_service.dart';
 import '../repositories/story_repository.dart';
@@ -14,7 +14,7 @@ class FlipbookViewModel extends ChangeNotifier {
   late StoryRepository _storyRepository;
 
   // State variables
-  Story? _story;
+  BookModel? _story;
   int _currentPage = 0;
   Language _selectedLanguage = Language.indonesia;
   bool _isLoading = false;
@@ -30,7 +30,7 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   // Getters
-  Story? get story => _story;
+  BookModel? get story => _story;
   int get currentPage => _currentPage;
   Language get selectedLanguage => _selectedLanguage;
   bool get isLoading => _isLoading;
@@ -62,7 +62,8 @@ class FlipbookViewModel extends ChangeNotifier {
 
     try {
       final pageNumber = _currentPage + 1;
-      final audioPaths = _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+      // Fixed: Await the async method
+      final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
 
       if (_selectedLanguage == Language.keduanya) {
         await _audioService.playSequentialAudio(audioPaths);
@@ -83,7 +84,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingObjectAudio(true);
 
     try {
-      final audioPath = _storyService.generateObjectAudioPath(storyId, audioFile);
+      final audioPath = await _storyService.generateObjectAudioPath(storyId, audioFile);
       await _audioService.playAudio(audioPath);
 
       // Add delay for better UX
@@ -106,7 +107,8 @@ class FlipbookViewModel extends ChangeNotifier {
 
       for (int i = 0; i < _story!.pages.length; i++) {
         final pageNumber = i + 1;
-        final audioPaths = _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+        // Fixed: Await the async method
+        final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
         allAudioPaths.addAll(audioPaths);
       }
 

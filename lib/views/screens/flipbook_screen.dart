@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:page_flip/page_flip.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
-import '../../models/story_model.dart';
+import '../../models/book_model.dart';
 import '../widgets/kids_interactive_area.dart';
 import '../../core/constants.dart';
 
 class FlipbookScreen extends StatefulWidget {
-  final String storyId;
+  final String bookId;
+  final String bookTitle;
 
-  const FlipbookScreen({super.key, required this.storyId});
+  const FlipbookScreen({super.key, required this.bookId, required this.bookTitle});
 
   @override
   State<FlipbookScreen> createState() => _FlipbookScreenState();
@@ -23,7 +24,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   void initState() {
     super.initState();
     _viewModel = FlipbookViewModel();
-    _viewModel.loadStory(widget.storyId);
+    _viewModel.loadStory(widget.bookId);
   }
 
   @override
@@ -76,7 +77,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           Text(error, textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => _viewModel.loadStory(widget.storyId),
+            onPressed: () => _viewModel.loadStory(widget.bookId),
             child: const Text('Retry'),
           ),
         ],
@@ -196,7 +197,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildPageImage(StoryPage page) {
     return Center(
       child: Image.asset(
-        'assets/${widget.storyId}/${page.image}',
+        page.image,
         fit: BoxFit.contain,
         width: double.infinity,
         height: double.infinity,
@@ -211,10 +212,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       width: layout.interactiveWidth,
       height: layout.interactiveHeight,
       child: KidsInteractiveArea(
-        storyId: widget.storyId,
+        storyId: widget.bookId,
         audioFile: page.audioObject,
         isPlaying: viewModel.isPlayingObjectAudio,
-        onTap: () => viewModel.playObjectAudio(widget.storyId, page.audioObject),
+        onTap: () => viewModel.playObjectAudio(widget.bookId, page.audioObject),
       ),
     );
   }
@@ -258,7 +259,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: ElevatedButton(
         onPressed: viewModel.isPlayingPageAudio
             ? null
-            : () => viewModel.playFullBookAudio(widget.storyId),
+            : () => viewModel.playFullBookAudio(widget.bookId),
         style: _getButtonStyle(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Seluruh Buku',
@@ -361,7 +362,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: ElevatedButton(
         onPressed: viewModel.isPlayingPageAudio
             ? null
-            : () => viewModel.playPageAudio(widget.storyId),
+            : () => viewModel.playPageAudio(widget.bookId),
         style: _getButtonStyle(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Halaman Ini',
