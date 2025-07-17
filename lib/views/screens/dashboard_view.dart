@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/book_viewmodel.dart';
+import '../../viewmodels/book_viewmodel.dart';
 import '../widgets/book_card.dart';
-import 'flipbook_view.dart';
+import '../screens/flipbook_screen.dart';
 
 class DashboardView extends StatelessWidget {
   @override
@@ -110,7 +110,7 @@ class DashboardView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FlipbookView(bookId: book.id),
+                          builder: (context) => FlipbookScreen(bookId: book.id, bookTitle: book.title,),
                         ),
                       );
                     },

@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:kado_ceria/views/splash_view.dart';
 import 'package:provider/provider.dart';
-import 'views/splash_view.dart';
+import 'views/screens/dashboard_view.dart';
+import 'models/app_state.dart';
+import 'services/navigation_service.dart';
+import 'config/app_config.dart';
 import 'viewmodels/book_viewmodel.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => BookViewModel()),
       ],
       child: MaterialApp(
-        title: 'Balai Bahasa Provinsi Jawa Barat',
-        debugShowCheckedModeBanner: false,
+        title: AppConfig.appName,
+        navigatorKey: NavigationService.navigatorKey,
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          fontFamily: 'Poppins',
+          useMaterial3: true,
         ),
-        home: SplashView(),
+        home: DashboardView(),
+        debugShowCheckedModeBanner: AppConfig.enableDebugMode,
+        showPerformanceOverlay: AppConfig.enablePerformanceOverlay,
       ),
     );
   }
