@@ -154,7 +154,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       onPressed: () {
         // TODO: Implement settings
       },
-      icon: Image.asset('assets/hadelogo.png'),
+      icon: Image.asset(
+        'assets/logo/hade.png',
+        width: 50,
+        height: 50,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
