@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'story_model.dart';
 
 class AppState extends ChangeNotifier {
   String? _currentStoryId;

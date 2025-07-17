@@ -174,7 +174,7 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
 
   Widget _buildMarkerImage() {
     return Image.asset(
-      'assets/${widget.storyId}/penanda.png',
+      'assets/penanda.png',
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         return _buildFallbackMarker();

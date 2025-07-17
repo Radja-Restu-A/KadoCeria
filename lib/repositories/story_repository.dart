@@ -4,7 +4,7 @@ import '../core/assets_loader.dart';
 class StoryRepository {
   Future<Story> getStory(String storyId) async {
     try {
-      return await AssetsLoader.loadStory(storyId);
+      return await AssetsLoader.loadStory();
     } catch (e) {
       throw Exception('Failed to load story: $e');
     }
