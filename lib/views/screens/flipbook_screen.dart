@@ -158,7 +158,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         'assets/logo/hade.png',
         width: 50,
         height: 50,
-        fit: BoxFit.cover,
       ),
     );
   }
