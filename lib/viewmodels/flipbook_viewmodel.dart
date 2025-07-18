@@ -20,7 +20,11 @@ class FlipbookViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _isPlayingPageAudio = false;
   bool _isPlayingObjectAudio = false;
+  bool _isPlayingFullBook = false; // New state for full book playback
   String? _error;
+
+  // Callback for auto-navigation
+  VoidCallback? _onAutoNavigate;
 
   // Constructor
   FlipbookViewModel() {
@@ -36,9 +40,15 @@ class FlipbookViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isPlayingPageAudio => _isPlayingPageAudio;
   bool get isPlayingObjectAudio => _isPlayingObjectAudio;
+  bool get isPlayingFullBook => _isPlayingFullBook;
   String? get error => _error;
   bool get isFirstPage => _storyService.isFirstPage(_currentPage);
   bool get isLastPage => _story != null ? _storyService.isLastPage(_currentPage, _story!.pages.length) : false;
+
+  // Set auto-navigation callback
+  void setAutoNavigationCallback(VoidCallback callback) {
+    _onAutoNavigate = callback;
+  }
 
   // Public methods
   Future<void> loadStory(String storyId) async {
@@ -62,7 +72,6 @@ class FlipbookViewModel extends ChangeNotifier {
 
     try {
       final pageNumber = _currentPage + 1;
-      // Fixed: Await the async method
       final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
 
       if (_selectedLanguage == Language.keduanya) {
@@ -76,6 +85,59 @@ class FlipbookViewModel extends ChangeNotifier {
     } finally {
       _setPlayingPageAudio(false);
     }
+  }
+
+  Future<void> playFullBookAudio(String storyId) async {
+    if (_isPlayingFullBook || _story == null) return;
+
+    _setPlayingFullBook(true);
+
+    try {
+      // Start from current page
+      for (int i = _currentPage; i < _story!.pages.length; i++) {
+        // Play audio for current page FIRST
+        final pageNumber = i + 1;
+        final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+
+        if (_selectedLanguage == Language.keduanya) {
+          await _audioService.playSequentialAudio(audioPaths);
+        } else {
+          await _audioService.playAudio(audioPaths.first);
+        }
+
+        // Check if user stopped the playback
+        if (!_isPlayingFullBook) {
+          break;
+        }
+
+        // Add small delay between pages for better UX
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Only navigate to next page if not the last page
+        if (i < _story!.pages.length - 1) {
+          // Update current page
+          _currentPage = i + 1;
+          notifyListeners();
+
+          // Trigger page flip animation
+          if (_onAutoNavigate != null) {
+            _onAutoNavigate!();
+          }
+
+          // Small delay after page flip
+          await Future.delayed(const Duration(milliseconds: 300));
+        }
+      }
+    } catch (e) {
+      _setError('Failed to play full book audio: $e');
+    } finally {
+      _setPlayingFullBook(false);
+    }
+  }
+
+  void stopFullBookAudio() {
+    _setPlayingFullBook(false);
+    _audioService.stopAudio();
   }
 
   Future<void> playObjectAudio(String storyId, String audioFile) async {
@@ -94,30 +156,6 @@ class FlipbookViewModel extends ChangeNotifier {
       _setError('Failed to play object audio: $e');
     } finally {
       _setPlayingObjectAudio(false);
-    }
-  }
-
-  Future<void> playFullBookAudio(String storyId) async {
-    if (_story == null) return;
-
-    _setPlayingPageAudio(true);
-
-    try {
-      final allAudioPaths = <String>[];
-
-      for (int i = 0; i < _story!.pages.length; i++) {
-        final pageNumber = i + 1;
-        // Fixed: Await the async method
-        final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
-        allAudioPaths.addAll(audioPaths);
-      }
-
-      await _audioService.playSequentialAudio(allAudioPaths);
-
-    } catch (e) {
-      _setError('Failed to play full book audio: $e');
-    } finally {
-      _setPlayingPageAudio(false);
     }
   }
 
@@ -155,6 +193,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _audioService.stopAudio();
     _setPlayingPageAudio(false);
     _setPlayingObjectAudio(false);
+    _setPlayingFullBook(false);
   }
 
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
@@ -178,6 +217,11 @@ class FlipbookViewModel extends ChangeNotifier {
 
   void _setPlayingObjectAudio(bool playing) {
     _isPlayingObjectAudio = playing;
+    notifyListeners();
+  }
+
+  void _setPlayingFullBook(bool playing) {
+    _isPlayingFullBook = playing;
     notifyListeners();
   }
 

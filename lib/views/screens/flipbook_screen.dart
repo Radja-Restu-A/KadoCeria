@@ -27,6 +27,13 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     super.initState();
     _viewModel = FlipbookViewModel();
     _viewModel.loadStory(widget.bookId);
+
+    // Set auto-navigation callback
+    _viewModel.setAutoNavigationCallback(() {
+      if (_controller.currentState != null) {
+        _controller.currentState!.nextPage();
+      }
+    });
   }
 
   @override
@@ -264,12 +271,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: viewModel.isPlayingPageAudio
-            ? null
+        onPressed: viewModel.isPlayingFullBook
+            ? () => viewModel.stopFullBookAudio()
             : () => viewModel.playFullBookAudio(widget.bookId),
         style: _getButtonStyle(),
         child: Text(
-          viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Seluruh Buku',
+          viewModel.isPlayingFullBook ? 'Hentikan' : 'Dengarkan Seluruh Buku',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
@@ -298,7 +305,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             bottom: 0,
             child: _buildNavigationButton(
               Icons.arrow_back_ios_new,
-              viewModel.isFirstPage ? null : () {
+              (viewModel.isFirstPage || viewModel.isPlayingFullBook) ? null : () {
                 viewModel.previousPage();
                 _controller.currentState?.previousPage();
               },
@@ -313,7 +320,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             bottom: 0,
             child: _buildNavigationButton(
               Icons.arrow_forward_ios,
-              viewModel.isLastPage ? null : () {
+              (viewModel.isLastPage || viewModel.isPlayingFullBook) ? null : () {
                 viewModel.nextPage();
                 _controller.currentState?.nextPage();
               },
@@ -367,7 +374,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
     return Expanded(
       child: ElevatedButton(
-        onPressed: viewModel.isPlayingPageAudio
+        onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
             ? null
             : () => viewModel.playPageAudio(widget.bookId),
         style: _getButtonStyle(),
