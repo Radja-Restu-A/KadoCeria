@@ -9,8 +9,10 @@ import '../../core/constants.dart';
 class FlipbookScreen extends StatefulWidget {
   final String bookId;
   final String bookTitle;
+  final Color bookPrimaryColor;
+  final Color bookSecondaryColor;
 
-  const FlipbookScreen({super.key, required this.bookId, required this.bookTitle});
+  const FlipbookScreen({super.key, required this.bookId, required this.bookTitle, required this.bookPrimaryColor, required this.bookSecondaryColor});
 
   @override
   State<FlipbookScreen> createState() => _FlipbookScreenState();
@@ -88,9 +90,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildHeader(FlipbookViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.all(FlipbookConstants.headerPadding),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [FlipbookConstants.primaryColor, FlipbookConstants.secondaryColor],
+          colors: [widget.bookPrimaryColor, widget.bookSecondaryColor],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -119,22 +121,23 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
+          color: widget.bookSecondaryColor,
           borderRadius: BorderRadius.circular(FlipbookConstants.borderRadius),
         ),
         height: 48,
         child: DropdownButton<Language>(
           value: viewModel.selectedLanguage,
           underline: Container(),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: FlipbookConstants.primaryColor),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white),
           isExpanded: true,
+          dropdownColor: widget.bookSecondaryColor,
           onChanged: (Language? newValue) {
             if (newValue != null) {
               viewModel.changeLanguage(newValue);
             }
           },
           style: const TextStyle(
-            color: FlipbookConstants.primaryColor,
+            color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -239,9 +242,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildBottomControls(FlipbookViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.all(FlipbookConstants.controlPadding),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [FlipbookConstants.primaryColor, FlipbookConstants.secondaryColor],
+          colors: [widget.bookPrimaryColor, widget.bookSecondaryColor],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -267,7 +270,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         style: _getButtonStyle(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Seluruh Buku',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
     );
@@ -327,7 +330,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       width: 100,
       height: 48,
       decoration: BoxDecoration(
-        color: onPressed != null ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.5),
+        color: onPressed != null ? widget.bookSecondaryColor : Colors.grey.withOpacity(0.5),
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
@@ -351,7 +354,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               ),
               child: Icon(
                 icon,
-                color: onPressed != null ? FlipbookConstants.primaryColor : Colors.grey,
+                color: onPressed != null ? Colors.white : Colors.grey,
                 size: 24,
               ),
             ),
@@ -370,7 +373,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         style: _getButtonStyle(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Halaman Ini',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
     );
@@ -378,7 +381,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   ButtonStyle _getButtonStyle() {
     return ElevatedButton.styleFrom(
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: widget.bookSecondaryColor,
       foregroundColor: FlipbookConstants.primaryColor,
       padding: const EdgeInsets.symmetric(vertical: 12),
       shape: RoundedRectangleBorder(

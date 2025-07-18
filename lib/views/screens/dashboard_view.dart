@@ -110,7 +110,7 @@ class DashboardView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FlipbookScreen(bookId: book.id, bookTitle: book.title,),
+                          builder: (context) => FlipbookScreen(bookId: book.id, bookTitle: book.title, bookPrimaryColor: book.primaryColor, bookSecondaryColor: book.secondaryColor,),
                         ),
                       );
                     },

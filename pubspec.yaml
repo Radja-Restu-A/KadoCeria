@@ -39,6 +39,7 @@ flutter:
     - assets/sakeclak_cihujan_hayang_ka_sagara/
     - assets/metadata.json
     - assets/logo/
+    - assets/
   # example:
   # fonts:
   #   - family: Schyler
