@@ -49,28 +49,8 @@ class _SplashViewState extends State<SplashView> {
           children: [
             Image.asset('assets/logo/tutwurihandayani.png', width: 150, height: 150),
             SizedBox(height: 80),
-            // Text(
-            //   'KEMENTRIAN\nPENDIDIKAN DASAR DAN MENENGAH',
-            //   style: TextStyle(
-            //       fontFamily: 'Montserrat',
-            //       fontSize: 18,
-            //       fontWeight: FontWeight.w600
-            //   ),
-            //   textAlign: TextAlign.center,
-            // ),
-            // SizedBox(height: 10),
             Text(
-              'BALAI\nBAHASA PROVINSI JAWA BARAT',
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 80),
-            Text(
-              'BADAN\nPENGEMBANGAN DAN PEMBINAAN BAHASA',
+              'BALAI BAHASA\nPROVINSI JAWA BARAT',
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
@@ -78,13 +58,12 @@ class _SplashViewState extends State<SplashView> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 80),
             Text(
-              'KEMENTERIAN\nPENDIDIKAN DASAR DAN MENENGAH',
+              'BADAN PENGEMBANGAN DAN PEMBINAAN BAHASA\nKEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH',
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
-                  fontWeight: FontWeight.w600
+                  fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
             ),
