@@ -83,19 +83,22 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 return const Center(child: Text('No story loaded'));
               }
 
-              return SafeArea(
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        _buildHeader(viewModel),
-                        _buildMainContent(viewModel),
-                        _buildBottomControls(viewModel),
-                      ],
-                    ),
-                    if (_isLanguageDropdownOpen)
-                      _buildLanguageDropdownOverlay(viewModel),
-                  ],
+              return Container(
+                color: widget.bookPrimaryColor,
+                child: SafeArea(
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          _buildHeader(viewModel),
+                          _buildMainContent(viewModel),
+                          _buildBottomControls(viewModel),
+                        ],
+                      ),
+                      if (_isLanguageDropdownOpen)
+                        _buildLanguageDropdownOverlay(viewModel),
+                    ],
+                  ),
                 ),
               );
             },
@@ -330,6 +333,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildBottomControls(FlipbookViewModel viewModel) {
     return Container(
+      //ada problem disini
       padding: const EdgeInsets.all(FlipbookConstants.controlPadding),
       decoration: BoxDecoration(
         color: widget.bookPrimaryColor,
