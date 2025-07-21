@@ -74,13 +74,16 @@ class FlipbookViewModel extends ChangeNotifier {
       final pageNumber = _currentPage + 1;
       final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
 
+      print('Attempting to play audio from paths: $audioPaths'); // Add logging
+
       if (_selectedLanguage == Language.keduanya) {
-        await _audioService.playSequentialAudio(audioPaths);
+        await _audioService.playAudio(audioPaths.first);
       } else {
         await _audioService.playAudio(audioPaths.first);
       }
 
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Audio playback error: $e\n$stackTrace'); // Add detailed error logging
       _setError('Failed to play page audio: $e');
     } finally {
       _setPlayingPageAudio(false);

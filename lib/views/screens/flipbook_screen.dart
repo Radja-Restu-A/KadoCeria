@@ -21,6 +21,7 @@ class FlipbookScreen extends StatefulWidget {
 class _FlipbookScreenState extends State<FlipbookScreen> {
   late FlipbookViewModel _viewModel;
   final _controller = GlobalKey<PageFlipWidgetState>();
+  bool _isLanguageDropdownOpen = false;
 
   @override
   void initState() {
@@ -42,35 +43,63 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     super.dispose();
   }
 
+  void _toggleLanguageDropdown() {
+    setState(() {
+      _isLanguageDropdownOpen = !_isLanguageDropdownOpen;
+    });
+  }
+
+  void _closeLanguageDropdown() {
+    if (_isLanguageDropdownOpen) {
+      setState(() {
+        _isLanguageDropdownOpen = false;
+      });
+    }
+  }
+
+  void _selectLanguage(Language language) {
+    _viewModel.changeLanguage(language);
+    _closeLanguageDropdown();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: Scaffold(
-        body: Consumer<FlipbookViewModel>(
-          builder: (context, viewModel, child) {
-            if (viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        body: GestureDetector(
+          onTap: _closeLanguageDropdown,
+          child: Consumer<FlipbookViewModel>(
+            builder: (context, viewModel, child) {
+              if (viewModel.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (viewModel.error != null) {
-              return _buildErrorWidget(viewModel.error!);
-            }
+              if (viewModel.error != null) {
+                return _buildErrorWidget(viewModel.error!);
+              }
 
-            if (viewModel.story == null) {
-              return const Center(child: Text('No story loaded'));
-            }
+              if (viewModel.story == null) {
+                return const Center(child: Text('No story loaded'));
+              }
 
-            return SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(viewModel),
-                  _buildMainContent(viewModel),
-                  _buildBottomControls(viewModel),
-                ],
-              ),
-            );
-          },
+              return SafeArea(
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        _buildHeader(viewModel),
+                        _buildMainContent(viewModel),
+                        _buildBottomControls(viewModel),
+                      ],
+                    ),
+                    if (_isLanguageDropdownOpen)
+                      _buildLanguageDropdownOverlay(viewModel),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -98,11 +127,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Container(
       padding: const EdgeInsets.all(FlipbookConstants.headerPadding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [widget.bookPrimaryColor, widget.bookSecondaryColor],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+          color: widget.bookPrimaryColor
       ),
       child: Row(
         children: [
@@ -125,33 +150,90 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildLanguageSelector(FlipbookViewModel viewModel) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-        decoration: BoxDecoration(
-          color: widget.bookSecondaryColor,
-          borderRadius: BorderRadius.circular(FlipbookConstants.borderRadius),
-        ),
-        height: 48,
-        child: DropdownButton<Language>(
-          value: viewModel.selectedLanguage,
-          underline: Container(),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white),
-          isExpanded: true,
-          dropdownColor: widget.bookSecondaryColor,
-          onChanged: (Language? newValue) {
-            if (newValue != null) {
-              viewModel.changeLanguage(newValue);
-            }
-          },
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+      child: GestureDetector(
+        onTap: () {
+          _toggleLanguageDropdown();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+          decoration: BoxDecoration(
+            color: widget.bookSecondaryColor,
+            borderRadius: BorderRadius.circular(FlipbookConstants.borderRadius),
           ),
-          items: Language.values.map((Language language) {
-            return DropdownMenuItem<Language>(
-              value: language,
-              child: Text(language.displayName),
+          height: 48,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  viewModel.selectedLanguage.displayName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                _isLanguageDropdownOpen
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageDropdownOverlay(FlipbookViewModel viewModel) {
+    // Calculate the header height properly
+    final double headerHeight = FlipbookConstants.headerPadding * 2 + 48; // padding top + padding bottom + content height
+
+    return Positioned(
+      top: headerHeight + (headerHeight * 0.2), // Position right below the header
+      left: 0,
+      right: 0,
+      child: Container(
+        margin: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: Language.values.map((language) {
+            bool isFirst = language == Language.values.first;
+            bool isLast = language == Language.values.last;
+
+            return GestureDetector(
+              onTap: () => _selectLanguage(language),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                decoration: BoxDecoration(
+                  color: widget.bookPrimaryColor,
+                ),
+                child: Center(
+                  child: Text(
+                    language.displayName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
             );
           }).toList(),
         ),
@@ -250,11 +332,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Container(
       padding: const EdgeInsets.all(FlipbookConstants.controlPadding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [widget.bookPrimaryColor, widget.bookSecondaryColor],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        color: widget.bookPrimaryColor,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
