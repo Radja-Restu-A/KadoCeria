@@ -346,8 +346,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         },
         icon: Image.asset(
           'assets/logo/hade.png',
-          width: 32,
-          height: 32,
+          width: 50,
+          height: 50,
         ),
         padding: EdgeInsets.zero,
       ),
@@ -364,6 +364,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         backgroundColor: FlipbookConstants.backgroundColor,
         children: _buildPages(viewModel),
         lastPage: _buildLastPage(),
+        onPageFlipped: (index) {
+          // Update viewModel current page when flip animation completes
+          _viewModel.setCurrentPage(index);
+        },
       ),
     );
   }
@@ -375,17 +379,19 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildPage(StoryPage page, FlipbookViewModel viewModel) {
     return Container(
       color: FlipbookConstants.backgroundColor,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final pageLayout = viewModel.calculatePageLayout(page, constraints);
+      child: ClipRect( // ← Tambahkan ClipRect di sini
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final pageLayout = viewModel.calculatePageLayout(page, constraints);
 
-          return Stack(
-            children: [
-              _buildPageImage(page),
-              _buildInteractiveArea(page, pageLayout, viewModel),
-            ],
-          );
-        },
+            return Stack(
+              children: [
+                _buildPageImage(page),
+                _buildInteractiveArea(page, pageLayout, viewModel),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -466,7 +472,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         onPressed: viewModel.isPlayingFullBook
             ? () => viewModel.stopFullBookAudio()
             : () => viewModel.playFullBookAudio(widget.bookId),
-        style: _getButtonStyle(),
+        style: _getButtonStyleAudioFull(),
         child: Text(
           viewModel.isPlayingFullBook ? 'Hentikan' : 'Dengarkan Seluruh Buku',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
@@ -486,7 +492,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.55,
-              height: 50,
               child: _buildPageAudioButton(viewModel),
             ),
           ),
@@ -497,11 +502,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             top: 0,
             bottom: 0,
             child: SizedBox(
-              height: 50,
               child: _buildNavigationButton(
                 Icons.arrow_back_ios_new,
-                (viewModel.isFirstPage || viewModel.isPlayingFullBook) ? null : () {
-                  viewModel.previousPage();
+                (viewModel.isFirstPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                    ? null
+                    : () async {
+                  await viewModel.previousPage();
                   _controller.currentState?.previousPage();
                 },
                 isLeft: true,
@@ -515,11 +521,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             top: 0,
             bottom: 0,
             child: SizedBox(
-              height: 50,
               child: _buildNavigationButton(
                 Icons.arrow_forward_ios,
-                (viewModel.isLastPage || viewModel.isPlayingFullBook) ? null : () {
-                  viewModel.nextPage();
+                (viewModel.isLastPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                    ? null
+                    : () async {
+                  await viewModel.nextPage();
                   _controller.currentState?.nextPage();
                 },
                 isLeft: false,
@@ -571,14 +578,19 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
+    // Hide audio button on last page (completion page)
+    if (viewModel.currentPage >= viewModel.story!.pages.length) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
       width: double.infinity,
-      height: double.infinity,
+      height: 60,
       child: ElevatedButton(
         onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
             ? null
             : () => viewModel.playPageAudio(widget.bookId),
-        style: _getButtonStyle(),
+        style: _getButtonStyleAudio(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Halaman Ini',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
@@ -587,7 +599,18 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     );
   }
 
-  ButtonStyle _getButtonStyle() {
+  ButtonStyle _getButtonStyleAudioFull() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: widget.bookSecondaryColor,
+      foregroundColor: FlipbookConstants.primaryColor,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(36),
+      ),
+    );
+  }
+
+  ButtonStyle _getButtonStyleAudio() {
     return ElevatedButton.styleFrom(
       backgroundColor: widget.bookSecondaryColor,
       foregroundColor: FlipbookConstants.primaryColor,
