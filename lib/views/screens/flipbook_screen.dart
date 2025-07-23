@@ -22,11 +22,15 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   late FlipbookViewModel _viewModel;
   final _controller = GlobalKey<PageFlipWidgetState>();
   bool _isLanguageDropdownOpen = false;
+  double? imageAspectRatio;
 
   @override
   void initState() {
     super.initState();
     _viewModel = FlipbookViewModel();
+
+    // Add listener untuk menunggu story dimuat
+    _viewModel.addListener(_onStoryLoaded);
     _viewModel.loadStory(widget.bookId);
 
     // Set auto-navigation callback
@@ -35,6 +39,39 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         _controller.currentState!.nextPage();
       }
     });
+  }
+
+  void _onStoryLoaded() {
+    // Ketika story sudah dimuat dan ada pages, hitung aspect ratio
+    if (_viewModel.story != null &&
+        _viewModel.story!.pages.isNotEmpty &&
+        imageAspectRatio == null) {
+      _getImageAspectRatio();
+    }
+  }
+
+  Future<void> _getImageAspectRatio() async {
+    try {
+      // Gunakan gambar dari page pertama story
+      final firstPageImage = _viewModel.story!.pages.first.image;
+
+      final ImageStream stream = AssetImage(firstPageImage).resolve(ImageConfiguration.empty);
+      stream.addListener(ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        final double ratio = info.image.width / info.image.height;
+        if (mounted) {
+          setState(() {
+            imageAspectRatio = ratio;
+          });
+        }
+      }));
+    } catch (e) {
+      // Fallback aspect ratio jika gambar tidak dapat dimuat
+      if (mounted) {
+        setState(() {
+          imageAspectRatio = 4 / 3;
+        });
+      }
+    }
   }
 
   @override
@@ -71,7 +108,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           onTap: _closeLanguageDropdown,
           child: Consumer<FlipbookViewModel>(
             builder: (context, viewModel, child) {
-              if (viewModel.isLoading) {
+              if (viewModel.isLoading || imageAspectRatio == null) {
                 return const Center(child: CircularProgressIndicator());
               }
 
@@ -86,25 +123,69 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               return Container(
                 color: widget.bookPrimaryColor,
                 child: SafeArea(
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          _buildHeader(viewModel),
-                          _buildMainContent(viewModel),
-                          _buildBottomControls(viewModel),
-                        ],
-                      ),
-                      if (_isLanguageDropdownOpen)
-                        _buildLanguageDropdownOverlay(viewModel),
-                    ],
-                  ),
+                  child: _buildResponsiveLayout(viewModel),
                 ),
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildResponsiveLayout(FlipbookViewModel viewModel) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        final availableHeight = constraints.maxHeight;
+
+        // Hitung tinggi content berdasarkan lebar dan aspect ratio
+        final contentHeight = availableWidth / imageAspectRatio!;
+
+        // Pastikan content tidak melebihi 70% dari tinggi layar
+        final maxContentHeight = availableHeight * 0.7;
+        final finalContentHeight = contentHeight > maxContentHeight
+            ? maxContentHeight
+            : contentHeight;
+
+        // Hitung sisa tinggi untuk header dan footer
+        final remainingHeight = availableHeight - finalContentHeight;
+        final headerHeight = remainingHeight * 0.3;
+        final footerHeight = remainingHeight * 0.7;
+
+        return Stack(
+          children: [
+            Column(
+              children: [
+                // AREA HEADER
+                SizedBox(
+                  width: double.infinity,
+                  height: headerHeight,
+                  child: _buildHeader(viewModel),
+                ),
+
+                // AREA CONTENT
+                SizedBox(
+                  width: double.infinity,
+                  height: finalContentHeight,
+                  child: _buildMainContent(viewModel),
+                ),
+
+                // AREA FOOTER
+                SizedBox(
+                  width: double.infinity,
+                  height: footerHeight,
+                  child: _buildBottomControls(viewModel),
+                ),
+              ],
+            ),
+
+            // Language dropdown overlay
+            if (_isLanguageDropdownOpen)
+              _buildLanguageDropdownOverlay(viewModel, headerHeight),
+          ],
+        );
+      },
     );
   }
 
@@ -128,16 +209,18 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildHeader(FlipbookViewModel viewModel) {
     return Container(
-      padding: const EdgeInsets.all(FlipbookConstants.headerPadding),
+      width: double.infinity,
+      height: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-          color: widget.bookPrimaryColor
+        color: widget.bookPrimaryColor,
       ),
       child: Row(
         children: [
           _buildBackButton(),
-          const SizedBox(width: 8),
-          _buildLanguageSelector(viewModel),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
+          Expanded(child: _buildLanguageSelector(viewModel)),
+          const SizedBox(width: 12),
           _buildProfileButton(),
         ],
       ),
@@ -145,128 +228,142 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildBackButton() {
-    return IconButton(
-      onPressed: () => Navigator.pop(context),
-      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 30),
+    return Container(
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      child: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
+        padding: EdgeInsets.zero,
+      ),
     );
   }
 
   Widget _buildLanguageSelector(FlipbookViewModel viewModel) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _toggleLanguageDropdown();
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-          decoration: BoxDecoration(
-            color: widget.bookSecondaryColor,
-            borderRadius: BorderRadius.circular(FlipbookConstants.borderRadius),
-          ),
-          height: 48,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  viewModel.selectedLanguage.displayName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        _toggleLanguageDropdown();
+      },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: widget.bookSecondaryColor,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                viewModel.selectedLanguage.displayName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 8),
-              Icon(
-                _isLanguageDropdownOpen
-                    ? Icons.keyboard_arrow_up_rounded
-                    : Icons.keyboard_arrow_down_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              _isLanguageDropdownOpen
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildLanguageDropdownOverlay(FlipbookViewModel viewModel) {
-    // Calculate the header height properly
-    final double headerHeight = FlipbookConstants.headerPadding * 2 + 48; // padding top + padding bottom + content height
-
+  Widget _buildLanguageDropdownOverlay(FlipbookViewModel viewModel, double headerHeight) {
     return Positioned(
-      top: headerHeight + (headerHeight * 0.2), // Position right below the header
-      left: 0,
-      right: 0,
-      child: Container(
-        margin: EdgeInsets.zero,
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: Language.values.map((language) {
-            bool isFirst = language == Language.values.first;
-            bool isLast = language == Language.values.last;
+      top: headerHeight + 8,
+      left: 16,
+      right: 16,
+      child: Material(
+        elevation: 8,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.bookPrimaryColor,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: Language.values.map((language) {
+              bool isFirst = language == Language.values.first;
+              bool isLast = language == Language.values.last;
 
-            return GestureDetector(
-              onTap: () => _selectLanguage(language),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                  color: widget.bookPrimaryColor,
-                ),
-                child: Center(
-                  child: Text(
-                    language.displayName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+              return GestureDetector(
+                onTap: () => _selectLanguage(language),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: widget.bookPrimaryColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: isFirst ? const Radius.circular(12) : Radius.zero,
+                      topRight: isFirst ? const Radius.circular(12) : Radius.zero,
+                      bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
+                      bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      language.displayName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildProfileButton() {
-    return IconButton(
-      onPressed: () {
-        // TODO: Implement settings
-      },
-      icon: Image.asset(
-        'assets/logo/hade.png',
-        width: 50,
-        height: 50,
+    return Container(
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      child: IconButton(
+        onPressed: () {
+          // TODO: Implement settings
+        },
+        icon: Image.asset(
+          'assets/logo/hade.png',
+          width: 32,
+          height: 32,
+        ),
+        padding: EdgeInsets.zero,
       ),
     );
   }
 
   Widget _buildMainContent(FlipbookViewModel viewModel) {
-    return Expanded(
-      child: Container(
-        color: FlipbookConstants.backgroundColor,
-        child: PageFlipWidget(
-          key: _controller,
-          backgroundColor: FlipbookConstants.backgroundColor,
-          children: _buildPages(viewModel),
-          lastPage: _buildLastPage(),
-        ),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: FlipbookConstants.backgroundColor,
+      child: PageFlipWidget(
+        key: _controller,
+        backgroundColor: FlipbookConstants.backgroundColor,
+        children: _buildPages(viewModel),
+        lastPage: _buildLastPage(),
       ),
     );
   }
@@ -294,10 +391,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageImage(StoryPage page) {
-    return Center(
+    return Positioned.fill(
       child: Image.asset(
         page.image,
-        fit: BoxFit.contain,
+        fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
       ),
@@ -333,17 +430,29 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildBottomControls(FlipbookViewModel viewModel) {
     return Container(
-      //ada problem disini
-      padding: const EdgeInsets.all(FlipbookConstants.controlPadding),
+      width: double.infinity,
+      height: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: widget.bookPrimaryColor,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildFullBookButton(viewModel),
-          const SizedBox(height: 12),
-          _buildNavigationRow(viewModel),
+          // Row 1 - Full Book Button (30% of footer height)
+          Expanded(
+            flex: 5,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _buildFullBookButton(viewModel),
+            ),
+          ),
+
+          // Row 2 - Navigation Controls (70% of footer height)
+          Expanded(
+            flex: 5,
+            child: _buildNavigationRow(viewModel),
+          ),
         ],
       ),
     );
@@ -352,6 +461,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildFullBookButton(FlipbookViewModel viewModel) {
     return SizedBox(
       width: double.infinity,
+      height: double.infinity,
       child: ElevatedButton(
         onPressed: viewModel.isPlayingFullBook
             ? () => viewModel.stopFullBookAudio()
@@ -366,9 +476,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildNavigationRow(FlipbookViewModel viewModel) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 50,
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -376,6 +486,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.55,
+              height: 50,
               child: _buildPageAudioButton(viewModel),
             ),
           ),
@@ -385,13 +496,16 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             left: -40,
             top: 0,
             bottom: 0,
-            child: _buildNavigationButton(
-              Icons.arrow_back_ios_new,
-              (viewModel.isFirstPage || viewModel.isPlayingFullBook) ? null : () {
-                viewModel.previousPage();
-                _controller.currentState?.previousPage();
-              },
-              isLeft: true,
+            child: SizedBox(
+              height: 50,
+              child: _buildNavigationButton(
+                Icons.arrow_back_ios_new,
+                (viewModel.isFirstPage || viewModel.isPlayingFullBook) ? null : () {
+                  viewModel.previousPage();
+                  _controller.currentState?.previousPage();
+                },
+                isLeft: true,
+              ),
             ),
           ),
 
@@ -400,13 +514,16 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             right: -40,
             top: 0,
             bottom: 0,
-            child: _buildNavigationButton(
-              Icons.arrow_forward_ios,
-              (viewModel.isLastPage || viewModel.isPlayingFullBook) ? null : () {
-                viewModel.nextPage();
-                _controller.currentState?.nextPage();
-              },
-              isLeft: false,
+            child: SizedBox(
+              height: 50,
+              child: _buildNavigationButton(
+                Icons.arrow_forward_ios,
+                (viewModel.isLastPage || viewModel.isPlayingFullBook) ? null : () {
+                  viewModel.nextPage();
+                  _controller.currentState?.nextPage();
+                },
+                isLeft: false,
+              ),
             ),
           ),
         ],
@@ -431,10 +548,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(25),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(25),
           child: Center(
             child: Padding(
               padding: EdgeInsets.only(
@@ -454,7 +571,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
-    return Expanded(
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
       child: ElevatedButton(
         onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
             ? null
@@ -474,7 +593,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       foregroundColor: FlipbookConstants.primaryColor,
       padding: const EdgeInsets.symmetric(vertical: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FlipbookConstants.borderRadius),
+        borderRadius: BorderRadius.circular(24),
       ),
     );
   }
