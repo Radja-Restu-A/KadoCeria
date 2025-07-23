@@ -48,12 +48,12 @@ class _SplashViewState extends State<SplashView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/logo/tutwurihandayani.png', width: 150, height: 150),
-            SizedBox(height: 80),
+            SizedBox(height: 20),
             Text(
               'BALAI BAHASA\nPROVINSI JAWA BARAT',
               style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600
               ),
               textAlign: TextAlign.center,
@@ -62,7 +62,7 @@ class _SplashViewState extends State<SplashView> {
               'BADAN PENGEMBANGAN DAN PEMBINAAN BAHASA\nKEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH',
               style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
