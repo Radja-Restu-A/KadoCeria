@@ -600,7 +600,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         style: _getButtonStyleAudio(),
         child: Text(
           viewModel.isPlayingPageAudio ? 'Hentikan' : 'Dengarkan Halaman Ini',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
     );

@@ -35,8 +35,14 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
   assets:
-    - assets/dongeng_janiti/
-    - assets/sakeclak_cihujan_hayang_ka_sagara/
+    - assets/dongeng_janiti/halaman/
+    - assets/dongeng_janiti/audio_narasi_indonesia/
+    - assets/dongeng_janiti/audio_narasi_sunda/
+    - assets/dongeng_janiti/audio_objek/
+    - assets/sakeclak_cihujan_hayang_ka_sagara/halaman/
+    - assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/
+    - assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/
+    - assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/
     - assets/metadata.json
     - assets/logo/
     - assets/

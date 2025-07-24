@@ -7,11 +7,11 @@
       "description": "Kania dan Gumiwang sedang bermain layangan di halaman rumah mereka. Langit mendung. Setetes air hujan mengenai hidung Kania.",
       "author": "Toni Lesmana",
       "illustrator": "RuhiArt",
-      "coverImagePath": "assets/sakeclak_cihujan_hayang_ka_sagara/page1.png",
+      "coverImagePath": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/cover.png",
       "pages": [
-        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/page1.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page1_objek.mp3", "x": 1172, "y": 793, "width": 155, "height": 205},
-        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/page2.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page2_objek.mp3", "x": 87, "y": 1, "width": 249, "height": 296},
-        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/page3.png", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120}
+        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page1.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page1_objek.mp3", "x": 1172, "y": 793, "width": 155, "height": 205},
+        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page2.png", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page2_objek.mp3", "x": 87, "y": 1, "width": 249, "height": 296},
+        {"image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page3.png", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120}
       ],
       "primaryColor": "#35B1FF",
       "secondaryColor": "#80CFFF"
@@ -23,12 +23,11 @@
       "description": "Janiti adalah anak perempuan berusia delapan tahun. Ibunya adalah seorang penjual bunga bernama Bunda Asri. Janiti punya seorang kakak perempuan bernama Alamanda. Bunda Asri adalah seorang perempuan yang sangat menyukai bunga-bungaan. Oleh karena itu, selain berjualan bunga di halaman rumahnya, Bunda Asri menamai kedua anaknya dengan nama bunga, Janiti dan Alamanda, Berjualan bunga tidak mudah. Terkadang ada bunga yang tidak laku, padahal bunga cepat layu. Salah satu bunga yang mudah layu adalah mawar. Alamanda merasa sedih apabila ada bunga mawar yang mulai layu. Dia ingin sekali membuat bunga-bunga itu awet. Alamanda punya ide! Mahkota bunga mawar yang gugur dan mengering diambilnya, lalu dijadikan pembatas buku. Sementara itu, Janiti punya cara sendiri untuk memanfaatkan mahkota bunga mawar yang gugur. Ia kemudian bisa melihat dunia-dunia yang dilewati oleh bunga tersebut. ",
       "author": "Indah Eka Lestari",
       "illustrator": "RuhiArt",
-      "coverImagePath": "assets/dongeng_janiti/cover.jpg",
+      "coverImagePath": "assets/dongeng_janiti/halaman/cover.jpg",
       "pages": [
-        {"image": "assets/dongeng_janiti/page1.jpg", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page1_objek.mp3", "x": 1172, "y": 793, "width": 155, "height": 205},
-        {"image": "assets/dongeng_janiti/page2.jpg", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page2_objek.mp3", "x": 87, "y": 1, "width": 249, "height": 296},
-        {"image": "assets/dongeng_janiti/page3.jpg", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120},
-        {"image": "assets/dongeng_janiti/page3.jpg", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120}
+        {"image": "assets/dongeng_janiti/halaman/page1.jpg", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page1_objek.mp3", "x": 1172, "y": 793, "width": 155, "height": 205},
+        {"image": "assets/dongeng_janiti/halaman/page2.jpg", "widthImage": 1654, "heightImage": 2339, "audioObjek": "page2_objek.mp3", "x": 87, "y": 1, "width": 249, "height": 296},
+        {"image": "assets/dongeng_janiti/halaman/page3.jpg", "widthImage": 123, "heightImage": 123, "audioObjek": "page3_objek.mp3", "x": 120, "y": 120, "width": 120, "height": 120}
       ],
       "primaryColor": "#39D447",
       "secondaryColor": "#7CF287"

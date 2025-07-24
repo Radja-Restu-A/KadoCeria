@@ -40,13 +40,13 @@ class StoryService {
 
     switch (language) {
       case Language.indonesia:
-        return ['$basePath/page${pageNumber}_narasi_indonesia.mp3'];
+        return ['$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3'];
       case Language.sunda:
-        return ['$basePath/page${pageNumber}_narasi_sunda.mp3'];
+        return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3'];
       case Language.keduanya:
         return [
-          '$basePath/page${pageNumber}_narasi_indonesia.mp3',
-          '$basePath/page${pageNumber}_narasi_sunda.mp3',
+          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
+          '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3',
         ];
     }
   }
@@ -70,12 +70,12 @@ class StoryService {
 
   Future<String> generateObjectAudioPath(String storyId, String audioFile) async {
     final folderName = await _getFolderNameById(storyId);
-    return 'assets/$folderName/$audioFile';
+    return 'assets/$folderName/audio_objek/$audioFile';
   }
 
   Future<String> generateImagePath(String storyId, String imageName) async {
     final folderName = await _getFolderNameById(storyId);
-    return 'assets/$folderName/$imageName';
+    return 'assets/$folderName/halaman/$imageName';
   }
 
   bool isFirstPage(int currentPage) {
