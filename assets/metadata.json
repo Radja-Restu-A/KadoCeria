@@ -318,18 +318,293 @@
       "coverImagePath": "assets/dongeng_janiti/halaman/cover.jpg",
       "pages": [
         {
-          "image": "assets/dongeng_janiti/halaman/page1.png",
+          "image": "assets/dongeng_janiti/halaman/page1.jpg",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
-              "x": 77,
-              "y": 1,
-              "width": 253,
-              "height": 274
+              "audioObject": "page1_objek.mp3",
+              "x": 145,
+              "y": 347,
+              "width": 935,
+              "height": 445
+            },
+            {
+              "audioObject": "page1_objek.mp3",
+              "x": 704,
+              "y": 871,
+              "width": 119,
+              "height": 100
             }
           ]
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page2.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page3.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": [
+            {
+              "audioObject": "page3_objek.mp3",
+              "x": 300,
+              "y": 900,
+              "width": 250,
+              "height": 180
+            }
+          ]
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page4.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page5.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page6.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page7.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page8.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page9.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page10.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page11.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page12.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page13.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page14.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page15.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page16.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page17.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page18.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": [
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 235,
+              "y": 1288,
+              "width": 121,
+              "height": 93
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 379,
+              "y": 1259,
+              "width": 214,
+              "height": 156
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 622,
+              "y": 1197,
+              "width": 117,
+              "height": 81
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 613,
+              "y": 1370,
+              "width": 96,
+              "height": 162
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 60,
+              "y": 1430,
+              "width": 323,
+              "height": 209
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 894,
+              "y": 1379,
+              "width": 147,
+              "height": 130
+            },
+            {
+              "audioObject": "page18_objek.mp3",
+              "x": 765,
+              "y": 1090,
+              "width": 116,
+              "height": 361
+            }
+          ]
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page19.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page20.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": [
+            {
+              "audioObject": "page20_objek.mp3",
+              "x": 3,
+              "y": 718,
+              "width": 232,
+              "height": 359
+            },
+            {
+              "audioObject": "page20_objek.mp3",
+              "x": 615,
+              "y": 836,
+              "width": 213,
+              "height": 121
+            },
+            {
+              "audioObject": "page20_objek.mp3",
+              "x": 987,
+              "y": 769,
+              "width": 233,
+              "height": 219
+            },
+            {
+              "audioObject": "page20_objek.mp3",
+              "x": 31,
+              "y": 1481,
+              "width": 235,
+              "height": 232
+            },
+            {
+              "audioObject": "page20_objek.mp3",
+              "x": 956,
+              "y": 1418,
+              "width": 176,
+              "height": 150
+            }
+          ]
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page21.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page22.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page23.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page24.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page25.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page26.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page27.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page28.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page29.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
+        },
+        {
+          "image": "assets/dongeng_janiti/halaman/page30.jpg",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
         }
       ],
       "primaryColor": "#39D447",
