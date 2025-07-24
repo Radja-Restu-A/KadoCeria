@@ -23,6 +23,9 @@ class FlipbookViewModel extends ChangeNotifier {
   bool _isPlayingFullBook = false;
   String? _error;
 
+  // Track currently playing object audio for multiple objects support
+  String? _currentPlayingObjectAudio;
+
   // Navigation state to prevent double clicks
   bool _isNavigating = false;
 
@@ -46,6 +49,7 @@ class FlipbookViewModel extends ChangeNotifier {
   bool get isPlayingFullBook => _isPlayingFullBook;
   String? get error => _error;
   bool get isNavigating => _isNavigating;
+  String? get currentPlayingObjectAudio => _currentPlayingObjectAudio;
 
   // Updated page checking logic to include last page widget
   bool get isFirstPage => _currentPage == 0;
@@ -67,6 +71,7 @@ class FlipbookViewModel extends ChangeNotifier {
     // Reset current page when loading new story
     _currentPage = 0;
     _setNavigating(false);
+    _currentPlayingObjectAudio = null;
 
     try {
       _story = await _storyRepository.getStory(storyId);
@@ -157,8 +162,22 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> playObjectAudio(String storyId, String audioFile) async {
-    if (_isPlayingObjectAudio) return;
+    // Stop current object audio if different audio is requested
+    if (_isPlayingObjectAudio && _currentPlayingObjectAudio != audioFile) {
+      _audioService.stopAudio();
+      _setPlayingObjectAudio(false);
+      _currentPlayingObjectAudio = null;
+    }
 
+    if (_isPlayingObjectAudio && _currentPlayingObjectAudio == audioFile) {
+      // If same audio is already playing, stop it
+      _audioService.stopAudio();
+      _setPlayingObjectAudio(false);
+      _currentPlayingObjectAudio = null;
+      return;
+    }
+
+    _setCurrentPlayingObjectAudio(audioFile);
     _setPlayingObjectAudio(true);
 
     try {
@@ -172,6 +191,30 @@ class FlipbookViewModel extends ChangeNotifier {
       _setError('Failed to play object audio: $e');
     } finally {
       _setPlayingObjectAudio(false);
+      _currentPlayingObjectAudio = null;
+    }
+  }
+
+  // New method to play all interactive object audios in sequence for current page
+  Future<void> playAllObjectAudiosInPage(String storyId) async {
+    if (_story == null || _currentPage >= _story!.pages.length) return;
+
+    final currentStoryPage = _story!.pages[_currentPage];
+
+    if (currentStoryPage.interactiveObjects.isEmpty) return;
+
+    for (final obj in currentStoryPage.interactiveObjects) {
+      if (obj.audioObject != null && obj.audioObject!.isNotEmpty) {
+        await playObjectAudio(storyId, obj.audioObject!);
+
+        // Wait for audio to finish before playing next
+        while (_isPlayingObjectAudio) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+
+        // Small delay between objects
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
     }
   }
 
@@ -187,6 +230,8 @@ class FlipbookViewModel extends ChangeNotifier {
 
     _setNavigating(true);
     _audioService.stopAudio();
+    _setPlayingObjectAudio(false);
+    _currentPlayingObjectAudio = null;
 
     _currentPage++;
     notifyListeners();
@@ -201,6 +246,8 @@ class FlipbookViewModel extends ChangeNotifier {
 
     _setNavigating(true);
     _audioService.stopAudio();
+    _setPlayingObjectAudio(false);
+    _currentPlayingObjectAudio = null;
 
     _currentPage--;
     notifyListeners();
@@ -213,6 +260,7 @@ class FlipbookViewModel extends ChangeNotifier {
   void setCurrentPage(int page) {
     if (page >= 0 && _story != null && page <= _story!.pages.length) {
       _currentPage = page;
+      _currentPlayingObjectAudio = null;
       notifyListeners();
     }
   }
@@ -222,10 +270,25 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingPageAudio(false);
     _setPlayingObjectAudio(false);
     _setPlayingFullBook(false);
+    _currentPlayingObjectAudio = null;
   }
 
+  // Updated methods for multiple interactive objects support
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
     return _storyService.calculatePageLayout(page, constraints);
+  }
+
+  List<PageLayout> calculateInteractiveObjectsLayout(StoryPage page, BoxConstraints constraints) {
+    return _storyService.calculateInteractiveObjectsLayout(page, constraints);
+  }
+
+  // Helper methods for interactive objects
+  bool hasInteractiveObjects(StoryPage page) {
+    return _storyService.hasInteractiveObjects(page);
+  }
+
+  int getInteractiveObjectsCount(StoryPage page) {
+    return _storyService.getInteractiveObjectsCount(page);
   }
 
   void clearError() {
@@ -260,6 +323,11 @@ class FlipbookViewModel extends ChangeNotifier {
 
   void _setError(String? error) {
     _error = error;
+    notifyListeners();
+  }
+
+  void _setCurrentPlayingObjectAudio(String? audioFile) {
+    _currentPlayingObjectAudio = audioFile;
     notifyListeners();
   }
 

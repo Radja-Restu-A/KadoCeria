@@ -5,34 +5,22 @@ import '../services/book_service.dart';
 class StoryService {
   static BookModel? _cachedBook;
 
-  PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
-    // Handle null values dengan default values atau early return
+  // Updated method to handle multiple interactive objects
+  List<PageLayout> calculateInteractiveObjectsLayout(StoryPage page, BoxConstraints constraints) {
+    List<PageLayout> layouts = [];
+
+    // Handle null values dengan default values
     final pageWidthImage = page.widthImage ?? 1.0; // Prevent division by zero
     final pageHeightImage = page.heightImage ?? 1.0; // Prevent division by zero
-    final pageX = page.x ?? 0.0;
-    final pageY = page.y ?? 0.0;
-    final pageWidth = page.width ?? 0.0;
-    final pageHeight = page.height ?? 0.0;
 
     // Validasi untuk mencegah division by zero
     if (pageWidthImage <= 0 || pageHeightImage <= 0) {
-      // Return default layout jika dimensi image tidak valid
-      return PageLayout(
-        interactiveLeft: 0.0,
-        interactiveTop: 0.0,
-        interactiveWidth: 0.0,
-        interactiveHeight: 0.0,
-      );
+      return layouts; // Return empty list jika dimensi image tidak valid
     }
 
     // Validasi constraints
     if (constraints.maxWidth <= 0 || constraints.maxHeight <= 0) {
-      return PageLayout(
-        interactiveLeft: 0.0,
-        interactiveTop: 0.0,
-        interactiveWidth: 0.0,
-        interactiveHeight: 0.0,
-      );
+      return layouts;
     }
 
     final imageRatio = pageWidthImage / pageHeightImage;
@@ -55,15 +43,54 @@ class StoryService {
     final scaleX = pageWidthImage > 0 ? renderedWidth / pageWidthImage : 1.0;
     final scaleY = pageHeightImage > 0 ? renderedHeight / pageHeightImage : 1.0;
 
+    // Calculate layout for each interactive object
+    for (InteractiveObject obj in page.interactiveObjects) {
+      final objX = obj.x ?? 0.0;
+      final objY = obj.y ?? 0.0;
+      final objWidth = obj.width ?? 0.0;
+      final objHeight = obj.height ?? 0.0;
+
+      layouts.add(PageLayout(
+        interactiveLeft: (objX * scaleX) + imageOffsetX,
+        interactiveTop: (objY * scaleY) + imageOffsetY,
+        interactiveWidth: objWidth * scaleX,
+        interactiveHeight: objHeight * scaleY,
+      ));
+    }
+
+    return layouts;
+  }
+
+  // Backward compatibility method - returns layout for first interactive object or default
+  PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
+    final layouts = calculateInteractiveObjectsLayout(page, constraints);
+
+    if (layouts.isNotEmpty) {
+      return layouts.first;
+    }
+
     return PageLayout(
-      interactiveLeft: (pageX * scaleX) + imageOffsetX,
-      interactiveTop: (pageY * scaleY) + imageOffsetY,
-      interactiveWidth: pageWidth * scaleX,
-      interactiveHeight: pageHeight * scaleY,
+      interactiveLeft: 0.0,
+      interactiveTop: 0.0,
+      interactiveWidth: 0.0,
+      interactiveHeight: 0.0,
     );
   }
 
-  // Fixed: Make this method async and await the folder name
+  // New method to get audio paths for all interactive objects in a page
+  Future<List<String>> generateInteractiveObjectAudioPaths(String storyId, StoryPage page) async {
+    List<String> audioPaths = [];
+
+    for (InteractiveObject obj in page.interactiveObjects) {
+      if (obj.audioObject != null && obj.audioObject!.isNotEmpty) {
+        final audioPath = await generateObjectAudioPath(storyId, obj.audioObject!);
+        audioPaths.add(audioPath);
+      }
+    }
+
+    return audioPaths;
+  }
+
   Future<List<String>> generateAudioPaths(String storyId, int pageNumber, Language language) async {
     final folderName = await _getFolderNameById(storyId);
     final basePath = 'assets/$folderName';
@@ -114,5 +141,23 @@ class StoryService {
 
   bool isLastPage(int currentPage, int totalPages) {
     return currentPage >= totalPages - 1;
+  }
+
+  // Helper method to check if a page has interactive objects
+  bool hasInteractiveObjects(StoryPage page) {
+    return page.interactiveObjects.isNotEmpty;
+  }
+
+  // Helper method to get count of interactive objects in a page
+  int getInteractiveObjectsCount(StoryPage page) {
+    return page.interactiveObjects.length;
+  }
+
+  // Helper method to get specific interactive object by index
+  InteractiveObject? getInteractiveObjectAt(StoryPage page, int index) {
+    if (index >= 0 && index < page.interactiveObjects.length) {
+      return page.interactiveObjects[index];
+    }
+    return null;
   }
 }

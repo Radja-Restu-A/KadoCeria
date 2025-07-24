@@ -59,7 +59,7 @@ class BookModel {
       'author': author,
       'illustrator': illustrator,
       'coverImagePath': coverImagePath,
-      'pages': pages,
+      'pages': pages.map((page) => page.toJson()).toList(),
       'primaryColor': '#${primaryColor.value.toRadixString(16).substring(2)}',
       'secondaryColor': '#${secondaryColor.value.toRadixString(16).substring(2)}',
     };
@@ -67,31 +67,86 @@ class BookModel {
 }
 
 class StoryPage {
-  final String? image, audioObject;
-  final double? x, y, width, height, widthImage, heightImage;
+  final String? image;
+  final double? widthImage, heightImage;
+  final List<InteractiveObject> interactiveObjects;
 
   StoryPage({
     this.image,
-    this.audioObject,
-    this.height,
-    this.width,
-    this.x,
-    this.y,
+    this.widthImage,
     this.heightImage,
-    this.widthImage
+    this.interactiveObjects = const [],
   });
 
   factory StoryPage.fromJson(Map<String, dynamic> json) {
+    List<InteractiveObject> objects = [];
+
+    // Handle backward compatibility - jika masih menggunakan format lama
+    if (json.containsKey('audioObjek') || json.containsKey('x')) {
+      objects.add(InteractiveObject(
+        audioObject: json['audioObjek'],
+        x: json['x'] != null ? (json['x'] as num).toDouble() : null,
+        y: json['y'] != null ? (json['y'] as num).toDouble() : null,
+        width: json['width'] != null ? (json['width'] as num).toDouble() : null,
+        height: json['height'] != null ? (json['height'] as num).toDouble() : null,
+      ));
+    }
+
+    // Handle new format - multiple interactive objects
+    if (json.containsKey('interactiveObjects')) {
+      objects = (json['interactiveObjects'] as List)
+          .map((e) => InteractiveObject.fromJson(e))
+          .toList();
+    }
+
     return StoryPage(
       image: json['image'],
-      audioObject: json['audioObjek'],
+      widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
+      heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
+      interactiveObjects: objects,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'image': image,
+      'widthImage': widthImage,
+      'heightImage': heightImage,
+      'interactiveObjects': interactiveObjects.map((obj) => obj.toJson()).toList(),
+    };
+  }
+}
+
+class InteractiveObject {
+  final String? audioObject;
+  final double? x, y, width, height;
+
+  InteractiveObject({
+    this.audioObject,
+    this.x,
+    this.y,
+    this.width,
+    this.height,
+  });
+
+  factory InteractiveObject.fromJson(Map<String, dynamic> json) {
+    return InteractiveObject(
+      audioObject: json['audioObject'] ?? json['audioObjek'], // backward compatibility
       x: json['x'] != null ? (json['x'] as num).toDouble() : null,
       y: json['y'] != null ? (json['y'] as num).toDouble() : null,
       width: json['width'] != null ? (json['width'] as num).toDouble() : null,
       height: json['height'] != null ? (json['height'] as num).toDouble() : null,
-      widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
-      heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'audioObject': audioObject,
+      'x': x,
+      'y': y,
+      'width': width,
+      'height': height,
+    };
   }
 }
 

@@ -392,14 +392,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final pageLayout = viewModel.calculatePageLayout(page, constraints);
+            // Gunakan calculateInteractiveObjectsLayout untuk multiple objects
+            final pageLayouts = viewModel.calculateInteractiveObjectsLayout(page, constraints);
 
             return Stack(
               children: [
                 _buildPageImage(page),
-                // Hanya tampilkan interactive area jika tidak null
-                if (_buildInteractiveArea(page, pageLayout, viewModel) != null)
-                  _buildInteractiveArea(page, pageLayout, viewModel)!,
+                // Gunakan _buildInteractiveAreas yang sudah Anda buat
+                ..._buildInteractiveAreas(page, pageLayouts, viewModel),
               ],
             );
           },
@@ -451,37 +451,61 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     );
   }
 
-  Widget? _buildInteractiveArea(StoryPage page, PageLayout layout, FlipbookViewModel viewModel) {
-    // Cek apakah page memiliki data yang valid untuk interactive area
-    final hasValidDimensions = page.widthImage != null && page.heightImage != null &&
-        page.widthImage! > 0 && page.heightImage! > 0 &&
-        page.x != null && page.y != null &&
-        page.width != null && page.height != null &&
-        page.width! > 0 && page.height! > 0;
+  List<Widget> _buildInteractiveAreas(StoryPage page, List<PageLayout> layouts, FlipbookViewModel viewModel) {
+    List<Widget> interactiveWidgets = [];
 
-    if (!hasValidDimensions) {
-      return null;
+    // Cek apakah page memiliki data yang valid untuk interactive areas
+    final hasValidImageDimensions = page.widthImage != null &&
+        page.heightImage != null &&
+        page.widthImage! > 0 &&
+        page.heightImage! > 0;
+
+    if (!hasValidImageDimensions) {
+      return interactiveWidgets; // Return empty list
     }
 
-    // Cek apakah audioObject ada dan tidak null
-    final audioObject = page.audioObject;
-    if (audioObject == null || audioObject.isEmpty) {
-      return null; // Tidak tampilkan interactive area jika tidak ada audio
+    // Loop through all interactive objects and their corresponding layouts
+    for (int i = 0; i < page.interactiveObjects.length && i < layouts.length; i++) {
+      final obj = page.interactiveObjects[i];
+      final layout = layouts[i];
+
+      // Cek apakah object memiliki data yang valid
+      final hasValidObjectDimensions = obj.x != null &&
+          obj.y != null &&
+          obj.width != null &&
+          obj.height != null &&
+          obj.width! > 0 &&
+          obj.height! > 0;
+
+      if (!hasValidObjectDimensions) {
+        continue; // Skip object ini jika tidak valid
+      }
+
+      // Cek apakah audioObject ada dan tidak null
+      final audioObject = obj.audioObject;
+      if (audioObject == null || audioObject.isEmpty) {
+        continue; // Skip object ini jika tidak ada audio
+      }
+
+      // Create interactive widget untuk object ini
+      interactiveWidgets.add(
+        Positioned(
+          left: layout.interactiveLeft,
+          top: layout.interactiveTop - FlipbookConstants.interactiveAreaOffset + 150,
+          width: layout.interactiveWidth,
+          height: layout.interactiveHeight,
+          child: KidsInteractiveArea(
+            key: Key('interactive_${i}_$audioObject'), // Unique key for each object
+            storyId: widget.bookId,
+            audioFile: audioObject,
+            isPlaying: viewModel.isPlayingObjectAudio && viewModel.currentPlayingObjectAudio == audioObject,
+            onTap: () => viewModel.playObjectAudio(widget.bookId, audioObject),
+          ),
+        ),
+      );
     }
 
-    // Dengan PageLayout yang sudah memiliki default values, tidak perlu null check lagi
-    return Positioned(
-      left: layout.interactiveLeft,
-      top: layout.interactiveTop - FlipbookConstants.interactiveAreaOffset + 150,
-      width: layout.interactiveWidth,
-      height: layout.interactiveHeight,
-      child: KidsInteractiveArea(
-        storyId: widget.bookId,
-        audioFile: audioObject,
-        isPlaying: viewModel.isPlayingObjectAudio,
-        onTap: () => viewModel.playObjectAudio(widget.bookId, audioObject),
-      ),
-    );
+    return interactiveWidgets;
   }
 
   Widget _buildLastPage() {
