@@ -6,7 +6,36 @@ class StoryService {
   static BookModel? _cachedBook;
 
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
-    final imageRatio = page.widthImage / page.heightImage;
+    // Handle null values dengan default values atau early return
+    final pageWidthImage = page.widthImage ?? 1.0; // Prevent division by zero
+    final pageHeightImage = page.heightImage ?? 1.0; // Prevent division by zero
+    final pageX = page.x ?? 0.0;
+    final pageY = page.y ?? 0.0;
+    final pageWidth = page.width ?? 0.0;
+    final pageHeight = page.height ?? 0.0;
+
+    // Validasi untuk mencegah division by zero
+    if (pageWidthImage <= 0 || pageHeightImage <= 0) {
+      // Return default layout jika dimensi image tidak valid
+      return PageLayout(
+        interactiveLeft: 0.0,
+        interactiveTop: 0.0,
+        interactiveWidth: 0.0,
+        interactiveHeight: 0.0,
+      );
+    }
+
+    // Validasi constraints
+    if (constraints.maxWidth <= 0 || constraints.maxHeight <= 0) {
+      return PageLayout(
+        interactiveLeft: 0.0,
+        interactiveTop: 0.0,
+        interactiveWidth: 0.0,
+        interactiveHeight: 0.0,
+      );
+    }
+
+    final imageRatio = pageWidthImage / pageHeightImage;
     final screenRatio = constraints.maxWidth / constraints.maxHeight;
 
     double renderedWidth, renderedHeight;
@@ -22,14 +51,15 @@ class StoryService {
       imageOffsetY = (constraints.maxHeight - renderedHeight) / 2;
     }
 
-    final scaleX = renderedWidth / page.widthImage;
-    final scaleY = renderedHeight / page.heightImage;
+    // Prevent division by zero untuk scale calculations
+    final scaleX = pageWidthImage > 0 ? renderedWidth / pageWidthImage : 1.0;
+    final scaleY = pageHeightImage > 0 ? renderedHeight / pageHeightImage : 1.0;
 
     return PageLayout(
-      interactiveLeft: (page.x * scaleX) + imageOffsetX,
-      interactiveTop: (page.y * scaleY) + imageOffsetY,
-      interactiveWidth: page.width * scaleX,
-      interactiveHeight: page.height * scaleY,
+      interactiveLeft: (pageX * scaleX) + imageOffsetX,
+      interactiveTop: (pageY * scaleY) + imageOffsetY,
+      interactiveWidth: pageWidth * scaleX,
+      interactiveHeight: pageHeight * scaleY,
     );
   }
 

@@ -67,21 +67,30 @@ class BookModel {
 }
 
 class StoryPage {
-  final String image, audioObject;
-  final double x, y, width, height, widthImage, heightImage;
+  final String? image, audioObject;
+  final double? x, y, width, height, widthImage, heightImage;
 
-  StoryPage({required this.image,  required this.audioObject, required this.height, required this.width, required this.x, required this.y, required this.heightImage, required this.widthImage});
+  StoryPage({
+    this.image,
+    this.audioObject,
+    this.height,
+    this.width,
+    this.x,
+    this.y,
+    this.heightImage,
+    this.widthImage
+  });
 
   factory StoryPage.fromJson(Map<String, dynamic> json) {
     return StoryPage(
       image: json['image'],
       audioObject: json['audioObjek'],
-      x: (json['x'] as num).toDouble(),
-      y: (json['y'] as num).toDouble(),
-      width: (json['width'] as num).toDouble(),
-      height: (json['height'] as num).toDouble(),
-      widthImage: (json['widthImage'] as num).toDouble(),
-      heightImage: (json['heightImage'] as num).toDouble(),
+      x: json['x'] != null ? (json['x'] as num).toDouble() : null,
+      y: json['y'] != null ? (json['y'] as num).toDouble() : null,
+      width: json['width'] != null ? (json['width'] as num).toDouble() : null,
+      height: json['height'] != null ? (json['height'] as num).toDouble() : null,
+      widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
+      heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
     );
   }
 }
@@ -105,9 +114,9 @@ class PageLayout {
   final double interactiveHeight;
 
   PageLayout({
-    required this.interactiveLeft,
-    required this.interactiveTop,
-    required this.interactiveWidth,
-    required this.interactiveHeight,
+    this.interactiveLeft = 0.0,
+    this.interactiveTop = 0.0,
+    this.interactiveWidth = 0.0,
+    this.interactiveHeight = 0.0,
   });
 }

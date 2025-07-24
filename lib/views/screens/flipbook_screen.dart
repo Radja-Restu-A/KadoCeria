@@ -52,8 +52,20 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Future<void> _getImageAspectRatio() async {
     try {
-      // Gunakan gambar dari page pertama story
-      final firstPageImage = _viewModel.story!.pages.first.image;
+      // Gunakan gambar dari page pertama story dengan null check
+      final firstPage = _viewModel.story?.pages.first;
+      final firstPageImage = firstPage?.image;
+
+      // Pastikan image tidak null dan tidak kosong
+      if (firstPageImage == null || firstPageImage.isEmpty) {
+        // Set fallback aspect ratio jika image null
+        if (mounted) {
+          setState(() {
+            imageAspectRatio = 4 / 3;
+          });
+        }
+        return;
+      }
 
       final ImageStream stream = AssetImage(firstPageImage).resolve(ImageConfiguration.empty);
       stream.addListener(ImageStreamListener((ImageInfo info, bool synchronousCall) {
@@ -377,7 +389,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildPage(StoryPage page, FlipbookViewModel viewModel) {
     return Container(
       color: FlipbookConstants.backgroundColor,
-      child: ClipRect( // ← Tambahkan ClipRect di sini
+      child: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final pageLayout = viewModel.calculatePageLayout(page, constraints);
@@ -385,7 +397,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             return Stack(
               children: [
                 _buildPageImage(page),
-                _buildInteractiveArea(page, pageLayout, viewModel),
+                // Hanya tampilkan interactive area jika tidak null
+                if (_buildInteractiveArea(page, pageLayout, viewModel) != null)
+                  _buildInteractiveArea(page, pageLayout, viewModel)!,
               ],
             );
           },
@@ -395,17 +409,67 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageImage(StoryPage page) {
+    // Handle null image dengan fallback
+    final imagePath = page.image;
+
+    if (imagePath == null || imagePath.isEmpty) {
+      // Tampilkan placeholder jika image null
+      return Positioned.fill(
+        child: Container(
+          color: Colors.grey[300],
+          child: const Center(
+            child: Icon(
+              Icons.image_not_supported,
+              size: 64,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Positioned.fill(
       child: Image.asset(
-        page.image,
+        imagePath,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          // Handle error loading image
+          return Container(
+            color: Colors.grey[300],
+            child: const Center(
+              child: Icon(
+                Icons.broken_image,
+                size: 64,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildInteractiveArea(StoryPage page, PageLayout layout, FlipbookViewModel viewModel) {
+  Widget? _buildInteractiveArea(StoryPage page, PageLayout layout, FlipbookViewModel viewModel) {
+    // Cek apakah page memiliki data yang valid untuk interactive area
+    final hasValidDimensions = page.widthImage != null && page.heightImage != null &&
+        page.widthImage! > 0 && page.heightImage! > 0 &&
+        page.x != null && page.y != null &&
+        page.width != null && page.height != null &&
+        page.width! > 0 && page.height! > 0;
+
+    if (!hasValidDimensions) {
+      return null;
+    }
+
+    // Cek apakah audioObject ada dan tidak null
+    final audioObject = page.audioObject;
+    if (audioObject == null || audioObject.isEmpty) {
+      return null; // Tidak tampilkan interactive area jika tidak ada audio
+    }
+
+    // Dengan PageLayout yang sudah memiliki default values, tidak perlu null check lagi
     return Positioned(
       left: layout.interactiveLeft,
       top: layout.interactiveTop - FlipbookConstants.interactiveAreaOffset + 150,
@@ -413,9 +477,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       height: layout.interactiveHeight,
       child: KidsInteractiveArea(
         storyId: widget.bookId,
-        audioFile: page.audioObject,
+        audioFile: audioObject,
         isPlaying: viewModel.isPlayingObjectAudio,
-        onTap: () => viewModel.playObjectAudio(widget.bookId, page.audioObject),
+        onTap: () => viewModel.playObjectAudio(widget.bookId, audioObject),
       ),
     );
   }
@@ -586,7 +650,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
     // Hide audio button on last page (completion page)
-    if (viewModel.currentPage >= viewModel.story!.pages.length) {
+    if (viewModel.story == null || viewModel.currentPage >= viewModel.story!.pages.length) {
       return const SizedBox.shrink();
     }
 
