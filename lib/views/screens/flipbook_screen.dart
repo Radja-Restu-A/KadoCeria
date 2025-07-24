@@ -480,6 +480,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildNavigationRow(FlipbookViewModel viewModel) {
+    const double buttonHeight = 56; // Consistent height for all buttons
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -490,44 +492,51 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.55,
+              height: buttonHeight, // Fixed height
               child: _buildPageAudioButton(viewModel),
             ),
           ),
 
           // Previous button
           Positioned(
-            left: -40,
+            left: -45,
             top: 0,
             bottom: 0,
-            child: SizedBox(
-              child: _buildNavigationButton(
-                Icons.arrow_back_ios_new,
-                (viewModel.isFirstPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
-                    ? null
-                    : () async {
-                  await viewModel.previousPage();
-                  _controller.currentState?.previousPage();
-                },
-                isLeft: true,
+            child: Center(
+              child: SizedBox(
+                height: buttonHeight, // Same height as audio button
+                child: _buildNavigationButton(
+                  Icons.arrow_back_ios_new,
+                  (viewModel.isFirstPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                      ? null
+                      : () async {
+                    await viewModel.previousPage();
+                    _controller.currentState?.previousPage();
+                  },
+                  isLeft: true,
+                ),
               ),
             ),
           ),
 
           // Next button
           Positioned(
-            right: -40,
+            right: -45,
             top: 0,
             bottom: 0,
-            child: SizedBox(
-              child: _buildNavigationButton(
-                Icons.arrow_forward_ios,
-                (viewModel.isLastPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
-                    ? null
-                    : () async {
-                  await viewModel.nextPage();
-                  _controller.currentState?.nextPage();
-                },
-                isLeft: false,
+            child: Center(
+              child: SizedBox(
+                height: buttonHeight, // Same height as audio button
+                child: _buildNavigationButton(
+                  Icons.arrow_forward_ios,
+                  (viewModel.isLastPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                      ? null
+                      : () async {
+                    await viewModel.nextPage();
+                    _controller.currentState?.nextPage();
+                  },
+                  isLeft: false,
+                ),
               ),
             ),
           ),
@@ -538,11 +547,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildNavigationButton(IconData icon, VoidCallback? onPressed, {required bool isLeft}) {
     return Container(
-      width: 100,
-      height: 48,
+      width: 100, // Made it square for better proportion
+      height: 56,
       decoration: BoxDecoration(
         color: onPressed != null ? widget.bookSecondaryColor : Colors.grey.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(36),
+        borderRadius: BorderRadius.circular(28), // Half of width/height for perfect circle
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -553,14 +562,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(36),
+        borderRadius: BorderRadius.circular(28),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(36),
+          borderRadius: BorderRadius.circular(28),
           child: Center(
             child: Padding(
               padding: EdgeInsets.only(
-                left: isLeft ? 8 : 0,
+                left: isLeft ? 8 : 0, // Reduced padding for better centering
                 right: isLeft ? 0 : 8,
               ),
               child: Icon(
@@ -583,14 +592,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: double.infinity, // Will be constrained by parent SizedBox
       child: ElevatedButton(
         onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
-            ? null
+            ? () => viewModel.stopFullBookAudio()
             : () => viewModel.playPageAudio(widget.bookId),
         style: _getButtonStyleAudio(),
         child: Text(
-          viewModel.isPlayingPageAudio ? 'Memutar...' : 'Dengarkan Halaman Ini',
+          viewModel.isPlayingPageAudio ? 'Hentikan' : 'Dengarkan Halaman Ini',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
@@ -612,9 +621,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return ElevatedButton.styleFrom(
       backgroundColor: widget.bookSecondaryColor,
       foregroundColor: FlipbookConstants.primaryColor,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(28), // Matched with navigation buttons
       ),
     );
   }
