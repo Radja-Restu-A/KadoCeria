@@ -248,7 +248,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: widget.bookSecondaryColor,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(36),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -281,19 +281,17 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildLanguageDropdownOverlay(FlipbookViewModel viewModel, double headerHeight) {
     return Positioned(
-      top: headerHeight + 8,
-      left: 16,
-      right: 16,
+      top: headerHeight,
+      left: 0,
+      right: 0,
       child: Material(
         elevation: 8,
-        borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
             color: widget.bookPrimaryColor,
-            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -543,11 +541,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       width: 100,
       height: 48,
       decoration: BoxDecoration(
-        color: onPressed != null ? widget.bookSecondaryColor : Colors.grey.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(25),
+        color: onPressed != null ? widget.bookSecondaryColor : Colors.grey.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(36),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -555,10 +553,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(36),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(36),
           child: Center(
             child: Padding(
               padding: EdgeInsets.only(
@@ -585,7 +583,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     return SizedBox(
       width: double.infinity,
-      height: 60,
+      height: 48,
       child: ElevatedButton(
         onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
             ? null
@@ -616,7 +614,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       foregroundColor: FlipbookConstants.primaryColor,
       padding: const EdgeInsets.symmetric(vertical: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(25),
       ),
     );
   }

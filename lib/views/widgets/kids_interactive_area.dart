@@ -66,29 +66,29 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
   Animation<Color?> _createRainbowAnimation() {
     return TweenSequence<Color?>([
       TweenSequenceItem(
-        tween: ColorTween(begin: Colors.red, end: Colors.orange),
+        tween: ColorTween(begin: Colors.yellow, end: Colors.orange),
         weight: 1.0,
       ),
       TweenSequenceItem(
         tween: ColorTween(begin: Colors.orange, end: Colors.yellow),
         weight: 1.0,
       ),
-      TweenSequenceItem(
-        tween: ColorTween(begin: Colors.yellow, end: Colors.green),
-        weight: 1.0,
-      ),
-      TweenSequenceItem(
-        tween: ColorTween(begin: Colors.green, end: Colors.blue),
-        weight: 1.0,
-      ),
-      TweenSequenceItem(
-        tween: ColorTween(begin: Colors.blue, end: Colors.purple),
-        weight: 1.0,
-      ),
-      TweenSequenceItem(
-        tween: ColorTween(begin: Colors.purple, end: Colors.red),
-        weight: 1.0,
-      ),
+      // TweenSequenceItem(
+      //   tween: ColorTween(begin: Colors.yellow, end: Colors.green),
+      //   weight: 1.0,
+      // ),
+      // TweenSequenceItem(
+      //   tween: ColorTween(begin: Colors.green, end: Colors.blue),
+      //   weight: 1.0,
+      // ),
+      // TweenSequenceItem(
+      //   tween: ColorTween(begin: Colors.blue, end: Colors.purple),
+      //   weight: 1.0,
+      // ),
+      // TweenSequenceItem(
+      //   tween: ColorTween(begin: Colors.purple, end: Colors.red),
+      //   weight: 1.0,
+      // ),
     ]).animate(_colorController);
   }
 
@@ -141,12 +141,12 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: (_colorAnimation.value ?? Colors.blue).withOpacity(0.6),
+            color: (_colorAnimation.value ?? Colors.blue).withValues(alpha: 0.6),
             blurRadius: 20,
             spreadRadius: 3,
           ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha: 0.4),
             blurRadius: 10,
             spreadRadius: 1,
           ),
@@ -184,7 +184,7 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
 
   Widget _buildFallbackMarker() {
     return Container(
-      color: Colors.blue.withOpacity(0.3),
+      color: Colors.blue.withValues(alpha: 0.3),
       child: const Center(
         child: Icon(
           Icons.touch_app,
@@ -197,7 +197,7 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
 
   Widget _buildLoadingIndicator() {
     return Container(
-      color: Colors.black.withOpacity(0.3),
+      color: Colors.black.withValues(alpha: 0.3),
       child: const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
