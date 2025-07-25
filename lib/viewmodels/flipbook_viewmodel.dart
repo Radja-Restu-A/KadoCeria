@@ -333,7 +333,20 @@ class FlipbookViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    // Stop semua audio yang sedang berjalan
+    stopAudio();
+
+    // Reset semua state
+    _currentPage = 0;
+    _isPlayingPageAudio = false;
+    _isPlayingObjectAudio = false;
+    _isPlayingFullBook = false;
+    _currentPlayingObjectAudio = null;
+    _story = null;
+
+    // Dispose audio service
     _audioService.dispose();
+
     super.dispose();
   }
 }

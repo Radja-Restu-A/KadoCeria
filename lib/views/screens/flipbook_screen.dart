@@ -27,18 +27,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = FlipbookViewModel();
 
-    // Add listener untuk menunggu story dimuat
+    // Reset view model state
+    _viewModel = FlipbookViewModel();
+    _viewModel.stopAudio();
+
+    // Setup listeners
     _viewModel.addListener(_onStoryLoaded);
     _viewModel.loadStory(widget.bookId);
-
-    // Set auto-navigation callback
-    _viewModel.setAutoNavigationCallback(() {
-      if (_controller.currentState != null) {
-        _controller.currentState!.nextPage();
-      }
-    });
   }
 
   void _onStoryLoaded() {
@@ -88,7 +84,19 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   @override
   void dispose() {
-    _viewModel.dispose();
+    // Pastikan _viewModel tidak null
+    if (_viewModel != null) {
+      // Hentikan audio jika sedang diputar
+      _viewModel.stopAudio();
+
+      // Hapus listener jika sebelumnya ditambahkan
+      _viewModel.removeListener(_onStoryLoaded);
+
+      // Hapus callback navigasi otomatis
+      _viewModel.setAutoNavigationCallback(() {});
+    }
+
+    // Panggil dispose() milik superclass
     super.dispose();
   }
 
