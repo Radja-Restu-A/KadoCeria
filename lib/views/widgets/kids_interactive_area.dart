@@ -73,22 +73,6 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
         tween: ColorTween(begin: Colors.orange, end: Colors.yellow),
         weight: 1.0,
       ),
-      // TweenSequenceItem(
-      //   tween: ColorTween(begin: Colors.yellow, end: Colors.green),
-      //   weight: 1.0,
-      // ),
-      // TweenSequenceItem(
-      //   tween: ColorTween(begin: Colors.green, end: Colors.blue),
-      //   weight: 1.0,
-      // ),
-      // TweenSequenceItem(
-      //   tween: ColorTween(begin: Colors.blue, end: Colors.purple),
-      //   weight: 1.0,
-      // ),
-      // TweenSequenceItem(
-      //   tween: ColorTween(begin: Colors.purple, end: Colors.red),
-      //   weight: 1.0,
-      // ),
     ]).animate(_colorController);
   }
 
@@ -128,7 +112,6 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
           child: Stack(
             children: [
               _buildGlowEffect(),
-              _buildInteractiveContent(),
             ],
           ),
         );
@@ -151,57 +134,6 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
             spreadRadius: 1,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildInteractiveContent() {
-    return GestureDetector(
-      onTap: _handleTap,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.transparent),
-        ),
-        child: Stack(
-          children: [
-            _buildMarkerImage(),
-            if (widget.isPlaying) _buildLoadingIndicator(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMarkerImage() {
-    return Image.asset(
-      'assets/penanda.png',
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        return _buildFallbackMarker();
-      },
-    );
-  }
-
-  Widget _buildFallbackMarker() {
-    return Container(
-      color: Colors.blue.withValues(alpha: 0.3),
-      child: const Center(
-        child: Icon(
-          Icons.touch_app,
-          color: Colors.white,
-          size: FlipbookConstants.iconSize,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Container(
-      color: Colors.black.withValues(alpha: 0.3),
-      child: const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
       ),
     );
   }

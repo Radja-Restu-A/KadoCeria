@@ -15,7 +15,6 @@ class FlipbookConstants {
 
   // Settings
   static const String defaultLanguage = 'indonesia';
-  static const int interactiveAreaOffset = 150;
   static const int tapFeedbackDuration = 200;
   static const int audioDelay = 500;
 

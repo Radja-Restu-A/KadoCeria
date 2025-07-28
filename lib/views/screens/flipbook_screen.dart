@@ -499,7 +499,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       interactiveWidgets.add(
         Positioned(
           left: layout.interactiveLeft,
-          top: layout.interactiveTop - FlipbookConstants.interactiveAreaOffset + 150,
+          top: layout.interactiveTop,
           width: layout.interactiveWidth,
           height: layout.interactiveHeight,
           child: KidsInteractiveArea(
@@ -516,19 +516,48 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return interactiveWidgets;
   }
 
+  // Modifikasi untuk _buildLastPage()
   Widget _buildLastPage() {
     return Container(
       color: FlipbookConstants.backgroundColor,
-      child: const Center(
-        child: Text(
-          'Selesai membaca!',
-          style: TextStyle(fontSize: 24),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Title text
+            Text(
+              'Trigatra Bangun Bahasa',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: widget.bookPrimaryColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 16),
+
+            Text(
+              '1. Utamakan Bahasa Indonesia\n2. Lestarikan Bahasa Daerah\n3. Kuasai Bahasa Asing',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildBottomControls(FlipbookViewModel viewModel) {
+    // Check if we're on the last page (completion page)
+    final bool isOnLastPage = viewModel.story != null &&
+        viewModel.currentPage >= viewModel.story!.pages.length;
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -538,20 +567,22 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       ),
       child: Column(
         children: [
-          // Row 1 - Full Book Button (30% of footer height)
+          // Row 1 - Full Book Button or Empty Space (30% of footer height)
           Expanded(
             flex: 5,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.only(bottom: 8),
-              child: _buildFullBookButton(viewModel),
+              child: isOnLastPage
+                  ? const SizedBox.shrink() // Hide full book button on last page
+                  : _buildFullBookButton(viewModel),
             ),
           ),
 
           // Row 2 - Navigation Controls (70% of footer height)
           Expanded(
             flex: 5,
-            child: _buildNavigationRow(viewModel),
+            child: _buildNavigationRow(viewModel), // Always show navigation row
           ),
         ],
       ),
@@ -681,14 +712,62 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
-    // Hide audio button on last page (completion page)
-    if (viewModel.story == null || viewModel.currentPage >= viewModel.story!.pages.length) {
-      return const SizedBox.shrink();
+    // Check if we're on the last page (completion page)
+    final bool isOnLastPage = viewModel.story != null &&
+        viewModel.currentPage >= viewModel.story!.pages.length;
+
+    // Show completion button on last page
+    if (isOnLastPage) {
+      return SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            // Stop any playing audio
+            viewModel.stopAudio();
+
+            // Navigate back to dashboard
+            Navigator.pop(context);
+
+            // Optional: You can also navigate to a specific route
+            // Navigator.pushReplacementNamed(context, '/dashboard');
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: widget.bookSecondaryColor,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+            ),
+            elevation: 4,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.home_rounded,
+                size: 18,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Selesai Membaca',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return SizedBox(
       width: double.infinity,
-      height: double.infinity, // Will be constrained by parent SizedBox
+      height: double.infinity,
       child: ElevatedButton(
         onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
             ? () => viewModel.stopFullBookAudio()
