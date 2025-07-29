@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class BookModel {
   final String id;
-  final String title;
+  final Map<Language, String> titles;
   final String folderName;
-  final String subtitle;
-  final String description;
+  final Map<Language, String> descriptions;
   final String author;
   final String illustrator;
   final String coverImagePath;
@@ -15,10 +14,9 @@ class BookModel {
 
   BookModel({
     required this.id,
-    required this.title,
+    required this.titles,
     required this.folderName,
-    required this.subtitle,
-    required this.description,
+    required this.descriptions,
     required this.author,
     required this.illustrator,
     required this.coverImagePath,
@@ -30,10 +28,15 @@ class BookModel {
   factory BookModel.fromJson(Map<String, dynamic> json) {
     return BookModel(
       id: json['id'],
-      title: json['title'],
+      titles: {
+        Language.indonesia: json['title_id'],
+        Language.sunda: json['title_su'],
+      },
       folderName: json['folderName'],
-      subtitle: json['subtitle'] ?? '',
-      description: json['description'],
+      descriptions: {
+        Language.indonesia: json['description_id'],
+        Language.sunda: json['description_su'],
+      },
       author: json['author'],
       illustrator: json['illustrator'],
       coverImagePath: json['coverImagePath'],
@@ -52,10 +55,11 @@ class BookModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'title': title,
+      'title_id': titles[Language.indonesia],
+      'title_su': titles[Language.sunda],
       'folderName': folderName,
-      'subtitle': subtitle,
-      'description': description,
+      'description_id': descriptions[Language.indonesia],
+      'description_su': descriptions[Language.sunda],
       'author': author,
       'illustrator': illustrator,
       'coverImagePath': coverImagePath,
@@ -64,6 +68,9 @@ class BookModel {
       'secondaryColor': '#${secondaryColor.value.toRadixString(16).substring(2)}',
     };
   }
+
+  String getTitle(Language language) => titles[language] ?? titles[Language.indonesia]!;
+  String getDescription(Language language) => descriptions[language] ?? descriptions[Language.indonesia]!;
 }
 
 class StoryPage {

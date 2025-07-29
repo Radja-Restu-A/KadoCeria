@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kado_ceria/provider/language_provider.dart';
 import 'package:provider/provider.dart';
-import 'views/screens/splash_view.dart';
+import 'views/screens/splash_Screen.dart';
 import 'models/app_state.dart';
 import 'services/navigation_service.dart';
 import 'config/app_config.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => BookViewModel()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider())
       ],
       child: MaterialApp(
         title: AppConfig.appName,
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
-        home: SplashView(),
+        home: SplashScreen(),
         debugShowCheckedModeBanner: AppConfig.enableDebugMode,
         showPerformanceOverlay: AppConfig.enablePerformanceOverlay,
       ),

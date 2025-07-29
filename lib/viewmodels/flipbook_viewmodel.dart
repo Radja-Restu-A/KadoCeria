@@ -4,7 +4,7 @@ import '../models/book_model.dart';
 import '../services/audio_service.dart';
 import '../services/story_service.dart';
 import '../repositories/story_repository.dart';
-import '../core/service_locator.dart';
+import '../provider/service_locator.dart';
 
 class FlipbookViewModel extends ChangeNotifier {
   final ServiceLocator _serviceLocator = ServiceLocator();

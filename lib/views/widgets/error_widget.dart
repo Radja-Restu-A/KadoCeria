@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import '../../core/constants.dart';
+// import '../../provider/constants.dart';
 //
 // class AppErrorWidget extends StatelessWidget {
 //   final String error;

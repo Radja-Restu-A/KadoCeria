@@ -1,8 +1,9 @@
+// lib/repositories/story_repository.dart
 import '../models/book_model.dart';
 import '../services/book_service.dart';
 
 class StoryRepository {
-  // Memuat semua buku/cerita yang tersedia
+  // Load all available books
   Future<List<BookModel>> getAllBooks() async {
     try {
       return await BookService.loadBooks();
@@ -11,7 +12,7 @@ class StoryRepository {
     }
   }
 
-  // Memuat buku/cerita berdasarkan ID
+  // Load book by ID
   Future<BookModel?> getBookById(String bookId) async {
     try {
       return await BookService.loadBookById(bookId);
@@ -20,7 +21,7 @@ class StoryRepository {
     }
   }
 
-  // Memuat buku/cerita berdasarkan ID (dengan exception jika tidak ditemukan)
+  // Load book by ID (with exception if not found)
   Future<BookModel> getStory(String storyId) async {
     try {
       final BookModel? book = await BookService.loadBookById(storyId);
@@ -33,7 +34,7 @@ class StoryRepository {
     }
   }
 
-  // Mendapatkan daftar ID cerita yang tersedia
+  // Get list of available story IDs
   Future<List<String>> getAvailableStories() async {
     try {
       final List<BookModel> books = await BookService.loadBooks();
@@ -43,41 +44,30 @@ class StoryRepository {
     }
   }
 
-  // Mendapatkan daftar judul cerita yang tersedia
-  Future<List<String>> getAvailableStoryTitles() async {
+  // Get list of available story titles
+  Future<List<String>> getAvailableStoryTitles(Language language) async {
     try {
       final List<BookModel> books = await BookService.loadBooks();
-      return books.map((book) => book.title).toList();
+      return books.map((book) => book.getTitle(language)).toList();
     } catch (e) {
       throw Exception('Failed to get available story titles: $e');
     }
   }
 
-  // Mencari buku berdasarkan judul
-  Future<List<BookModel>> searchBooksByTitle(String title) async {
+  // Search books by title
+  Future<List<BookModel>> searchBooksByTitle(String title, Language language) async {
     try {
       final List<BookModel> books = await BookService.loadBooks();
       return books.where((book) =>
-          book.title.toLowerCase().contains(title.toLowerCase())
+          book.getTitle(language).toLowerCase().contains(title.toLowerCase())
       ).toList();
     } catch (e) {
       throw Exception('Failed to search books by title: $e');
     }
   }
 
-  // Mencari buku berdasarkan author
-  Future<List<BookModel>> searchBooksByAuthor(String author) async {
-    try {
-      final List<BookModel> books = await BookService.loadBooks();
-      return books.where((book) =>
-          book.author.toLowerCase().contains(author.toLowerCase())
-      ).toList();
-    } catch (e) {
-      throw Exception('Failed to search books by author: $e');
-    }
-  }
 
-  // Mendapatkan buku berdasarkan warna primer
+  // Get books by primary color
   Future<List<BookModel>> getBooksByPrimaryColor(String colorHex) async {
     try {
       final List<BookModel> books = await BookService.loadBooks();
@@ -88,4 +78,15 @@ class StoryRepository {
       throw Exception('Failed to get books by primary color: $e');
     }
   }
+
+  // Get book descriptions by language
+  Future<List<String>> getBookDescriptions(Language language) async {
+    try {
+      final List<BookModel> books = await BookService.loadBooks();
+      return books.map((book) => book.getDescription(language)).toList();
+    } catch (e) {
+      throw Exception('Failed to get book descriptions: $e');
+    }
+  }
+
 }

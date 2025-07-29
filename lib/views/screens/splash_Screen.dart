@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dashboard_view.dart';
+import 'package:kado_ceria/views/screens/language_selection_screen.dart';
 
-class SplashView extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView> {
+class _SplashViewState extends State<SplashScreen> {
   int _pageIndex = 0;
 
   @override
@@ -23,7 +23,7 @@ class _SplashViewState extends State<SplashView> {
       if(mounted){
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardView())
+          MaterialPageRoute(builder: (context) => LanguageSelectionScreen())
         );
       }
     }

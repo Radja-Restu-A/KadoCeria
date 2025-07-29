@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:page_flip/page_flip.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
 import '../../models/book_model.dart';
-import '../widgets/kids_interactive_area.dart';
-import '../../core/constants.dart';
+import '../widgets/kids_interactive_area_widget.dart';
+import '../../provider/constants.dart';
 
 class FlipbookScreen extends StatefulWidget {
   final String bookId;
@@ -85,16 +85,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   @override
   void dispose() {
     // Pastikan _viewModel tidak null
-    if (_viewModel != null) {
-      // Hentikan audio jika sedang diputar
-      _viewModel.stopAudio();
+    // Hentikan audio jika sedang diputar
+    _viewModel.stopAudio();
 
-      // Hapus listener jika sebelumnya ditambahkan
-      _viewModel.removeListener(_onStoryLoaded);
+    // Hapus listener jika sebelumnya ditambahkan
+    _viewModel.removeListener(_onStoryLoaded);
 
-      // Hapus callback navigasi otomatis
-      _viewModel.setAutoNavigationCallback(() {});
-    }
+    // Hapus callback navigasi otomatis
+    _viewModel.setAutoNavigationCallback(() {});
 
     // Panggil dispose() milik superclass
     super.dispose();
