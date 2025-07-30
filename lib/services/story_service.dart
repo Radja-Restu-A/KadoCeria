@@ -102,8 +102,8 @@ class StoryService {
         return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3'];
       case Language.keduanya:
         return [
-          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
           '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3',
+          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
         ];
     }
   }

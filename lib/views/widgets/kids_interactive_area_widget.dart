@@ -90,7 +90,12 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
   }
 
   Future<void> _handleTap() async {
-    if (widget.isPlaying) return;
+    print('Interactive area tapped! Audio: ${widget.audioFile}'); // ✅ Debug log
+
+    if (widget.isPlaying) {
+      print('Audio is already playing, ignoring tap');
+      return;
+    }
 
     await _tapController.forward();
     await _tapController.reverse();
@@ -111,7 +116,15 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
           scale: _scaleAnimation.value * _tapScaleAnimation.value,
           child: Stack(
             children: [
-              _buildGlowEffect(),
+              // ✅ PERBAIKAN: Tambahkan GestureDetector untuk mendeteksi tap
+              GestureDetector(
+                onTap: _handleTap,
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: _buildGlowEffect(),
+                ),
+              ),
             ],
           ),
         );
@@ -121,7 +134,10 @@ class _KidsInteractiveAreaState extends State<KidsInteractiveArea>
 
   Widget _buildGlowEffect() {
     return Container(
+      width: double.infinity,
+      height: double.infinity,
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: (_colorAnimation.value ?? Colors.blue).withValues(alpha: 0.6),

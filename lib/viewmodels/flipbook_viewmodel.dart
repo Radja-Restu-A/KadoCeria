@@ -95,9 +95,9 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Attempting to play audio from paths: $audioPaths');
 
       if (_selectedLanguage == Language.keduanya) {
-        await _audioService.playAudio(audioPaths.first);
+        await _audioService.playSequentialAudio(audioPaths); // Memutar semua audio secara berurutan
       } else {
-        await _audioService.playAudio(audioPaths.first);
+        await _audioService.playAudio(audioPaths.first); // Memutar audio tunggal
       }
 
     } catch (e, stackTrace) {
@@ -116,17 +116,26 @@ class FlipbookViewModel extends ChangeNotifier {
     try {
       // Start from current page, but only play story pages (not the last page widget)
       for (int i = _currentPage; i < _story!.pages.length; i++) {
+        // ✅ Check if user stopped the playbook BEFORE playing audio
+        if (!_isPlayingFullBook) {
+          break;
+        }
+
         // Play audio for current page FIRST
         final pageNumber = i + 1;
         final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
 
+        print('Playing page $pageNumber audio with language: $_selectedLanguage');
+        print('Audio paths: $audioPaths');
+
+        // ✅ PERBAIKAN: Konsisten dengan playPageAudio method
         if (_selectedLanguage == Language.keduanya) {
           await _audioService.playSequentialAudio(audioPaths);
         } else {
           await _audioService.playAudio(audioPaths.first);
         }
 
-        // Check if user stopped the playback
+        // ✅ Check again after audio playback
         if (!_isPlayingFullBook) {
           break;
         }
@@ -140,18 +149,22 @@ class FlipbookViewModel extends ChangeNotifier {
           _currentPage = i + 1;
           notifyListeners();
 
-          // Trigger page flip animation
+          // ✅ PERBAIKAN: Trigger page flip animation dengan null check
           if (_onAutoNavigate != null) {
             _onAutoNavigate!();
+          } else {
+            print('Warning: Auto navigation callback not set');
           }
 
           // Small delay after page flip
-          await Future.delayed(const Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 800)); // ✅ Increased delay
         }
       }
     } catch (e) {
+      print('Full book audio error: $e');
       _setError('Failed to play full book audio: $e');
     } finally {
+      // ✅ PERBAIKAN: Pastikan state di-reset dengan benar
       _setPlayingFullBook(false);
     }
   }

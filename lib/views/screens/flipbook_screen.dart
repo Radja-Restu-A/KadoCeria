@@ -34,6 +34,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     _viewModel = FlipbookViewModel();
     _viewModel.stopAudio();
 
+    // ✅ PERBAIKAN: Set callback untuk auto-navigation
+    _viewModel.setAutoNavigationCallback(() {
+      // Trigger next page animation
+      _controller.currentState?.nextPage();
+    });
+
     // Setup listeners
     _viewModel.addListener(_onStoryLoaded);
     _viewModel.loadStory(widget.bookId);
@@ -731,74 +737,75 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     // Show completion button on last page
     if (isOnLastPage) {
       return Consumer2<FlipbookViewModel, LanguageProvider>(
-        builder: (context, flipbookViewModel, languageProvider, child){
-          return SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Stop any playing audio
-                viewModel.stopAudio();
-
-                // Navigate back to dashboard
-                Navigator.pop(context);
-
-                // Optional: You can also navigate to a specific route
-                // Navigator.pushReplacementNamed(context, '/dashboard');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.bookSecondaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
+          builder: (context, flipbookViewModel, languageProvider, child){
+            return SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Stop any playing audio
+                  viewModel.stopAudio();
+                  // Navigate back to dashboard
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.bookSecondaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 4,
                 ),
-                elevation: 4,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.home_rounded,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    TeksProvider.getString('endreading', languageProvider.selectedLanguage),
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.home_rounded,
+                      size: 18,
+                      color: Colors.white,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      TeksProvider.getString('endreading', languageProvider.selectedLanguage),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }
+            );
+          }
       );
     }
 
     return Consumer2<FlipbookViewModel, LanguageProvider>(
-      builder: (context, viewModel, languageProvider, child) {
-        // Show audio button for current page
-        return SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: ElevatedButton(
-            onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
-                ? () => viewModel.stopFullBookAudio()
-                : () => viewModel.playPageAudio(widget.bookId),
-            style: _getButtonStyleAudio(),
-            child: Text(
-              viewModel.isPlayingPageAudio ? TeksProvider.getString('stop', languageProvider.selectedLanguage) : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+        builder: (context, viewModel, languageProvider, child) {
+          // Show audio button for current page
+          return SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: ElevatedButton(
+              onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
+                  ? () {
+                // ✅ PERBAIKAN: Panggil stopAudio yang sudah diperbaiki
+                viewModel.stopAudio();
+              }
+                  : () => viewModel.playPageAudio(widget.bookId),
+              style: _getButtonStyleAudio(),
+              child: Text(
+                viewModel.isPlayingPageAudio
+                    ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
+                    : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
             ),
-          ),
-        );
-      }
+          );
+        }
     );
   }
 
