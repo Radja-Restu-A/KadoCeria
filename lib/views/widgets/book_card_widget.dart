@@ -197,7 +197,7 @@ class BookCardWidget extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                        '${TeksProvider.getString('penulis', languageProvider.selectedLanguage)}   : ${book.author}',
+                                        '${TeksProvider.getString('author', languageProvider.selectedLanguage)}   : ${book.author}',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.white,

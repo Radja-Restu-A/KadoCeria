@@ -159,13 +159,26 @@ class InteractiveObject {
 
 // Language enum
 enum Language {
-  indonesia('indonesia', 'Bahasa Indonesia'),
-  sunda('sunda', 'Bahasa Sunda'),
-  keduanya('keduanya', 'Kedua Bahasa');
+  indonesia('indonesia', {
+    'indonesia': 'Bahasa Indonesia',
+    'sunda': 'Basa Indonesia'
+  }),
+  sunda('sunda', {
+    'indonesia': 'Bahasa Sunda',
+    'sunda': 'Basa Sunda'
+  }),
+  keduanya('keduanya', {
+    'indonesia': 'Kedua Bahasa',
+    'sunda': 'Duanana'
+  });
 
-  const Language(this.code, this.displayName);
+  const Language(this.code, this.displayNames);
   final String code;
-  final String displayName;
+  final Map<String, String> displayNames;
+
+  String getDisplayName(Language currentLanguage) {
+    return displayNames[currentLanguage.code] ?? displayNames['indonesia']!;
+  }
 }
 
 // PageLayout data class

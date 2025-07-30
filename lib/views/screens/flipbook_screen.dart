@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kado_ceria/provider/teks_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:page_flip/page_flip.dart';
+import '../../provider/language_provider.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
 import '../../models/book_model.dart';
 import '../widgets/kids_interactive_area_widget.dart';
@@ -257,99 +259,107 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildLanguageSelector(FlipbookViewModel viewModel) {
-    return GestureDetector(
-      onTap: () {
-        _toggleLanguageDropdown();
-      },
-      child: Container(
-        height: 48,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: widget.bookSecondaryColor,
-          borderRadius: BorderRadius.circular(36),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Text(
-                viewModel.selectedLanguage.displayName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return GestureDetector(
+          onTap: () {
+            _toggleLanguageDropdown();
+          },
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: widget.bookSecondaryColor,
+              borderRadius: BorderRadius.circular(36),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    viewModel.selectedLanguage.getDisplayName(languageProvider.selectedLanguage),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
+                const SizedBox(width: 8),
+                Icon(
+                  _isLanguageDropdownOpen
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            Icon(
-              _isLanguageDropdownOpen
-                  ? Icons.keyboard_arrow_up_rounded
-                  : Icons.keyboard_arrow_down_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildLanguageDropdownOverlay(FlipbookViewModel viewModel, double headerHeight) {
-    return Positioned(
-      top: headerHeight,
-      left: 0,
-      right: 0,
-      child: Material(
-        elevation: 8,
-        child: Container(
-          decoration: BoxDecoration(
-            color: widget.bookPrimaryColor,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: Language.values.map((language) {
-              bool isFirst = language == Language.values.first;
-              bool isLast = language == Language.values.last;
-
-              return GestureDetector(
-                onTap: () => _selectLanguage(language),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: widget.bookPrimaryColor,
-                    borderRadius: BorderRadius.only(
-                      topLeft: isFirst ? const Radius.circular(12) : Radius.zero,
-                      topRight: isFirst ? const Radius.circular(12) : Radius.zero,
-                      bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
-                      bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
-                    ),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return Positioned(
+          top: headerHeight,
+          left: 0,
+          right: 0,
+          child: Material(
+            elevation: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                color: widget.bookPrimaryColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  child: Center(
-                    child: Text(
-                      language.displayName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                ],
+              ),
+              child: Column(
+                children: Language.values.map((language) {
+                  bool isFirst = language == Language.values.first;
+                  bool isLast = language == Language.values.last;
+
+                  return GestureDetector(
+                    onTap: () => _selectLanguage(language),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: widget.bookPrimaryColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: isFirst ? const Radius.circular(12) : Radius.zero,
+                          topRight: isFirst ? const Radius.circular(12) : Radius.zero,
+                          bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
+                          bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          language.getDisplayName(languageProvider.selectedLanguage),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -588,19 +598,23 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildFullBookButton(FlipbookViewModel viewModel) {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: ElevatedButton(
-        onPressed: viewModel.isPlayingFullBook
-            ? () => viewModel.stopFullBookAudio()
-            : () => viewModel.playFullBookAudio(widget.bookId),
-        style: _getButtonStyleAudioFull(),
-        child: Text(
-          viewModel.isPlayingFullBook ? 'Hentikan' : 'Dengarkan Seluruh Buku',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
-      ),
+    return Consumer2<FlipbookViewModel, LanguageProvider>(
+      builder: (context, flipbookViewModel, languageProvider,child){
+        return SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: ElevatedButton(
+            onPressed: viewModel.isPlayingFullBook
+                ? () => viewModel.stopFullBookAudio()
+                : () => viewModel.playFullBookAudio(widget.bookId),
+            style: _getButtonStyleAudioFull(),
+            child: Text(
+              viewModel.isPlayingFullBook ? TeksProvider.getString('stop', languageProvider.selectedLanguage) : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+            ),
+          ),
+        );
+      }
     );
   }
 
@@ -716,66 +730,75 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     // Show completion button on last page
     if (isOnLastPage) {
-      return SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-            // Stop any playing audio
-            viewModel.stopAudio();
+      return Consumer2<FlipbookViewModel, LanguageProvider>(
+        builder: (context, flipbookViewModel, languageProvider, child){
+          return SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                // Stop any playing audio
+                viewModel.stopAudio();
 
-            // Navigate back to dashboard
-            Navigator.pop(context);
+                // Navigate back to dashboard
+                Navigator.pop(context);
 
-            // Optional: You can also navigate to a specific route
-            // Navigator.pushReplacementNamed(context, '/dashboard');
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: widget.bookSecondaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            elevation: 4,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.home_rounded,
-                size: 18,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Selesai Membaca',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white
+                // Optional: You can also navigate to a specific route
+                // Navigator.pushReplacementNamed(context, '/dashboard');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: widget.bookSecondaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
                 ),
+                elevation: 4,
               ),
-            ],
-          ),
-        ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.home_rounded,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    TeksProvider.getString('endreading', languageProvider.selectedLanguage),
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
       );
     }
 
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: ElevatedButton(
-        onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
-            ? () => viewModel.stopFullBookAudio()
-            : () => viewModel.playPageAudio(widget.bookId),
-        style: _getButtonStyleAudio(),
-        child: Text(
-          viewModel.isPlayingPageAudio ? 'Hentikan' : 'Dengarkan Halaman Ini',
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
-      ),
+    return Consumer2<FlipbookViewModel, LanguageProvider>(
+      builder: (context, viewModel, languageProvider, child) {
+        // Show audio button for current page
+        return SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: ElevatedButton(
+            onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
+                ? () => viewModel.stopFullBookAudio()
+                : () => viewModel.playPageAudio(widget.bookId),
+            style: _getButtonStyleAudio(),
+            child: Text(
+              viewModel.isPlayingPageAudio ? TeksProvider.getString('stop', languageProvider.selectedLanguage) : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+            ),
+          ),
+        );
+      }
     );
   }
 
