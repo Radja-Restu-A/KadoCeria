@@ -114,7 +114,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingFullBook(true);
 
     try {
-      // Start from current page, but only play story pages (not the last page widget)
+      // Start from current page, play all story pages
       for (int i = _currentPage; i < _story!.pages.length; i++) {
         // ✅ Check if user stopped the playbook BEFORE playing audio
         if (!_isPlayingFullBook) {
@@ -143,23 +143,35 @@ class FlipbookViewModel extends ChangeNotifier {
         // Add small delay between pages for better UX
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Only navigate to next page if not the last story page
-        if (i < _story!.pages.length - 1) {
-          // Update current page
-          _currentPage = i + 1;
-          notifyListeners();
+        // Navigate to next page (either next story page or last page)
+        _currentPage = i + 1;
+        notifyListeners();
 
-          // ✅ PERBAIKAN: Trigger page flip animation dengan null check
-          if (_onAutoNavigate != null) {
-            _onAutoNavigate!();
-          } else {
-            print('Warning: Auto navigation callback not set');
-          }
+        // ✅ PERBAIKAN: Trigger page flip animation dengan null check
+        if (_onAutoNavigate != null) {
+          _onAutoNavigate!();
+        } else {
+          print('Warning: Auto navigation callback not set');
+        }
 
-          // Small delay after page flip
-          await Future.delayed(const Duration(milliseconds: 800)); // ✅ Increased delay
+        // Small delay after page flip
+        await Future.delayed(const Duration(milliseconds: 800));
+      }
+
+      // ✅ TAMBAHAN: Navigate to the last page (buildLastPage) if we finished all story pages
+      if (_isPlayingFullBook && _currentPage < totalPages - 1) {
+        print('Navigating to last page (buildLastPage)');
+
+        // Update to last page
+        _currentPage = _story!.pages.length; // This will show buildLastPage
+        notifyListeners();
+
+        // Trigger navigation to last page
+        if (_onAutoNavigate != null) {
+          _onAutoNavigate!();
         }
       }
+
     } catch (e) {
       print('Full book audio error: $e');
       _setError('Failed to play full book audio: $e');
