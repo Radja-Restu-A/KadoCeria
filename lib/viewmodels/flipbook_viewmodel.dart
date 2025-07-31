@@ -95,9 +95,9 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Attempting to play audio from paths: $audioPaths');
 
       if (_selectedLanguage == Language.keduanya) {
-        await _audioService.playSequentialAudio(audioPaths); // Memutar semua audio secara berurutan
+        await _audioService.playSequentialAudio(audioPaths);
       } else {
-        await _audioService.playAudio(audioPaths.first); // Memutar audio tunggal
+        await _audioService.playAudio(audioPaths.first);
       }
 
     } catch (e, stackTrace) {
@@ -116,7 +116,6 @@ class FlipbookViewModel extends ChangeNotifier {
     try {
       // Start from current page, play all story pages
       for (int i = _currentPage; i < _story!.pages.length; i++) {
-        // ✅ Check if user stopped the playbook BEFORE playing audio
         if (!_isPlayingFullBook) {
           break;
         }
@@ -128,14 +127,12 @@ class FlipbookViewModel extends ChangeNotifier {
         print('Playing page $pageNumber audio with language: $_selectedLanguage');
         print('Audio paths: $audioPaths');
 
-        // ✅ PERBAIKAN: Konsisten dengan playPageAudio method
         if (_selectedLanguage == Language.keduanya) {
           await _audioService.playSequentialAudio(audioPaths);
         } else {
           await _audioService.playAudio(audioPaths.first);
         }
 
-        // ✅ Check again after audio playback
         if (!_isPlayingFullBook) {
           break;
         }
@@ -143,11 +140,10 @@ class FlipbookViewModel extends ChangeNotifier {
         // Add small delay between pages for better UX
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Navigate to next page (either next story page or last page)
+        // Navigate to next page
         _currentPage = i + 1;
         notifyListeners();
 
-        // ✅ PERBAIKAN: Trigger page flip animation dengan null check
         if (_onAutoNavigate != null) {
           _onAutoNavigate!();
         } else {
@@ -158,12 +154,12 @@ class FlipbookViewModel extends ChangeNotifier {
         await Future.delayed(const Duration(milliseconds: 800));
       }
 
-      // ✅ TAMBAHAN: Navigate to the last page (buildLastPage) if we finished all story pages
+      // Navigate to the last page if we finished all story pages
       if (_isPlayingFullBook && _currentPage < totalPages - 1) {
         print('Navigating to last page (buildLastPage)');
 
         // Update to last page
-        _currentPage = _story!.pages.length; // This will show buildLastPage
+        _currentPage = _story!.pages.length;
         notifyListeners();
 
         // Trigger navigation to last page
@@ -176,7 +172,6 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Full book audio error: $e');
       _setError('Failed to play full book audio: $e');
     } finally {
-      // ✅ PERBAIKAN: Pastikan state di-reset dengan benar
       _setPlayingFullBook(false);
     }
   }
@@ -186,6 +181,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _audioService.stopAudio();
   }
 
+  // ✅ MODIFIED: Updated playObjectAudio to always play both languages (Sunda first, then Indonesia)
   Future<void> playObjectAudio(String storyId, String audioFile) async {
     // Stop current object audio if different audio is requested
     if (_isPlayingObjectAudio && _currentPlayingObjectAudio != audioFile) {
@@ -206,13 +202,20 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingObjectAudio(true);
 
     try {
-      final audioPath = await _storyService.generateObjectAudioPath(storyId, audioFile);
-      await _audioService.playAudio(audioPath);
+      // ✅ NEW: Always generate both audio paths (Sunda first, then Indonesia)
+      final audioPaths = await _storyService.generateObjectAudioPathsBothLanguages(storyId, audioFile);
+
+      print('Playing object audio in both languages (Sunda -> Indonesia)');
+      print('Object audio paths: $audioPaths');
+
+      // ✅ NEW: Always play both languages sequentially
+      await _audioService.playSequentialAudio(audioPaths);
 
       // Add delay for better UX
       await Future.delayed(const Duration(milliseconds: 500));
 
     } catch (e) {
+      print('Object audio playback error: $e');
       _setError('Failed to play object audio: $e');
     } finally {
       _setPlayingObjectAudio(false);

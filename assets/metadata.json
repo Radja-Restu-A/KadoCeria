@@ -23,21 +23,21 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page2_objek2.mp3",
               "x": 86,
               "y": 0,
               "width": 218,
               "height": 264
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page2_objek3.mp3",
               "x": 512,
               "y": 861,
               "width": 1139,
               "height": 721
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page2_objek1.mp3",
               "x": 527,
               "y": 1931,
               "width": 299,
@@ -327,14 +327,14 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek.mp3",
+              "audioObject": "page1_objek2.mp3",
               "x": 145,
               "y": 347,
               "width": 935,
               "height": 445
             },
             {
-              "audioObject": "page1_objek.mp3",
+              "audioObject": "page1_objek1.mp3",
               "x": 704,
               "y": 871,
               "width": 119,
@@ -348,7 +348,7 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page3_objek.mp3",
+              "audioObject": "page2_objek1.mp3",
               "x": 264,
               "y": 1339,
               "width": 209,

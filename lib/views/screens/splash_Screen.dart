@@ -53,7 +53,7 @@ class _SplashViewState extends State<SplashScreen> {
               'BALAI BAHASA\nPROVINSI JAWA BARAT',
               style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600
               ),
               textAlign: TextAlign.center,
@@ -62,7 +62,7 @@ class _SplashViewState extends State<SplashScreen> {
               'BADAN PENGEMBANGAN DAN PEMBINAAN BAHASA\nKEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH',
               style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,

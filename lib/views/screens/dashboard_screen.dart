@@ -5,6 +5,7 @@ import '../../provider/language_provider.dart';
 import '../../provider/teks_provider.dart';
 import '../widgets/book_card_widget.dart';
 import '../screens/flipbook_screen.dart';
+import '../screens/language_selection_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -47,6 +48,21 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
           body: _buildBody(context, bookViewModel, languageProvider),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LanguageSelectionScreen(),
+                ),
+              );
+            },
+            backgroundColor: const Color(0xFF4FC3F7),
+            child: const Icon(
+              Icons.language,
+              color: Colors.white,
+            ),
+          ),
         );
       },
     );

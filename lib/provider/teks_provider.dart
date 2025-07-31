@@ -20,7 +20,7 @@ class TeksProvider {
       // 'descriptions': 'Kania dan Gumiwang sedang bermain layangan di halaman rumah mereka. Langit mendung. Setetes air hujan mengenai hidung Kania. Hujan pun turun, keduanya bermain hujan-hujanan. Kania penasaran ke mana berlalunya setetes air hujan yang jatuh dari langit itu. Kania dan Gumiwang kemudian mengikuti aliran air ke selokan yang menuju ke sawah. Di sawah, mereka bertemu dengan kakek mereka yang sedang berteduh di sebuah saung. Sambil menunggu hujan reda, Kakek mendongeng tentang perjalanan setetes air hujan yang ingin ke samudra. Dari dongeng Kakek, akhirnya Kania dan Gumiwang menjadi tahu tentang hujan.',
     },
     'sunda': {
-      'appTitle': 'Balé Basa Propinsi Jawa Barat',
+      'appTitle': 'Balai Bahasa Provinsi Jawa Barat',
       'noBooks': 'Teu aya buku nu sayaga',
       'listenPage': 'Dangukeun Kaca Ieu',
       'listenBook': 'Dangukeun Sakabéh Buku',

@@ -164,11 +164,11 @@ enum Language {
     'sunda': 'Basa Indonesia'
   }),
   sunda('sunda', {
-    'indonesia': 'Bahasa Sunda',
+    'indonesia': 'Basa Sunda',
     'sunda': 'Basa Sunda'
   }),
   keduanya('keduanya', {
-    'indonesia': 'Kedua Bahasa',
+    'indonesia': 'Kedua bahasa',
     'sunda': 'Duanana'
   });
 
