@@ -520,6 +520,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             audioFile: audioObject,
             isPlaying: viewModel.isPlayingObjectAudio && viewModel.currentPlayingObjectAudio == audioObject,
             onTap: () => viewModel.playObjectAudio(widget.bookId, audioObject),
+            primaryColor: widget.bookPrimaryColor,
+            secondaryColor: widget.bookPrimaryColor,
           ),
         ),
       );
