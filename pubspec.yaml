@@ -26,11 +26,12 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/logo/hade.png"
+  image_path: "assets/logo/kadoceria.png"
   min_sdk_android: 21
   min_sdk_ios: 11.0
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/logo/hade.png"
+  adaptive_icon_foreground: "assets/logo/kadoceria.png"
+  adaptive_icon_mask: true
 
 flutter:
   uses-material-design: true
