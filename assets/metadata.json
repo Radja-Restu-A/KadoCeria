@@ -15,35 +15,35 @@
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page1.png",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
-        },
-        {
-          "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page2.png",
-          "widthImage": 1654,
-          "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page2_objek2.mp3",
+              "audioObject": "page1_objek2.mp3",
               "x": 86,
               "y": 0,
               "width": 218,
               "height": 264
             },
             {
-              "audioObject": "page2_objek3.mp3",
+              "audioObject": "page1_objek3.mp3",
               "x": 512,
               "y": 861,
               "width": 1139,
               "height": 721
             },
             {
-              "audioObject": "page2_objek1.mp3",
+              "audioObject": "page1_objek1.mp3",
               "x": 527,
               "y": 1931,
               "width": 299,
               "height": 310
             }
           ]
+        },
+        {
+          "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page2.png",
+          "widthImage": 1654,
+          "heightImage": 2339,
+          "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page3.png",
@@ -81,14 +81,14 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page8_objek1.mp3",
               "x": 289,
               "y": 319,
               "width": 286,
               "height": 337
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page8_objek2.mp3",
               "x": 0,
               "y": 1475,
               "width": 1180,
@@ -108,7 +108,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page10_objek1.mp3",
               "x": 31,
               "y": 636,
               "width": 822,
@@ -122,7 +122,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page11_objek1.mp3",
               "x": 221,
               "y": 1589,
               "width": 380,
@@ -160,14 +160,14 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page16_objek1.mp3",
               "x": 367,
               "y": 1374,
               "width": 701,
               "height": 373
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page16_objek2.mp3",
               "x": 438,
               "y": 1778,
               "width": 621,
@@ -187,7 +187,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page18_objek1.mp3",
               "x": 469,
               "y": 299,
               "width": 717,
@@ -201,7 +201,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page19_objek1.mp3",
               "x": 71,
               "y": 114,
               "width": 1529,
@@ -227,14 +227,14 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page22_objek1.mp3",
               "x": 833,
               "y": 1166,
               "width": 271,
               "height": 435
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page22_objek2.mp3",
               "x": 924,
               "y": 1632,
               "width": 271,
@@ -272,7 +272,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page27_objek1.mp3",
               "x": 317,
               "y": 517,
               "width": 357,
@@ -286,7 +286,7 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page28_objek1.mp3",
               "x": 913,
               "y": 874,
               "width": 603,

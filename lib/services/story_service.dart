@@ -97,13 +97,13 @@ class StoryService {
 
     switch (language) {
       case Language.indonesia:
-        return ['$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.m4a'];
+        return ['$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3'];
       case Language.sunda:
-        return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.m4a'];
+        return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3'];
       case Language.keduanya:
         return [
-          '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.m4a',
-          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.m4a',
+          '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3',
+          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
         ];
     }
   }
@@ -141,13 +141,13 @@ class StoryService {
 
     switch (language) {
       case Language.indonesia:
-        return ['$basePath/${baseFileName}_indonesia.m4a'];
+        return ['$basePath/${baseFileName}_indonesia.mp3'];
       case Language.sunda:
-        return ['$basePath/${baseFileName}_sunda.m4a'];
+        return ['$basePath/${baseFileName}_sunda.mp3'];
       case Language.keduanya:
         return [
-          '$basePath/${baseFileName}_sunda.m4a',
-          '$basePath/${baseFileName}_indonesia.m4a',
+          '$basePath/${baseFileName}_sunda.mp3',
+          '$basePath/${baseFileName}_indonesia.mp3',
         ];
     }
   }
@@ -162,8 +162,8 @@ class StoryService {
 
     // Always return both languages: Sunda first, then Indonesia
     return [
-      '$basePath/${baseFileName}_sunda.m4a',
-      '$basePath/${baseFileName}_indonesia.m4a',
+      '$basePath/${baseFileName}_sunda.mp3',
+      '$basePath/${baseFileName}_indonesia.mp3',
     ];
   }
 
