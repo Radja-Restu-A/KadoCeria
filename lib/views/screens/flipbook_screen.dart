@@ -414,13 +414,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Gunakan calculateInteractiveObjectsLayout untuk multiple objects
             final pageLayouts = viewModel.calculateInteractiveObjectsLayout(page, constraints);
 
             return Stack(
               children: [
                 _buildPageImage(page),
-                // Gunakan _buildInteractiveAreas yang sudah Anda buat
                 ..._buildInteractiveAreas(page, pageLayouts, viewModel),
               ],
             );
@@ -532,40 +530,159 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return interactiveWidgets;
   }
 
-  // Modifikasi untuk _buildLastPage()
   Widget _buildLastPage() {
     return Container(
       color: FlipbookConstants.backgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Title text
-            Text(
-              'Trigatra Bangun Bahasa',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: widget.bookPrimaryColor,
-              ),
-              textAlign: TextAlign.center,
-            ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final availableHeight = constraints.maxHeight;
+          final availableWidth = constraints.maxWidth;
+          final imageSize = (availableHeight * 0.6).clamp(200.0, 400.0);
 
-            const SizedBox(height: 16),
+          return Stack(
+            children: [
+              // Background decorative elements
+              _buildBackgroundDecorations(constraints),
 
-            Text(
-              '1. Utamakan Bahasa Indonesia\n2. Lestarikan Bahasa Daerah\n3. Kuasai Bahasa Asing',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+              // Main content - Logo only
+              Center(
+                child: Container(
+                  width: imageSize,
+                  height: imageSize,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: widget.bookPrimaryColor.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                        spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 10,
+                        offset: const Offset(-5, -5),
+                      ),
+                    ],
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white,
+                        Colors.grey.withValues(alpha: 0.1),
+                      ],
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: widget.bookPrimaryColor.withValues(alpha: 0.2),
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/logo/badanbahasa.jpg',
+                        width: imageSize - 16,
+                        height: imageSize - 16,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: imageSize * 0.3,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildBackgroundDecorations(BoxConstraints constraints) {
+    return Stack(
+      children: [
+        // Decorative circles in corners
+        Positioned(
+          top: -50,
+          left: -50,
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.bookPrimaryColor.withValues(alpha: 0.1),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -50,
+          right: -50,
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.bookSecondaryColor.withValues(alpha: 0.1),
+            ),
+          ),
+        ),
+        Positioned(
+          top: constraints.maxHeight * 0.3,
+          left: -30,
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.bookPrimaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+        ),
+        Positioned(
+          top: constraints.maxHeight * 0.6,
+          right: -30,
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: widget.bookSecondaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+        ),
+
+        // Subtle pattern dots
+        ...List.generate(20, (index) {
+          return Positioned(
+            top: (constraints.maxHeight * (index * 0.15) % 1),
+            left: (constraints.maxWidth * (index * 0.23) % 1),
+            child: Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.bookPrimaryColor.withValues(alpha: 0.1),
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 
