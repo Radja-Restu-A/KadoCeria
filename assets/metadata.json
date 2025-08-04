@@ -327,14 +327,14 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek2.mp3",
+              "audioObject": "page1_objek1.mp3",
               "x": 145,
               "y": 347,
               "width": 935,
               "height": 445
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page1_objek2.mp3",
               "x": 704,
               "y": 871,
               "width": 119,
@@ -452,49 +452,49 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek1.mp3",
               "x": 235,
               "y": 1288,
               "width": 121,
               "height": 93
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek3.mp3",
               "x": 379,
               "y": 1259,
               "width": 214,
               "height": 156
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek6.mp3",
               "x": 622,
               "y": 1197,
               "width": 117,
               "height": 81
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek4.mp3",
               "x": 613,
               "y": 1370,
               "width": 96,
               "height": 162
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek2.mp3",
               "x": 60,
               "y": 1430,
               "width": 323,
               "height": 209
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek7.mp3",
               "x": 894,
               "y": 1379,
               "width": 147,
               "height": 130
             },
             {
-              "audioObject": "page18_objek.mp3",
+              "audioObject": "page18_objek5.mp3",
               "x": 765,
               "y": 1090,
               "width": 116,
@@ -514,35 +514,35 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page20_objek.mp3",
+              "audioObject": "page20_objek1.mp3",
               "x": 3,
               "y": 718,
               "width": 232,
               "height": 359
             },
             {
-              "audioObject": "page20_objek.mp3",
+              "audioObject": "page20_objek2.mp3",
               "x": 615,
               "y": 836,
               "width": 213,
               "height": 121
             },
             {
-              "audioObject": "page20_objek.mp3",
+              "audioObject": "page20_objek3.mp3",
               "x": 987,
               "y": 769,
               "width": 233,
               "height": 219
             },
             {
-              "audioObject": "page20_objek.mp3",
+              "audioObject": "page20_objek4.mp3",
               "x": 31,
               "y": 1481,
               "width": 235,
               "height": 232
             },
             {
-              "audioObject": "page20_objek.mp3",
+              "audioObject": "page20_objek5.mp3",
               "x": 956,
               "y": 1418,
               "width": 176,

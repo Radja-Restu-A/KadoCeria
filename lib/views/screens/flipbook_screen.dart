@@ -414,11 +414,13 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            // Gunakan calculateInteractiveObjectsLayout untuk multiple objects
             final pageLayouts = viewModel.calculateInteractiveObjectsLayout(page, constraints);
 
             return Stack(
               children: [
                 _buildPageImage(page),
+                // Gunakan _buildInteractiveAreas yang sudah Anda buat
                 ..._buildInteractiveAreas(page, pageLayouts, viewModel),
               ],
             );
