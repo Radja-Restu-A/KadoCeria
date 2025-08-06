@@ -6,6 +6,13 @@ import '../services/story_service.dart';
 import '../repositories/story_repository.dart';
 import '../provider/service_locator.dart';
 
+enum AudioErrorType {
+  pageAudio,
+  fullBookAudio,
+}
+
+typedef AudioErrorCallback = void Function(AudioErrorType errorType, String errorMessage);
+
 class FlipbookViewModel extends ChangeNotifier {
   final ServiceLocator _serviceLocator = ServiceLocator();
 
@@ -31,6 +38,9 @@ class FlipbookViewModel extends ChangeNotifier {
 
   // Callback for auto-navigation
   VoidCallback? _onAutoNavigate;
+
+  // Audio error modal
+  AudioErrorCallback? _onAudioError;
 
   // Constructor
   FlipbookViewModel() {
@@ -61,6 +71,10 @@ class FlipbookViewModel extends ChangeNotifier {
   // Set auto-navigation callback
   void setAutoNavigationCallback(VoidCallback callback) {
     _onAutoNavigate = callback;
+  }
+
+  void setAudioErrorCallback(AudioErrorCallback callback) {
+    _onAudioError = callback;
   }
 
   // Public methods
@@ -102,7 +116,11 @@ class FlipbookViewModel extends ChangeNotifier {
 
     } catch (e, stackTrace) {
       print('Audio playback error: $e\n$stackTrace');
-      _setError('Failed to play page audio: $e');
+
+      // ✅ MODIFIKASI: Panggil callback error invece of setting error state
+      if (_onAudioError != null) {
+        _onAudioError!(AudioErrorType.pageAudio, e.toString());
+      }
     } finally {
       _setPlayingPageAudio(false);
     }
@@ -120,38 +138,49 @@ class FlipbookViewModel extends ChangeNotifier {
           break;
         }
 
-        // Play audio for current page FIRST
-        final pageNumber = i + 1;
-        final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+        try {
+          // Play audio for current page FIRST
+          final pageNumber = i + 1;
+          final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
 
-        print('Playing page $pageNumber audio with language: $_selectedLanguage');
-        print('Audio paths: $audioPaths');
+          print('Playing page $pageNumber audio with language: $_selectedLanguage');
+          print('Audio paths: $audioPaths');
 
-        if (_selectedLanguage == Language.keduanya) {
-          await _audioService.playSequentialAudio(audioPaths);
-        } else {
-          await _audioService.playAudio(audioPaths.first);
+          if (_selectedLanguage == Language.keduanya) {
+            await _audioService.playSequentialAudio(audioPaths);
+          } else {
+            await _audioService.playAudio(audioPaths.first);
+          }
+
+          if (!_isPlayingFullBook) {
+            break;
+          }
+
+          // Add small delay between pages for better UX
+          await Future.delayed(const Duration(milliseconds: 500));
+
+          // Navigate to next page
+          _currentPage = i + 1;
+          notifyListeners();
+
+          if (_onAutoNavigate != null) {
+            _onAutoNavigate!();
+          } else {
+            print('Warning: Auto navigation callback not set');
+          }
+
+          // Small delay after page flip
+          await Future.delayed(const Duration(milliseconds: 800));
+
+        } catch (e) {
+          print('Error playing audio for page ${i + 1}: $e');
+
+          // ✅ MODIFIKASI: Panggil callback error untuk full book
+          if (_onAudioError != null) {
+            _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
+            return; // Stop execution and wait for user decision
+          }
         }
-
-        if (!_isPlayingFullBook) {
-          break;
-        }
-
-        // Add small delay between pages for better UX
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Navigate to next page
-        _currentPage = i + 1;
-        notifyListeners();
-
-        if (_onAutoNavigate != null) {
-          _onAutoNavigate!();
-        } else {
-          print('Warning: Auto navigation callback not set');
-        }
-
-        // Small delay after page flip
-        await Future.delayed(const Duration(milliseconds: 800));
       }
 
       // Navigate to the last page if we finished all story pages
@@ -170,10 +199,35 @@ class FlipbookViewModel extends ChangeNotifier {
 
     } catch (e) {
       print('Full book audio error: $e');
-      _setError('Failed to play full book audio: $e');
+
+      // ✅ MODIFIKASI: Panggil callback error
+      if (_onAudioError != null) {
+        _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
+      }
     } finally {
       _setPlayingFullBook(false);
     }
+  }
+
+  Future<void> continueFullBookFromNextPage(String storyId) async {
+    if (_story == null || _currentPage >= _story!.pages.length - 1) {
+      _setPlayingFullBook(false);
+      return;
+    }
+
+    // Move to next page and continue playing
+    _currentPage++;
+    notifyListeners();
+
+    if (_onAutoNavigate != null) {
+      _onAutoNavigate!();
+    }
+
+    // Small delay after page flip
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Continue playing from the next page
+    await playFullBookAudio(storyId);
   }
 
   void stopFullBookAudio() {
