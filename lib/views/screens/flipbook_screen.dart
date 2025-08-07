@@ -531,15 +531,20 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildLanguageSelector(FlipbookViewModel viewModel) {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
+        // ✅ TAMBAHAN: Check apakah audio sedang diputar
+        final bool isAudioPlaying = viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook;
+
         return GestureDetector(
-          onTap: () {
+          onTap: isAudioPlaying ? null : () {  // ✅ DISABLE tap jika audio sedang diputar
             _toggleLanguageDropdown();
           },
           child: Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: widget.bookSecondaryColor,
+              color: isAudioPlaying
+                  ? widget.bookSecondaryColor.withOpacity(0.5)  // ✅ Ubah opacity jika disabled
+                  : widget.bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
             ),
             child: Row(
@@ -548,8 +553,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 Flexible(
                   child: Text(
                     viewModel.selectedLanguage.getDisplayName(languageProvider.selectedLanguage),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: isAudioPlaying
+                          ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity text jika disabled
+                          : Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -562,7 +569,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   _isLanguageDropdownOpen
                       ? Icons.keyboard_arrow_up_rounded
                       : Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white,
+                  color: isAudioPlaying
+                      ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity icon jika disabled
+                      : Colors.white,
                   size: 20,
                 ),
               ],
@@ -655,15 +664,37 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       width: double.infinity,
       height: double.infinity,
       color: FlipbookConstants.backgroundColor,
-      child: PageFlipWidget(
-        key: _controller,
-        backgroundColor: FlipbookConstants.backgroundColor,
-        children: _buildPages(viewModel),
-        lastPage: _buildLastPage(),
-        onPageFlipped: (index) {
-          // Update viewModel current page when flip animation completes
-          _viewModel.setCurrentPage(index);
-        },
+      child: Stack(
+        children: [
+          // PageFlipWidget tetap sama seperti aslinya
+          PageFlipWidget(
+            key: _controller,
+            backgroundColor: FlipbookConstants.backgroundColor,
+            children: _buildPages(viewModel),
+            lastPage: _buildLastPage(),
+            onPageFlipped: (index) {
+              // ✅ PERBAIKAN: Stop audio saat page flip manual HANYA jika bukan full book mode
+              if (!viewModel.isPlayingFullBook &&
+                  (viewModel.isPlayingPageAudio || viewModel.isPlayingObjectAudio)) {
+                viewModel.stopAudio();
+              }
+
+              // Update viewModel current page when flip animation completes
+              _viewModel.setCurrentPage(index);
+            },
+          ),
+
+          // ✅ TAMBAHAN: Overlay untuk memblokir gesture saat full book audio diputar
+          if (viewModel.isPlayingFullBook)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

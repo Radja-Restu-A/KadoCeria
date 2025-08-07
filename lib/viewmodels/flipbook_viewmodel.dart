@@ -277,29 +277,6 @@ class FlipbookViewModel extends ChangeNotifier {
     }
   }
 
-  // New method to play all interactive object audios in sequence for current page
-  Future<void> playAllObjectAudiosInPage(String storyId) async {
-    if (_story == null || _currentPage >= _story!.pages.length) return;
-
-    final currentStoryPage = _story!.pages[_currentPage];
-
-    if (currentStoryPage.interactiveObjects.isEmpty) return;
-
-    for (final obj in currentStoryPage.interactiveObjects) {
-      if (obj.audioObject != null && obj.audioObject!.isNotEmpty) {
-        await playObjectAudio(storyId, obj.audioObject!);
-
-        // Wait for audio to finish before playing next
-        while (_isPlayingObjectAudio) {
-          await Future.delayed(const Duration(milliseconds: 100));
-        }
-
-        // Small delay between objects
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
-    }
-  }
-
   void changeLanguage(Language newLanguage) {
     if (_selectedLanguage != newLanguage) {
       _selectedLanguage = newLanguage;
@@ -319,7 +296,7 @@ class FlipbookViewModel extends ChangeNotifier {
     notifyListeners();
 
     // Wait for animation to complete before allowing next navigation
-    await Future.delayed(const Duration(milliseconds: 600));
+    // await Future.delayed(const Duration(milliseconds: 600));
     _setNavigating(false);
   }
 
@@ -335,7 +312,7 @@ class FlipbookViewModel extends ChangeNotifier {
     notifyListeners();
 
     // Wait for animation to complete before allowing next navigation
-    await Future.delayed(const Duration(milliseconds: 600));
+    // await Future.delayed(const Duration(milliseconds: 600));
     _setNavigating(false);
   }
 
