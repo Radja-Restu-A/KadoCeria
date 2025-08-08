@@ -51,7 +51,7 @@ class BookCardWidget extends StatelessWidget {
                                           children: [
                                             Container(
                                               width: 100,
-                                              height: 135,
+                                              height: 155,
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(20),
                                                 color: book.secondaryColor,
@@ -131,21 +131,17 @@ class BookCardWidget extends StatelessWidget {
                               children: [
                                 SizedBox(
                                   height: 50,
-                                  child: Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Text(
-                                        book.getTitle(languageProvider.selectedLanguage),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      )
+                                  child: Text(
+                                    book.getTitle(languageProvider.selectedLanguage),
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                SizedBox(height: 4),
                                 Container(
                                   height: 100,
                                   decoration: BoxDecoration(
