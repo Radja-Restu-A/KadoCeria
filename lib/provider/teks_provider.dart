@@ -1,4 +1,3 @@
-// lib/provider/teks_provider.dart
 import '../models/book_model.dart';
 
 class TeksProvider {
@@ -16,8 +15,10 @@ class TeksProvider {
       'onepage' : 'Dengarkan halaman ini',
       'fullbook' : 'Dengarkan seluruh buku',
       'endreading': 'Selesai Membaca',
-      // 'titles': 'Setetes Air Hujan, Ingin ke Samudra',
-      // 'descriptions': 'Kania dan Gumiwang sedang bermain layangan di halaman rumah mereka. Langit mendung. Setetes air hujan mengenai hidung Kania. Hujan pun turun, keduanya bermain hujan-hujanan. Kania penasaran ke mana berlalunya setetes air hujan yang jatuh dari langit itu. Kania dan Gumiwang kemudian mengikuti aliran air ke selokan yang menuju ke sawah. Di sawah, mereka bertemu dengan kakek mereka yang sedang berteduh di sebuah saung. Sambil menunggu hujan reda, Kakek mendongeng tentang perjalanan setetes air hujan yang ingin ke samudra. Dari dongeng Kakek, akhirnya Kania dan Gumiwang menjadi tahu tentang hujan.',
+      // ✅ TAMBAHAN: String untuk audio error modal
+      'audioError': 'Maaf, sepertinya ada masalah untuk suara di halaman ini',
+      'ok': 'Oke',
+      'continue': 'Lanjut',
     },
     'sunda': {
       'appTitle': 'Balai Bahasa Provinsi Jawa Barat',
@@ -32,8 +33,10 @@ class TeksProvider {
       'onepage': 'Dangukeun kaca ieu',
       'fullbook': 'Dangukeun sakabéh buku',
       'endreading': 'Rengse Maca',
-      // 'titles': 'Sakeclak Cihujan Hayang ka Sagara',
-      // 'descriptions': 'Kania jeung Gumiwang keur ngalayang langlayangan di pakarangan. Langit mendung. Titisan hujan neunggeul irung Kania. Hujan ngaririncik, duaan ulin hujan.Kania naros ka mana lir cihujan nu turun ti langit. Kania jeung Gumiwang tuluy nuturkeun aliran cai nepi ka solokan anu ngajugjug ka sawah. Di sawah, panggih jeung akina nu keur ngonci di gubug. Bari ngadagoan hujan eureun, Embah nyaritakeun lalampahan titisan hujan ka sagara.Tina carita Embah, Kania jeung Gumiwang ahirna diajar ngeunaan hujan.'
+      // ✅ TAMBAHAN: String untuk audio error modal
+      'audioError': 'Hampura, sigana aya masalah pikeun sora di kaca ieu',
+      'ok': 'Oke',
+      'continue': 'Teruskeun',
     },
   };
 

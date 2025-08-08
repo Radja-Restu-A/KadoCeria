@@ -36,13 +36,299 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     // ✅ PERBAIKAN: Set callback untuk auto-navigation
     _viewModel.setAutoNavigationCallback(() {
-      // Trigger next page animation
       _controller.currentState?.nextPage();
+    });
+
+    // ✅ TAMBAHAN: Set callback untuk audio error
+    _viewModel.setAudioErrorCallback((errorType, errorMessage) {
+      _showAudioErrorModal(errorType, errorMessage);
     });
 
     // Setup listeners
     _viewModel.addListener(_onStoryLoaded);
     _viewModel.loadStory(widget.bookId);
+  }
+
+  void _showAudioErrorModal(AudioErrorType errorType, String errorMessage) {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Consumer<LanguageProvider>(
+          builder: (context, languageProvider, child) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              backgroundColor: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 350,
+                  minHeight: 250,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      widget.bookPrimaryColor,
+                      widget.bookPrimaryColor.withOpacity(0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                      spreadRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: widget.bookPrimaryColor.withOpacity(0.2),
+                      blurRadius: 40,
+                      offset: const Offset(0, 0),
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header dengan icon dan animasi
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          // Animated icon dengan background circle
+                          TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 600),
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: 0.8 + (value * 0.2),
+                                child: Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.2),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.3),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.volume_off_rounded,
+                                    color: Colors.white,
+                                    size: 36,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          // Title dengan shadow effect
+                          Text(
+                            'Ups, Ada Gangguan Audio',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Content area
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        TeksProvider.getString('audioError', languageProvider.selectedLanguage),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Actions dengan styling menarik
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: _buildModalActions(errorType, languageProvider),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildModalActions(AudioErrorType errorType, LanguageProvider languageProvider) {
+    switch (errorType) {
+      case AudioErrorType.pageAudio:
+        return [
+          _buildActionButton(
+            text: TeksProvider.getString('ok', languageProvider.selectedLanguage),
+            icon: null, // Icon dihapus untuk button OK
+            isOutlined: false,
+            onPressed: () {
+              Navigator.of(context).pop();
+              _viewModel.clearError();
+            },
+          ),
+        ];
+
+      case AudioErrorType.fullBookAudio:
+        return [
+          _buildActionButton(
+            text: TeksProvider.getString('stop', languageProvider.selectedLanguage),
+            icon: Icons.stop_circle_rounded,
+            isOutlined: true,
+            onPressed: () {
+              Navigator.of(context).pop();
+              _viewModel.stopFullBookAudio();
+              _viewModel.clearError();
+            },
+          ),
+          const SizedBox(width: 12),
+          _buildActionButton(
+            text: TeksProvider.getString('continue', languageProvider.selectedLanguage),
+            icon: Icons.skip_next_rounded,
+            isOutlined: false,
+            onPressed: () {
+              Navigator.of(context).pop();
+              _viewModel.continueFullBookFromNextPage(widget.bookId);
+              _viewModel.clearError();
+            },
+          ),
+        ];
+    }
+  }
+
+  Widget _buildActionButton({
+    required String text,
+    required IconData? icon, // Ubah menjadi nullable
+    required bool isOutlined,
+    required VoidCallback onPressed,
+  }) {
+    return Expanded(
+      child: Container(
+        height: 48,
+        child: isOutlined
+            ? (icon != null
+            ? OutlinedButton.icon(
+          onPressed: onPressed,
+          icon: Icon(icon, size: 16),
+          label: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white.withOpacity(0.7), width: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+        )
+            : OutlinedButton(
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white.withOpacity(0.7), width: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+        ))
+            : (icon != null
+            ? ElevatedButton.icon(
+          onPressed: onPressed,
+          icon: Icon(icon, size: 16),
+          label: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: widget.bookPrimaryColor,
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+        )
+            : ElevatedButton(
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: widget.bookPrimaryColor,
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+        )),
+      ),
+    );
   }
 
   void _onStoryLoaded() {
@@ -138,10 +424,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (viewModel.error != null) {
-                return _buildErrorWidget(viewModel.error!);
-              }
-
               if (viewModel.story == null) {
                 return const Center(child: Text('No story loaded'));
               }
@@ -215,24 +497,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     );
   }
 
-  Widget _buildErrorWidget(String error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(error, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => _viewModel.loadStory(widget.bookId),
-            child: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildHeader(FlipbookViewModel viewModel) {
     return Container(
       width: double.infinity,
@@ -267,15 +531,20 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildLanguageSelector(FlipbookViewModel viewModel) {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
+        // ✅ TAMBAHAN: Check apakah audio sedang diputar
+        final bool isAudioPlaying = viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook;
+
         return GestureDetector(
-          onTap: () {
+          onTap: isAudioPlaying ? null : () {  // ✅ DISABLE tap jika audio sedang diputar
             _toggleLanguageDropdown();
           },
           child: Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: widget.bookSecondaryColor,
+              color: isAudioPlaying
+                  ? widget.bookSecondaryColor.withOpacity(0.5)  // ✅ Ubah opacity jika disabled
+                  : widget.bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
             ),
             child: Row(
@@ -284,8 +553,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 Flexible(
                   child: Text(
                     viewModel.selectedLanguage.getDisplayName(languageProvider.selectedLanguage),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: isAudioPlaying
+                          ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity text jika disabled
+                          : Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -298,7 +569,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   _isLanguageDropdownOpen
                       ? Icons.keyboard_arrow_up_rounded
                       : Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white,
+                  color: isAudioPlaying
+                      ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity icon jika disabled
+                      : Colors.white,
                   size: 20,
                 ),
               ],
@@ -391,15 +664,37 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       width: double.infinity,
       height: double.infinity,
       color: FlipbookConstants.backgroundColor,
-      child: PageFlipWidget(
-        key: _controller,
-        backgroundColor: FlipbookConstants.backgroundColor,
-        children: _buildPages(viewModel),
-        lastPage: _buildLastPage(),
-        onPageFlipped: (index) {
-          // Update viewModel current page when flip animation completes
-          _viewModel.setCurrentPage(index);
-        },
+      child: Stack(
+        children: [
+          // PageFlipWidget tetap sama seperti aslinya
+          PageFlipWidget(
+            key: _controller,
+            backgroundColor: FlipbookConstants.backgroundColor,
+            children: _buildPages(viewModel),
+            lastPage: _buildLastPage(),
+            onPageFlipped: (index) {
+              // ✅ PERBAIKAN: Stop audio saat page flip manual HANYA jika bukan full book mode
+              if (!viewModel.isPlayingFullBook &&
+                  (viewModel.isPlayingPageAudio || viewModel.isPlayingObjectAudio)) {
+                viewModel.stopAudio();
+              }
+
+              // Update viewModel current page when flip animation completes
+              _viewModel.setCurrentPage(index);
+            },
+          ),
+
+          // ✅ TAMBAHAN: Overlay untuk memblokir gesture saat full book audio diputar
+          if (viewModel.isPlayingFullBook)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -538,7 +833,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableHeight = constraints.maxHeight;
-          final availableWidth = constraints.maxWidth;
           final imageSize = (availableHeight * 0.6).clamp(200.0, 400.0);
 
           return Stack(
