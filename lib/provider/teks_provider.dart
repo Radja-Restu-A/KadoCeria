@@ -5,8 +5,6 @@ class TeksProvider {
     'indonesia': {
       'appTitle': 'Balai Bahasa Provinsi Jawa Barat',
       'noBooks': 'Tidak ada buku tersedia',
-      'listenPage': 'Dengarkan Halaman Ini',
-      'listenBook': 'Dengarkan Seluruh Buku',
       'retry': 'Coba Lagi',
       'loading': 'Memuat...',
       'error': 'Terjadi Kesalahan',
@@ -23,8 +21,6 @@ class TeksProvider {
     'sunda': {
       'appTitle': 'Balai Bahasa Provinsi Jawa Barat',
       'noBooks': 'Teu aya buku nu sayaga',
-      'listenPage': 'Dangukeun Kaca Ieu',
-      'listenBook': 'Dangukeun Sakabéh Buku',
       'retry': 'Cobian Deui',
       'loading': 'Ngamuat...',
       'error': 'Aya Kasalahan',

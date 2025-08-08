@@ -74,19 +74,19 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     end: Alignment.bottomCenter,
                     colors: [
                       widget.bookPrimaryColor,
-                      widget.bookPrimaryColor.withOpacity(0.9),
+                      widget.bookPrimaryColor.withValues(alpha :0.9),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha :0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                       spreadRadius: 2,
                     ),
                     BoxShadow(
-                      color: widget.bookPrimaryColor.withOpacity(0.2),
+                      color: widget.bookPrimaryColor.withValues(alpha :0.2),
                       blurRadius: 40,
                       offset: const Offset(0, 0),
                       spreadRadius: 10,
@@ -113,9 +113,9 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                                   height: 80,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withValues(alpha :0.2),
                                     border: Border.all(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: Colors.white.withValues(alpha :0.3),
                                       width: 2,
                                     ),
                                   ),
@@ -138,7 +138,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                               color: Colors.white,
                               shadows: [
                                 Shadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha :0.3),
                                   offset: const Offset(0, 2),
                                   blurRadius: 4,
                                 ),
@@ -155,10 +155,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha :0.15),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha :0.2),
                           width: 1,
                         ),
                       ),
@@ -258,7 +258,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           ),
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
-            side: BorderSide(color: Colors.white.withOpacity(0.7), width: 2),
+            side: BorderSide(color: Colors.white.withValues(alpha :0.7), width: 2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
@@ -277,7 +277,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           ),
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
-            side: BorderSide(color: Colors.white.withOpacity(0.7), width: 2),
+            side: BorderSide(color: Colors.white.withValues(alpha :0.7), width: 2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
@@ -300,7 +300,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             backgroundColor: Colors.white,
             foregroundColor: widget.bookPrimaryColor,
             elevation: 4,
-            shadowColor: Colors.black.withOpacity(0.3),
+            shadowColor: Colors.black.withValues(alpha :0.3),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
@@ -320,7 +320,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             backgroundColor: Colors.white,
             foregroundColor: widget.bookPrimaryColor,
             elevation: 4,
-            shadowColor: Colors.black.withOpacity(0.3),
+            shadowColor: Colors.black.withValues(alpha :0.3),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
@@ -543,7 +543,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isAudioPlaying
-                  ? widget.bookSecondaryColor.withOpacity(0.5)  // ✅ Ubah opacity jika disabled
+                  ? widget.bookSecondaryColor.withValues(alpha: 0.5)  // ✅ Ubah opacity jika disabled
                   : widget.bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
             ),
@@ -555,7 +555,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     viewModel.selectedLanguage.getDisplayName(languageProvider.selectedLanguage),
                     style: TextStyle(
                       color: isAudioPlaying
-                          ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity text jika disabled
+                          ? Colors.white.withValues(alpha :0.5)  // ✅ Ubah opacity text jika disabled
                           : Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -570,7 +570,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                       ? Icons.keyboard_arrow_up_rounded
                       : Icons.keyboard_arrow_down_rounded,
                   color: isAudioPlaying
-                      ? Colors.white.withOpacity(0.5)  // ✅ Ubah opacity icon jika disabled
+                      ? Colors.white.withValues(alpha :0.5)  // ✅ Ubah opacity icon jika disabled
                       : Colors.white,
                   size: 20,
                 ),
@@ -1020,39 +1020,51 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildFullBookButton(FlipbookViewModel viewModel) {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
-      builder: (context, flipbookViewModel, languageProvider,child){
-        return SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: ElevatedButton(
-            onPressed: viewModel.isPlayingFullBook
-                ? () => viewModel.stopFullBookAudio()
-                : () => viewModel.playFullBookAudio(widget.bookId),
-            style: _getButtonStyleAudioFull(),
-            child: Text(
-              viewModel.isPlayingFullBook ? TeksProvider.getString('stop', languageProvider.selectedLanguage) : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+        builder: (context, flipbookViewModel, languageProvider, child) {
+          final bool isPlaying = viewModel.isPlayingFullBook;
+          return SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: ElevatedButton(
+              onPressed: isPlaying
+                  ? () => viewModel.stopFullBookAudio()
+                  : () => viewModel.playFullBookAudio(widget.bookId),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isPlaying
+                    ? Colors.grey.withValues(alpha: 0.5)
+                    : widget.bookSecondaryColor,
+                foregroundColor: FlipbookConstants.primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(36),
+                ),
+              ),
+              child: Text(
+                isPlaying
+                    ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
+                    : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
             ),
-          ),
-        );
-      }
+          );
+        }
     );
   }
 
   Widget _buildNavigationRow(FlipbookViewModel viewModel) {
-    const double buttonHeight = 56; // Consistent height for all buttons
+    const double buttonHeight = 56;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Audio button di tengah
+          // Audio button in center
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.55,
-              height: buttonHeight, // Fixed height
+              height: buttonHeight,
               child: _buildPageAudioButton(viewModel),
             ),
           ),
@@ -1064,10 +1076,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             bottom: 0,
             child: Center(
               child: SizedBox(
-                height: buttonHeight, // Same height as audio button
+                height: buttonHeight,
                 child: _buildNavigationButton(
                   Icons.arrow_back_ios_new,
-                  (viewModel.isFirstPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                  // Disable when first page, full book playing, navigating, or page audio playing
+                  (viewModel.isFirstPage ||
+                      viewModel.isPlayingFullBook ||
+                      viewModel.isNavigating ||
+                      viewModel.isPlayingPageAudio)  // Added this condition
                       ? null
                       : () async {
                     await viewModel.previousPage();
@@ -1086,10 +1102,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             bottom: 0,
             child: Center(
               child: SizedBox(
-                height: buttonHeight, // Same height as audio button
+                height: buttonHeight,
                 child: _buildNavigationButton(
                   Icons.arrow_forward_ios,
-                  (viewModel.isLastPage || viewModel.isPlayingFullBook || viewModel.isNavigating)
+                  // Disable when last page, full book playing, navigating, or page audio playing
+                  (viewModel.isLastPage ||
+                      viewModel.isPlayingFullBook ||
+                      viewModel.isNavigating ||
+                      viewModel.isPlayingPageAudio)  // Added this condition
                       ? null
                       : () async {
                     await viewModel.nextPage();
@@ -1152,7 +1172,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     // Show completion button on last page
     if (isOnLastPage) {
       return Consumer2<FlipbookViewModel, LanguageProvider>(
-          builder: (context, flipbookViewModel, languageProvider, child){
+          builder: (context, flipbookViewModel, languageProvider, child) {
             return SizedBox(
               width: double.infinity,
               height: double.infinity,
@@ -1176,11 +1196,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.home_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
+                    const Icon(Icons.home_rounded, size: 18, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
                       TeksProvider.getString('endreading', languageProvider.selectedLanguage),
@@ -1200,23 +1216,33 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
-          // Show audio button for current page
+          final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: (viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook)
-                  ? () {
-                // ✅ PERBAIKAN: Panggil stopAudio yang sudah diperbaiki
-                viewModel.stopAudio();
-              }
+              onPressed: isPlayingPageAudio
+                  ? () => viewModel.stopAudio()
                   : () => viewModel.playPageAudio(widget.bookId),
-              style: _getButtonStyleAudio(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isPlayingPageAudio
+                    ? Colors.grey.withValues(alpha: 0.5)
+                    : widget.bookSecondaryColor,
+                foregroundColor: FlipbookConstants.primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+              ),
               child: Text(
-                viewModel.isPlayingPageAudio
+                isPlayingPageAudio
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
                     : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white
+                ),
               ),
             ),
           );
