@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../models/book_model.dart';
 
 class BookService {
-  // Method utama untuk memuat daftar buku dari metadata.json
+  // Main method for load all book from metadata.json
   static Future<List<BookModel>> loadBooks() async {
     try {
       final String response = await rootBundle.loadString('assets/metadata.json');
@@ -17,7 +17,7 @@ class BookService {
     }
   }
 
-  // Method untuk memuat satu buku berdasarkan ID (jika diperlukan)
+  // Method for load one book by ID (optional)
   static Future<BookModel?> loadBookById(String id) async {
     try {
       final List<BookModel> books = await loadBooks();
@@ -28,7 +28,7 @@ class BookService {
     }
   }
 
-  // Method untuk memuat metadata lengkap (jika diperlukan untuk keperluan lain)
+  // Method for load complete metadata (optional)
   static Future<Map<String, dynamic>> loadMetadata() async {
     try {
       final String response = await rootBundle.loadString('assets/metadata.json');

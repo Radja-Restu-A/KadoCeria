@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'views/screens/splash_Screen.dart';
 import 'models/app_state.dart';
 import 'services/navigation_service.dart';
-import 'config/app_config.dart';
 import 'viewmodels/book_viewmodel.dart';
 
 void main() {
@@ -23,15 +22,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LanguageProvider())
       ],
       child: MaterialApp(
-        title: AppConfig.appName,
+        title: 'Flipbook App',
         navigatorKey: NavigationService.navigatorKey,
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
         home: SplashScreen(),
-        debugShowCheckedModeBanner: AppConfig.enableDebugMode,
-        showPerformanceOverlay: AppConfig.enablePerformanceOverlay,
+        debugShowCheckedModeBanner: false,
+        showPerformanceOverlay: false,
       ),
     );
   }

@@ -13,7 +13,6 @@ class TeksProvider {
       'onepage' : 'Dengarkan halaman ini',
       'fullbook' : 'Dengarkan seluruh buku',
       'endreading': 'Selesai Membaca',
-      // ✅ TAMBAHAN: String untuk audio error modal
       'audioError': 'Maaf, sepertinya ada masalah untuk suara di halaman ini',
       'ok': 'Oke',
       'continue': 'Lanjut',
@@ -29,7 +28,6 @@ class TeksProvider {
       'onepage': 'Dangukeun kaca ieu',
       'fullbook': 'Dangukeun sakabéh buku',
       'endreading': 'Rengse Maca',
-      // ✅ TAMBAHAN: String untuk audio error modal
       'audioError': 'Hampura, sigana aya masalah pikeun sora di kaca ieu',
       'ok': 'Oke',
       'continue': 'Teruskeun',

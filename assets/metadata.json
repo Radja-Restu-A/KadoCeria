@@ -327,14 +327,14 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObject": "page1_objek2.mp3",
               "x": 145,
               "y": 347,
               "width": 935,
               "height": 445
             },
             {
-              "audioObject": "page1_objek2.mp3",
+              "audioObject": "page1_objek1.mp3",
               "x": 704,
               "y": 871,
               "width": 119,

@@ -6,7 +6,6 @@ import '../../provider/language_provider.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
 import '../../models/book_model.dart';
 import '../widgets/kids_interactive_area_widget.dart';
-import '../../provider/constants.dart';
 
 class FlipbookScreen extends StatefulWidget {
   final String bookId;
@@ -96,7 +95,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header dengan icon dan animasi
                     Container(
                       padding: const EdgeInsets.all(24),
                       child: Column(
@@ -199,7 +197,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
         return [
           _buildActionButton(
             text: TeksProvider.getString('ok', languageProvider.selectedLanguage),
-            icon: null, // Icon dihapus untuk button OK
+            icon: null,
             isOutlined: false,
             onPressed: () {
               Navigator.of(context).pop();
@@ -237,7 +235,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildActionButton({
     required String text,
-    required IconData? icon, // Ubah menjadi nullable
+    required IconData? icon,
     required bool isOutlined,
     required VoidCallback onPressed,
   }) {
@@ -663,13 +661,13 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: FlipbookConstants.backgroundColor,
+      color: Colors.white,
       child: Stack(
         children: [
           // PageFlipWidget tetap sama seperti aslinya
           PageFlipWidget(
             key: _controller,
-            backgroundColor: FlipbookConstants.backgroundColor,
+            backgroundColor: Colors.white,
             children: _buildPages(viewModel),
             lastPage: _buildLastPage(),
             onPageFlipped: (index) {
@@ -705,7 +703,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildPage(StoryPage page, FlipbookViewModel viewModel) {
     return Container(
-      color: FlipbookConstants.backgroundColor,
+      color: Colors.white,
       child: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -829,7 +827,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   Widget _buildLastPage() {
     return Container(
-      color: FlipbookConstants.backgroundColor,
+      color: Colors.white,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableHeight = constraints.maxHeight;
@@ -1033,7 +1031,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 backgroundColor: isPlaying
                     ? Colors.grey.withValues(alpha: 0.5)
                     : widget.bookSecondaryColor,
-                foregroundColor: FlipbookConstants.primaryColor,
+                foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(36),
@@ -1228,7 +1226,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 backgroundColor: isPlayingPageAudio
                     ? Colors.grey.withValues(alpha: 0.5)
                     : widget.bookSecondaryColor,
-                foregroundColor: FlipbookConstants.primaryColor,
+                foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
@@ -1248,27 +1246,4 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           );
         }
     );
-  }
-
-  ButtonStyle _getButtonStyleAudioFull() {
-    return ElevatedButton.styleFrom(
-      backgroundColor: widget.bookSecondaryColor,
-      foregroundColor: FlipbookConstants.primaryColor,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(36),
-      ),
-    );
-  }
-
-  ButtonStyle _getButtonStyleAudio() {
-    return ElevatedButton.styleFrom(
-      backgroundColor: widget.bookSecondaryColor,
-      foregroundColor: FlipbookConstants.primaryColor,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28), // Matched with navigation buttons
-      ),
-    );
-  }
-}
+  }}

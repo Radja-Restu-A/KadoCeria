@@ -4,7 +4,6 @@ import '../models/book_model.dart';
 import '../services/audio_service.dart';
 import '../services/story_service.dart';
 import '../repositories/story_repository.dart';
-import '../provider/service_locator.dart';
 
 enum AudioErrorType {
   pageAudio,
@@ -14,8 +13,6 @@ enum AudioErrorType {
 typedef AudioErrorCallback = void Function(AudioErrorType errorType, String errorMessage);
 
 class FlipbookViewModel extends ChangeNotifier {
-  final ServiceLocator _serviceLocator = ServiceLocator();
-
   late AudioService _audioService;
   late StoryService _storyService;
   late StoryRepository _storyRepository;
@@ -44,9 +41,9 @@ class FlipbookViewModel extends ChangeNotifier {
 
   // Constructor
   FlipbookViewModel() {
-    _audioService = _serviceLocator.audioService;
-    _storyService = _serviceLocator.storyService;
-    _storyRepository = _serviceLocator.storyRepository;
+    _audioService = AudioService();
+    _storyService = StoryService();
+    _storyRepository = StoryRepository();
   }
 
   // Getters
@@ -210,12 +207,17 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> continueFullBookFromNextPage(String storyId) async {
-    if (_story == null || _currentPage >= _story!.pages.length - 1) {
+    if (_story == null) {
       _setPlayingFullBook(false);
       return;
     }
 
-    // Move to next page and continue playing
+    if (_currentPage >= _story!.pages.length) {
+      _setPlayingFullBook(false);
+      return;
+    }
+
+    // Move to next page
     _currentPage++;
     notifyListeners();
 
@@ -226,7 +228,14 @@ class FlipbookViewModel extends ChangeNotifier {
     // Small delay after page flip
     await Future.delayed(const Duration(milliseconds: 800));
 
-    // Continue playing from the next page
+    if (_currentPage >= _story!.pages.length) {
+      // Kita sudah sampai di last page, stop full book audio karena last page tidak memiliki audio
+      print('Reached last page, stopping full book audio');
+      _setPlayingFullBook(false);
+      return;
+    }
+
+    // ✅ PERBAIKAN: Hanya lanjutkan playFullBookAudio jika masih ada story pages yang tersisa
     await playFullBookAudio(storyId);
   }
 
