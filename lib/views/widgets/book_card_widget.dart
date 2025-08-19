@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kado_ceria/provider/teks_provider.dart';
 import 'package:provider/provider.dart';
 import '../../models/book_model.dart';
+import '../../provider/book_views_provider.dart';
 import '../../provider/language_provider.dart';
+import '../../services/book_views_service.dart';
 
-class BookCardWidget extends StatelessWidget {
+class BookCardWidget extends StatefulWidget {
   final BookModel book;
   final VoidCallback onTap;
 
@@ -15,14 +17,31 @@ class BookCardWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<BookCardWidget> createState() => _BookCardWidgetState();
+}
+
+class _BookCardWidgetState extends State<BookCardWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize views immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookViewsProvider>().initViews(widget.book.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        context.read<BookViewsProvider>().incrementViews(widget.book.id);
+        widget.onTap();
+      },
       child : Consumer<LanguageProvider>(
         builder: (context, languageProvider, _) {
           return Container(
             decoration: BoxDecoration(
-              color: book.primaryColor,
+              color: widget.book.primaryColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -54,7 +73,7 @@ class BookCardWidget extends StatelessWidget {
                                               height: 155,
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(20),
-                                                color: book.secondaryColor,
+                                                color: widget.book.secondaryColor,
                                               ),
                                               child: Stack(
                                                   children: [
@@ -68,7 +87,7 @@ class BookCardWidget extends StatelessWidget {
                                                           height: 80,
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(20),
-                                                            color: book.primaryColor,
+                                                            color: widget.book.primaryColor,
                                                           ),
                                                         ),
                                                       ),
@@ -80,9 +99,9 @@ class BookCardWidget extends StatelessWidget {
                                                         height: 80,
                                                         decoration: BoxDecoration(
                                                           borderRadius: BorderRadius.circular(20),
-                                                          color: book.primaryColor,
+                                                          color: widget.book.primaryColor,
                                                           image: DecorationImage(
-                                                            image: AssetImage(book.coverImagePath),
+                                                            image: AssetImage(widget.book.coverImagePath),
                                                             fit: BoxFit.cover,
                                                           ),
                                                         ),
@@ -94,7 +113,7 @@ class BookCardWidget extends StatelessWidget {
                                                         width: 20,
                                                         height: 20,
                                                         decoration: BoxDecoration(
-                                                            color: book.primaryColor,
+                                                            color: widget.book.primaryColor,
                                                             shape: BoxShape.circle
                                                         ),
                                                       ),
@@ -105,7 +124,7 @@ class BookCardWidget extends StatelessWidget {
                                                         width: 13,
                                                         height: 13,
                                                         decoration: BoxDecoration(
-                                                            color: book.primaryColor,
+                                                            color: widget.book.primaryColor,
                                                             shape: BoxShape.circle
                                                         ),
                                                       ),
@@ -132,7 +151,7 @@ class BookCardWidget extends StatelessWidget {
                                 SizedBox(
                                   height: 50,
                                   child: Text(
-                                    book.getTitle(languageProvider.selectedLanguage),
+                                    widget.book.getTitle(languageProvider.selectedLanguage),
                                     maxLines: 2,
                                     style: TextStyle(
                                       color: Colors.white,
@@ -146,7 +165,7 @@ class BookCardWidget extends StatelessWidget {
                                   height: 100,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: book.secondaryColor,
+                                    color: widget.book.secondaryColor,
                                   ),
                                   child:Padding(
                                       padding: EdgeInsets.all(8),
@@ -158,7 +177,7 @@ class BookCardWidget extends StatelessWidget {
                                               children: [
                                                 WidgetSpan(child: SizedBox(width: 20)), // indentasi
                                                 TextSpan(
-                                                  text: book.getDescription(languageProvider.selectedLanguage),
+                                                  text: widget.book.getDescription(languageProvider.selectedLanguage),
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 12,
@@ -177,23 +196,25 @@ class BookCardWidget extends StatelessWidget {
                         ],
                       ),
                       SizedBox(
-                          height: 60,
-                          width: double.infinity,
-                          child:Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: book.primaryColor,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(0,12,0,4),
-                              child: Column(
+                        height: 60,
+                        width: double.infinity,
+                        child: Stack( // Wrap in Stack to allow Positioned
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: widget.book.primaryColor,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 12, 0, 4),
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                        '${TeksProvider.getString('author', languageProvider.selectedLanguage)}   : ${book.author}',
+                                        '${TeksProvider.getString('author', languageProvider.selectedLanguage)}   : ${widget.book.author}',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -202,7 +223,7 @@ class BookCardWidget extends StatelessWidget {
                                         )
                                     ),
                                     Text(
-                                        'Ilustrator: ${book.illustrator}',
+                                        'Ilustrator: ${widget.book.illustrator}',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -210,10 +231,44 @@ class BookCardWidget extends StatelessWidget {
                                           fontWeight: FontWeight.bold,
                                         )
                                     ),
-                                  ]
+                                  ],
+                                ),
                               ),
                             ),
-                          )
+                            Positioned(
+                              right: 8,
+                              bottom: 8,
+                              child: Consumer<BookViewsProvider>(
+                                builder: (context, provider, child) {
+                                  return FutureBuilder<int>(
+                                    future: provider.viewsFutures[widget.book.id],
+                                    builder: (context, snapshot) {
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.remove_red_eye,
+                                            size: 16,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '${snapshot.data ?? 0}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ]
                 )

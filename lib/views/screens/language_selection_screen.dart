@@ -103,7 +103,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: LanguageCardWidget(
-                                  description: 'Mayu langsung waé maca buku',
+                                  description: 'Hayu langsung waé maca buku',
                                   language: 'Bahasa Sunda',
                                   languageEnum: Language.sunda,
                                   onTap: () => _navigateToLanguage(context, Language.sunda),
