@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "669961702799",
+    "project_id": "kadoceria-ac811",
+    "storage_bucket": "kadoceria-ac811.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669961702799:android:bf9b68046444960883cffa",
+        "android_client_info": {
+          "package_name": "com.example.eksplorkadoceria"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH58RGm9lCbzaKeKVy-wVeEqCg2ILptTE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
