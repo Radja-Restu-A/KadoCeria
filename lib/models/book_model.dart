@@ -64,8 +64,8 @@ class BookModel {
       'illustrator': illustrator,
       'coverImagePath': coverImagePath,
       'pages': pages.map((page) => page.toJson()).toList(),
-      'primaryColor': '#${primaryColor.value.toRadixString(16).substring(2)}',
-      'secondaryColor': '#${secondaryColor.value.toRadixString(16).substring(2)}',
+      'primaryColor': '#${primaryColor.toARGB32().toRadixString(16).substring(2)}',
+      'secondaryColor': '#${secondaryColor.toARGB32().toRadixString(16).substring(2)}',
     };
   }
 
@@ -164,7 +164,7 @@ enum Language {
     'sunda': 'Basa Indonesia'
   }),
   sunda('sunda', {
-    'indonesia': 'Basa Sunda',
+    'indonesia': 'Bahasa Sunda',
     'sunda': 'Basa Sunda'
   }),
   keduanya('keduanya', {

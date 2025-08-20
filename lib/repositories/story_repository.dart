@@ -71,7 +71,7 @@ class StoryRepository {
     try {
       final List<BookModel> books = await BookService.loadBooks();
       return books.where((book) =>
-      '#${book.primaryColor.value.toRadixString(16).substring(2)}' == colorHex
+      '#${book.primaryColor.toARGB32().toRadixString(16).substring(2)}' == colorHex
       ).toList();
     } catch (e) {
       throw Exception('Failed to get books by primary color: $e');

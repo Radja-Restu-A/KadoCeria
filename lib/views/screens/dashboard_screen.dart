@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/book_views_service.dart';
 import '../../viewmodels/book_viewmodel.dart';
 import '../../provider/language_provider.dart';
 import '../../provider/teks_provider.dart';

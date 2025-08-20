@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kado_ceria/provider/teks_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../../models/book_model.dart';
 import '../../provider/book_views_provider.dart';
 import '../../provider/language_provider.dart';
-import '../../services/book_views_service.dart';
 
 class BookCardWidget extends StatefulWidget {
   final BookModel book;
@@ -148,11 +148,14 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Replace the existing SizedBox and Text widget for the title with this:
                                 SizedBox(
                                   height: 50,
-                                  child: Text(
+                                  child: AutoSizeText(
                                     widget.book.getTitle(languageProvider.selectedLanguage),
                                     maxLines: 2,
+                                    minFontSize: 12,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
