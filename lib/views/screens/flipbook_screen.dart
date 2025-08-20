@@ -1272,17 +1272,22 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, flipbookViewModel, languageProvider, child) {
           final bool isPlaying = viewModel.isPlayingFullBook;
+          // ✅ TAMBAHAN: Disable button jika page audio sedang diputar
+          final bool isDisabled = viewModel.isPlayingPageAudio;
+
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: isPlaying
+              onPressed: isDisabled ? null : (isPlaying
                   ? () => viewModel.stopFullBookAudio()
-                  : () => viewModel.playFullBookAudio(widget.bookId),
+                  : () => viewModel.playFullBookAudio(widget.bookId)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlaying
+                backgroundColor: isDisabled
+                    ? Colors.grey.withValues(alpha: 0.3)  // ✅ Warna disabled
+                    : (isPlaying
                     ? Colors.grey.withValues(alpha: 0.5)
-                    : widget.bookSecondaryColor,
+                    : widget.bookSecondaryColor),
                 foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -1293,7 +1298,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 isPlaying
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
                     : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    // ✅ TAMBAHAN: Ubah warna text jika disabled
+                    color: isDisabled ? Colors.grey : Colors.white
+                ),
               ),
             ),
           );
@@ -1481,17 +1491,22 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
+          // ✅ TAMBAHAN: Disable button jika full book audio sedang diputar
+          final bool isDisabled = viewModel.isPlayingFullBook;
+
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: isPlayingPageAudio
+              onPressed: isDisabled ? null : (isPlayingPageAudio
                   ? () => viewModel.stopAudio()
-                  : () => viewModel.playPageAudio(widget.bookId),
+                  : () => viewModel.playPageAudio(widget.bookId)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlayingPageAudio
+                backgroundColor: isDisabled
+                    ? Colors.grey.withValues(alpha: 0.3)  // ✅ Warna disabled
+                    : (isPlayingPageAudio
                     ? Colors.grey.withValues(alpha: 0.5)
-                    : widget.bookSecondaryColor,
+                    : widget.bookSecondaryColor),
                 foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
@@ -1502,10 +1517,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 isPlayingPageAudio
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
                     : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white
+                    // ✅ TAMBAHAN: Ubah warna text jika disabled
+                    color: isDisabled ? Colors.grey : Colors.white
                 ),
               ),
             ),

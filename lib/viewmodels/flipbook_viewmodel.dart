@@ -57,6 +57,7 @@ class FlipbookViewModel extends ChangeNotifier {
   String? get error => _error;
   bool get isNavigating => _isNavigating;
   String? get currentPlayingObjectAudio => _currentPlayingObjectAudio;
+  bool get hasAnyAudioPlaying => _isPlayingPageAudio || _isPlayingFullBook;
 
   // Updated page checking logic to include last page widget
   bool get isFirstPage => _currentPage == 0;
@@ -95,7 +96,8 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> playPageAudio(String storyId) async {
-    if (_isPlayingPageAudio || _story == null) return;
+    // ✅ TAMBAHAN: Cek apakah ada audio lain yang sedang diputar
+    if (_isPlayingPageAudio || _isPlayingFullBook || _story == null) return;
 
     _setPlayingPageAudio(true);
 
@@ -114,7 +116,6 @@ class FlipbookViewModel extends ChangeNotifier {
     } catch (e, stackTrace) {
       print('Audio playback error: $e\n$stackTrace');
 
-      // ✅ MODIFIKASI: Panggil callback error invece of setting error state
       if (_onAudioError != null) {
         _onAudioError!(AudioErrorType.pageAudio, e.toString());
       }
@@ -124,7 +125,7 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> playFullBookAudio(String storyId) async {
-    if (_isPlayingFullBook || _story == null) return;
+    if (_isPlayingFullBook || _isPlayingPageAudio || _story == null) return;
 
     _setPlayingFullBook(true);
 
