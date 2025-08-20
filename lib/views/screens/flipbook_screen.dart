@@ -25,6 +25,24 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   bool _isLanguageDropdownOpen = false;
   double? imageAspectRatio;
 
+  final List<Map<String, String>> _kataData = [
+    {'indonesia': 'awan', 'sunda': 'awan'},
+    {'indonesia': 'bambu', 'sunda': 'awi'},
+    {'indonesia': 'kapal', 'sunda': 'parahu'},
+    {'indonesia': 'kucing', 'sunda': 'ucing'},
+    {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
+    {'indonesia': 'matahari', 'sunda': 'panonpoé'},
+    {'indonesia': 'ombak', 'sunda': 'ombak'},
+    {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
+    {'indonesia': 'panci', 'sunda': 'panci'},
+    {'indonesia': 'rumah', 'sunda': 'imah'},
+    {'indonesia': 'saung', 'sunda': 'saung'},
+    {'indonesia': 'selokan', 'sunda': 'solokan'},
+    {'indonesia': 'sungai', 'sunda': 'walungan'},
+    {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
+    {'indonesia': 'tungku api', 'sunda': 'hawu'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -698,7 +716,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   List<Widget> _buildPages(FlipbookViewModel viewModel) {
-    return viewModel.story!.pages.map((page) => _buildPage(page, viewModel)).toList();
+    List<Widget> pages = viewModel.story!.pages.map((page) => _buildPage(page, viewModel)).toList();
+
+    // ✅ TAMBAHAN: Tambahkan Senarai Kata page sebelum last page
+    pages.add(_buildSenaraiKataPage());
+
+    return pages;
   }
 
   Widget _buildPage(StoryPage page, FlipbookViewModel viewModel) {
@@ -823,6 +846,191 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     }
 
     return interactiveWidgets;
+  }
+
+  Widget _buildSenaraiKataPage() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          // Header dengan dekorasi
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  widget.bookPrimaryColor,
+                  widget.bookPrimaryColor.withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.bookPrimaryColor.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              'Senarai Kata',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Tabel kata
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: widget.bookPrimaryColor.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Header tabel
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: widget.bookPrimaryColor.withValues(alpha: 0.1),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: widget.bookPrimaryColor.withValues(alpha: 0.3),
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Bahasa Indonesia',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: widget.bookPrimaryColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Container(
+                          width: 2,
+                          height: 20,
+                          color: widget.bookPrimaryColor.withValues(alpha: 0.3),
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Basa Sunda',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: widget.bookPrimaryColor,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Konten tabel
+                  Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: _kataData.length,
+                      itemBuilder: (context, index) {
+                        final kata = _kataData[index];
+                        final isEven = index % 2 == 0;
+
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: isEven
+                                ? Colors.white
+                                : widget.bookPrimaryColor.withValues(alpha: 0.05),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: widget.bookPrimaryColor.withValues(alpha: 0.1),
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  kata['indonesia']!,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Container(
+                                width: 1,
+                                height: 20,
+                                color: widget.bookPrimaryColor.withValues(alpha: 0.2),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  kata['sunda']!,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildLastPage() {
@@ -981,9 +1189,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildBottomControls(FlipbookViewModel viewModel) {
-    // Check if we're on the last page (completion page)
-    final bool isOnLastPage = viewModel.story != null &&
-        viewModel.currentPage >= viewModel.story!.pages.length;
+    // Check if we're on the Senarai Kata page (second to last) or completion page (last)
+    final bool isOnSenaraiKataPage = viewModel.story != null &&
+        viewModel.currentPage == viewModel.story!.pages.length;
+
+    final bool isOnCompletionPage = viewModel.story != null &&
+        viewModel.currentPage > viewModel.story!.pages.length;
 
     return Container(
       width: double.infinity,
@@ -1000,8 +1211,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.only(bottom: 8),
-              child: isOnLastPage
-                  ? const SizedBox.shrink() // Hide full book button on last page
+              child: (isOnSenaraiKataPage || isOnCompletionPage)
+                  ? const SizedBox.shrink() // Hide full book button on both special pages
                   : _buildFullBookButton(viewModel),
             ),
           ),
@@ -1052,6 +1263,10 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   Widget _buildNavigationRow(FlipbookViewModel viewModel) {
     const double buttonHeight = 56;
 
+    // Calculate if we're on the final completion page
+    final bool isOnFinalCompletionPage = viewModel.story != null &&
+        viewModel.currentPage > viewModel.story!.pages.length;
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -1081,7 +1296,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   (viewModel.isFirstPage ||
                       viewModel.isPlayingFullBook ||
                       viewModel.isNavigating ||
-                      viewModel.isPlayingPageAudio)  // Added this condition
+                      viewModel.isPlayingPageAudio)
                       ? null
                       : () async {
                     await viewModel.previousPage();
@@ -1103,11 +1318,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 height: buttonHeight,
                 child: _buildNavigationButton(
                   Icons.arrow_forward_ios,
-                  // Disable when last page, full book playing, navigating, or page audio playing
-                  (viewModel.isLastPage ||
+                  // PERBAIKAN: Disable ketika di final completion page atau kondisi lainnya
+                  (isOnFinalCompletionPage ||
                       viewModel.isPlayingFullBook ||
                       viewModel.isNavigating ||
-                      viewModel.isPlayingPageAudio)  // Added this condition
+                      viewModel.isPlayingPageAudio)
                       ? null
                       : () async {
                     await viewModel.nextPage();
@@ -1163,12 +1378,16 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildPageAudioButton(FlipbookViewModel viewModel) {
-    // Check if we're on the last page (completion page)
-    final bool isOnLastPage = viewModel.story != null &&
-        viewModel.currentPage >= viewModel.story!.pages.length;
+    // Check if we're on the Senarai Kata page
+    final bool isOnSenaraiKataPage = viewModel.story != null &&
+        viewModel.currentPage == viewModel.story!.pages.length;
 
-    // Show completion button on last page
-    if (isOnLastPage) {
+    // Check if we're on the completion page (final page)
+    final bool isOnCompletionPage = viewModel.story != null &&
+        viewModel.currentPage > viewModel.story!.pages.length;
+
+    // Show completion button on final completion page
+    if (isOnCompletionPage) {
       return Consumer2<FlipbookViewModel, LanguageProvider>(
           builder: (context, flipbookViewModel, languageProvider, child) {
             return SizedBox(
@@ -1212,6 +1431,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       );
     }
 
+    // Hide page audio button on Senarai Kata page - show empty space
+    if (isOnSenaraiKataPage) {
+      return const SizedBox.shrink();
+    }
+
+    // Normal page audio button for regular story pages
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
@@ -1246,4 +1471,5 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           );
         }
     );
-  }}
+  }
+}

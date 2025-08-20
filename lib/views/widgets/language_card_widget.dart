@@ -17,6 +17,9 @@ class LanguageCardWidget extends StatelessWidget {
   final double? borderRadius;
   final Color? backgroundColor;
   final Color? textColor;
+  // Tambahan parameter untuk styling italic
+  final TextStyle? descriptionStyle;
+  final TextStyle? languageStyle;
 
   const LanguageCardWidget({
     Key? key,
@@ -29,6 +32,8 @@ class LanguageCardWidget extends StatelessWidget {
     this.borderRadius = 20,
     this.backgroundColor,
     this.textColor = Colors.white,
+    this.descriptionStyle, // Parameter baru untuk style description
+    this.languageStyle,    // Parameter baru untuk style language
   }) : super(key: key);
 
   @override
@@ -55,7 +60,7 @@ class LanguageCardWidget extends StatelessWidget {
                 flex: 4,
                 child: AutoSizeText(
                   description,
-                  style: TextStyle(
+                  style: descriptionStyle ?? TextStyle(
                     fontSize: 16,
                     color: textColor,
                     fontWeight: FontWeight.w500,
@@ -73,7 +78,7 @@ class LanguageCardWidget extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     language,
-                    style: TextStyle(
+                    style: languageStyle ?? TextStyle(
                       fontSize: 18,
                       color: textColor,
                       fontWeight: FontWeight.bold,

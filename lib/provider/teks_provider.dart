@@ -11,7 +11,7 @@ class TeksProvider {
       'author' : 'Penulis',
       'stop': 'Hentikan',
       'onepage' : 'Dengarkan halaman ini',
-      'fullbook' : 'Dengarkan seluruh buku',
+      'fullbook' : 'Dengarkan seluruh cerita',
       'endreading': 'Selesai',
       'audioError': 'Maaf, sepertinya ada masalah untuk suara di halaman ini',
       'ok': 'Oke',

@@ -62,8 +62,8 @@ class FlipbookViewModel extends ChangeNotifier {
   bool get isFirstPage => _currentPage == 0;
   bool get isLastPage => _story != null ? _currentPage >= _story!.pages.length : false;
 
-  // Total pages including the last page widget
-  int get totalPages => _story != null ? _story!.pages.length + 1 : 0;
+  // Dan update totalPages:
+  int get totalPages => _story != null ? _story!.pages.length + 2 : 0; // +2 untuk senarai kata dan last page
 
   // Set auto-navigation callback
   void setAutoNavigationCallback(VoidCallback callback) {
@@ -294,7 +294,11 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> nextPage() async {
-    if (_isNavigating || _story == null || _currentPage >= _story!.pages.length) return;
+    if (_isNavigating || _story == null) return;
+
+    // Allow navigation to completion page (one page beyond story pages and senarai kata)
+    final maxAllowedPage = _story!.pages.length + 1; // +1 untuk completion page
+    if (_currentPage >= maxAllowedPage) return;
 
     _setNavigating(true);
     _audioService.stopAudio();
@@ -304,8 +308,6 @@ class FlipbookViewModel extends ChangeNotifier {
     _currentPage++;
     notifyListeners();
 
-    // Wait for animation to complete before allowing next navigation
-    // await Future.delayed(const Duration(milliseconds: 600));
     _setNavigating(false);
   }
 
@@ -320,8 +322,6 @@ class FlipbookViewModel extends ChangeNotifier {
     _currentPage--;
     notifyListeners();
 
-    // Wait for animation to complete before allowing next navigation
-    // await Future.delayed(const Duration(milliseconds: 600));
     _setNavigating(false);
   }
 

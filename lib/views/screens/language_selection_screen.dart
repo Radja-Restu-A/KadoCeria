@@ -77,7 +77,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start, // posisi horizontal kiri
                           children: [
                             const Text(
-                              'Pilih Bahasa\nuntuk teks tampilan',
+                              'Pilih bahasa\nuntuk teks tampilan',
                               textAlign: TextAlign.left, // memastikan teks rata kiri
                               style: TextStyle(
                                 fontSize: 36,
@@ -99,13 +99,29 @@ class LanguageSelectionScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          // Modifikasi pada bagian LanguageCardWidget untuk Sunda
+                          // Modifikasi pada bagian Row di LanguageSelectionScreen
                           Row(
                             children: [
                               Expanded(
                                 child: LanguageCardWidget(
                                   description: 'Hayu urang maca',
-                                  language: 'Bahasa Sunda',
+                                  language: 'Sunda',
                                   languageEnum: Language.sunda,
+                                  // Tambahkan styling italic untuk Sunda
+                                  descriptionStyle: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.3,
+                                    fontStyle: FontStyle.italic, // Italic untuk description
+                                  ),
+                                  languageStyle: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.normal, // Italic untuk language
+                                  ),
                                   onTap: () => _navigateToLanguage(context, Language.sunda),
                                 ),
                               ),
@@ -113,8 +129,9 @@ class LanguageSelectionScreen extends StatelessWidget {
                               Expanded(
                                 child: LanguageCardWidget(
                                   description: 'Mari kita membaca',
-                                  language: 'Bahasa Indonesia',
+                                  language: 'Indonesia',
                                   languageEnum: Language.indonesia,
+                                  // Tidak perlu menambahkan style karena akan menggunakan default
                                   onTap: () => _navigateToLanguage(context, Language.indonesia),
                                 ),
                               ),
