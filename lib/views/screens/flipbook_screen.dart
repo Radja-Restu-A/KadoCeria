@@ -25,6 +25,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   bool _isLanguageDropdownOpen = false;
   double? imageAspectRatio;
 
+  final ScrollController _senaraiKataScrollController = ScrollController();
+
   final List<Map<String, String>> _kataData = [
     {'indonesia': 'awan', 'sunda': 'awan'},
     {'indonesia': 'bambu', 'sunda': 'awi'},
@@ -403,6 +405,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
     // Hapus callback navigasi otomatis
     _viewModel.setAutoNavigationCallback(() {});
+
+    _senaraiKataScrollController.dispose();
 
     // Panggil dispose() milik superclass
     super.dispose();
@@ -896,7 +900,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
           const SizedBox(height: 24),
 
-          // Tabel kata
+          // Tabel kata dengan Scrollbar
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -966,62 +970,70 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     ),
                   ),
 
-                  // Konten tabel
+                  // MODIFIKASI: Konten tabel dengan Scrollbar
                   Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: _kataData.length,
-                      itemBuilder: (context, index) {
-                        final kata = _kataData[index];
-                        final isEven = index % 2 == 0;
+                    child: Scrollbar(
+                      controller: _senaraiKataScrollController,
+                      thumbVisibility: true, // Scrollbar selalu terlihat
+                      trackVisibility: true, // Track scrollbar terlihat
+                      thickness: 8, // Ketebalan scrollbar
+                      radius: const Radius.circular(4), // Border radius scrollbar
+                      child: ListView.builder(
+                        controller: _senaraiKataScrollController,
+                        padding: EdgeInsets.zero,
+                        itemCount: _kataData.length,
+                        itemBuilder: (context, index) {
+                          final kata = _kataData[index];
+                          final isEven = index % 2 == 0;
 
-                        return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: isEven
-                                ? Colors.white
-                                : widget.bookPrimaryColor.withValues(alpha: 0.05),
-                            border: Border(
-                              bottom: BorderSide(
-                                color: widget.bookPrimaryColor.withValues(alpha: 0.1),
-                                width: 1,
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: isEven
+                                  ? Colors.white
+                                  : widget.bookPrimaryColor.withValues(alpha: 0.05),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: widget.bookPrimaryColor.withValues(alpha: 0.1),
+                                  width: 1,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  kata['indonesia']!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    kata['indonesia']!,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              Container(
-                                width: 1,
-                                height: 20,
-                                color: widget.bookPrimaryColor.withValues(alpha: 0.2),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  kata['sunda']!,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
-                                    fontStyle: FontStyle.italic,
+                                Container(
+                                  width: 1,
+                                  height: 20,
+                                  color: widget.bookPrimaryColor.withValues(alpha: 0.2),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    kata['sunda']!,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
