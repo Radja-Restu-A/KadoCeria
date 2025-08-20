@@ -27,50 +27,23 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   final ScrollController _senaraiKataScrollController = ScrollController();
 
-  List<Map<String, String>> _getKataDataForBook(String bookId) {
-    if (bookId == "1") {
-      // Data untuk buku Sakeclak Cihujan Hayang ka Sagara
-      return [
-        {'indonesia': 'awan', 'sunda': 'awan'},
-        {'indonesia': 'bambu', 'sunda': 'awi'},
-        {'indonesia': 'kapal', 'sunda': 'parahu'},
-        {'indonesia': 'kucing', 'sunda': 'ucing'},
-        {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
-        {'indonesia': 'matahari', 'sunda': 'panonpoé'},
-        {'indonesia': 'ombak', 'sunda': 'ombak'},
-        {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
-        {'indonesia': 'panci', 'sunda': 'panci'},
-        {'indonesia': 'rumah', 'sunda': 'imah'},
-        {'indonesia': 'saung', 'sunda': 'saung'},
-        {'indonesia': 'selokan', 'sunda': 'solokan'},
-        {'indonesia': 'sungai', 'sunda': 'walungan'},
-        {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
-        {'indonesia': 'tungku api', 'sunda': 'hawu'},
-      ];
-    } else if (bookId == "2") {
-      // Data untuk buku Dongeng Janiti
-      return [
-        {'indonesia': 'anggur', 'sunda': 'anggur'},
-        {'indonesia': 'apel', 'sunda': 'apel'},
-        {'indonesia': 'beruang', 'sunda': 'biruang'},
-        {'indonesia': 'buaya', 'sunda': 'buhaya'},
-        {'indonesia': 'bunga', 'sunda': 'kembang'},
-        {'indonesia': 'burung', 'sunda': 'manuk'},
-        {'indonesia': 'gajah', 'sunda': 'gajah'},
-        {'indonesia': 'jerapah', 'sunda': 'jerapah'},
-        {'indonesia': 'kupu-kupu', 'sunda': 'kukupu'},
-        {'indonesia': 'monyet', 'sunda': 'monyet'},
-        {'indonesia': 'nanas', 'sunda': 'ganas'},
-        {'indonesia': 'pisang', 'sunda': 'cau'},
-        {'indonesia': 'rumah', 'sunda': 'imah'},
-        {'indonesia': 'semangka', 'sunda': 'samangka'},
-        {'indonesia': 'singa', 'sunda': 'singa'},
-      ];
-    } else {
-      // Default atau buku lain
-      return [];
-    }
-  }
+  final List<Map<String, String>> _kataData = [
+    {'indonesia': 'awan', 'sunda': 'awan'},
+    {'indonesia': 'bambu', 'sunda': 'awi'},
+    {'indonesia': 'kapal', 'sunda': 'parahu'},
+    {'indonesia': 'kucing', 'sunda': 'ucing'},
+    {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
+    {'indonesia': 'matahari', 'sunda': 'panonpoé'},
+    {'indonesia': 'ombak', 'sunda': 'ombak'},
+    {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
+    {'indonesia': 'panci', 'sunda': 'panci'},
+    {'indonesia': 'rumah', 'sunda': 'imah'},
+    {'indonesia': 'saung', 'sunda': 'saung'},
+    {'indonesia': 'selokan', 'sunda': 'solokan'},
+    {'indonesia': 'sungai', 'sunda': 'walungan'},
+    {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
+    {'indonesia': 'tungku api', 'sunda': 'hawu'},
+  ];
 
   @override
   void initState() {
@@ -590,7 +563,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isAudioPlaying
-                  ? widget.bookSecondaryColor.withValues(alpha: 0.5)  // ✅ Ubah opacity jika disabled
+                  ? Colors.grey.withValues(alpha: 0.5)  // ✅ Ubah opacity jika disabled
                   : widget.bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
             ),
@@ -880,8 +853,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildSenaraiKataPage() {
-    final kataData = _getKataDataForBook(widget.bookId);
-
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(24),
@@ -999,20 +970,20 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     ),
                   ),
 
-                  // Konten tabel dengan Scrollbar
+                  // MODIFIKASI: Konten tabel dengan Scrollbar
                   Expanded(
                     child: Scrollbar(
                       controller: _senaraiKataScrollController,
-                      thumbVisibility: true,
-                      trackVisibility: true,
-                      thickness: 8,
-                      radius: const Radius.circular(4),
+                      thumbVisibility: true, // Scrollbar selalu terlihat
+                      trackVisibility: true, // Track scrollbar terlihat
+                      thickness: 8, // Ketebalan scrollbar
+                      radius: const Radius.circular(4), // Border radius scrollbar
                       child: ListView.builder(
                         controller: _senaraiKataScrollController,
                         padding: EdgeInsets.zero,
-                        itemCount: kataData.length,
+                        itemCount: _kataData.length,
                         itemBuilder: (context, index) {
-                          final kata = kataData[index];
+                          final kata = _kataData[index];
                           final isEven = index % 2 == 0;
 
                           return Container(
@@ -1272,22 +1243,18 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, flipbookViewModel, languageProvider, child) {
           final bool isPlaying = viewModel.isPlayingFullBook;
-          // ✅ TAMBAHAN: Disable button jika page audio sedang diputar
-          final bool isDisabled = viewModel.isPlayingPageAudio;
-
+          final bool playingOnePage = viewModel.isPlayingPageAudio;
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: isDisabled ? null : (isPlaying
+              onPressed: isPlaying
                   ? () => viewModel.stopFullBookAudio()
-                  : () => viewModel.playFullBookAudio(widget.bookId)),
+                  : () => viewModel.playFullBookAudio(widget.bookId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDisabled
-                    ? Colors.grey.withValues(alpha: 0.3)  // ✅ Warna disabled
-                    : (isPlaying
+                backgroundColor: isPlaying || playingOnePage
                     ? Colors.grey.withValues(alpha: 0.5)
-                    : widget.bookSecondaryColor),
+                    : widget.bookSecondaryColor,
                 foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -1297,13 +1264,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               child: Text(
                 isPlaying
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    // ✅ TAMBAHAN: Ubah warna text jika disabled
-                    color: isDisabled ? Colors.grey : Colors.white
-                ),
+                    :(playingOnePage ? "" :TeksProvider.getString('fullbook', languageProvider.selectedLanguage)) ,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           );
@@ -1491,22 +1453,18 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
-          // ✅ TAMBAHAN: Disable button jika full book audio sedang diputar
-          final bool isDisabled = viewModel.isPlayingFullBook;
-
+          final bool isPlayingFullBook = viewModel.isPlayingFullBook;
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: isDisabled ? null : (isPlayingPageAudio
+              onPressed: isPlayingPageAudio
                   ? () => viewModel.stopAudio()
-                  : () => viewModel.playPageAudio(widget.bookId)),
+                  : () => viewModel.playPageAudio(widget.bookId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDisabled
-                    ? Colors.grey.withValues(alpha: 0.3)  // ✅ Warna disabled
-                    : (isPlayingPageAudio
+                backgroundColor: isPlayingPageAudio || isPlayingFullBook
                     ? Colors.grey.withValues(alpha: 0.5)
-                    : widget.bookSecondaryColor),
+                    : widget.bookSecondaryColor,
                 foregroundColor: Color(0xFF4FC3F7),
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
@@ -1516,12 +1474,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               child: Text(
                 isPlayingPageAudio
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
-                style: TextStyle(
+                    :(isPlayingFullBook ? "" : TeksProvider.getString('onepage', languageProvider.selectedLanguage)),
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    // ✅ TAMBAHAN: Ubah warna text jika disabled
-                    color: isDisabled ? Colors.grey : Colors.white
+                    color: Colors.white
                 ),
               ),
             ),
