@@ -563,7 +563,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isAudioPlaying
-                  ? widget.bookSecondaryColor.withValues(alpha: 0.5)  // ✅ Ubah opacity jika disabled
+                  ? Colors.grey.withValues(alpha: 0.5)  // ✅ Ubah opacity jika disabled
                   : widget.bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
             ),
@@ -1243,6 +1243,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, flipbookViewModel, languageProvider, child) {
           final bool isPlaying = viewModel.isPlayingFullBook;
+          final bool playingOnePage = viewModel.isPlayingPageAudio;
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -1251,7 +1252,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   ? () => viewModel.stopFullBookAudio()
                   : () => viewModel.playFullBookAudio(widget.bookId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlaying
+                backgroundColor: isPlaying || playingOnePage
                     ? Colors.grey.withValues(alpha: 0.5)
                     : widget.bookSecondaryColor,
                 foregroundColor: Color(0xFF4FC3F7),
@@ -1263,7 +1264,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               child: Text(
                 isPlaying
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
+                    :(playingOnePage ? "" :TeksProvider.getString('fullbook', languageProvider.selectedLanguage)) ,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
@@ -1452,6 +1453,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
+          final bool isPlayingFullBook = viewModel.isPlayingFullBook;
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -1460,7 +1462,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                   ? () => viewModel.stopAudio()
                   : () => viewModel.playPageAudio(widget.bookId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlayingPageAudio
+                backgroundColor: isPlayingPageAudio || isPlayingFullBook
                     ? Colors.grey.withValues(alpha: 0.5)
                     : widget.bookSecondaryColor,
                 foregroundColor: Color(0xFF4FC3F7),
@@ -1472,7 +1474,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
               child: Text(
                 isPlayingPageAudio
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
+                    :(isPlayingFullBook ? "" : TeksProvider.getString('onepage', languageProvider.selectedLanguage)),
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
