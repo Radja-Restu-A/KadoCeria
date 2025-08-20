@@ -27,23 +27,50 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   final ScrollController _senaraiKataScrollController = ScrollController();
 
-  final List<Map<String, String>> _kataData = [
-    {'indonesia': 'awan', 'sunda': 'awan'},
-    {'indonesia': 'bambu', 'sunda': 'awi'},
-    {'indonesia': 'kapal', 'sunda': 'parahu'},
-    {'indonesia': 'kucing', 'sunda': 'ucing'},
-    {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
-    {'indonesia': 'matahari', 'sunda': 'panonpoé'},
-    {'indonesia': 'ombak', 'sunda': 'ombak'},
-    {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
-    {'indonesia': 'panci', 'sunda': 'panci'},
-    {'indonesia': 'rumah', 'sunda': 'imah'},
-    {'indonesia': 'saung', 'sunda': 'saung'},
-    {'indonesia': 'selokan', 'sunda': 'solokan'},
-    {'indonesia': 'sungai', 'sunda': 'walungan'},
-    {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
-    {'indonesia': 'tungku api', 'sunda': 'hawu'},
-  ];
+  List<Map<String, String>> _getKataDataForBook(String bookId) {
+    if (bookId == "1") {
+      // Data untuk buku Sakeclak Cihujan Hayang ka Sagara
+      return [
+        {'indonesia': 'awan', 'sunda': 'awan'},
+        {'indonesia': 'bambu', 'sunda': 'awi'},
+        {'indonesia': 'kapal', 'sunda': 'parahu'},
+        {'indonesia': 'kucing', 'sunda': 'ucing'},
+        {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
+        {'indonesia': 'matahari', 'sunda': 'panonpoé'},
+        {'indonesia': 'ombak', 'sunda': 'ombak'},
+        {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
+        {'indonesia': 'panci', 'sunda': 'panci'},
+        {'indonesia': 'rumah', 'sunda': 'imah'},
+        {'indonesia': 'saung', 'sunda': 'saung'},
+        {'indonesia': 'selokan', 'sunda': 'solokan'},
+        {'indonesia': 'sungai', 'sunda': 'walungan'},
+        {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
+        {'indonesia': 'tungku api', 'sunda': 'hawu'},
+      ];
+    } else if (bookId == "2") {
+      // Data untuk buku Dongeng Janiti
+      return [
+        {'indonesia': 'anggur', 'sunda': 'anggur'},
+        {'indonesia': 'apel', 'sunda': 'apel'},
+        {'indonesia': 'beruang', 'sunda': 'biruang'},
+        {'indonesia': 'buaya', 'sunda': 'buhaya'},
+        {'indonesia': 'bunga', 'sunda': 'kembang'},
+        {'indonesia': 'burung', 'sunda': 'manuk'},
+        {'indonesia': 'gajah', 'sunda': 'gajah'},
+        {'indonesia': 'jerapah', 'sunda': 'jerapah'},
+        {'indonesia': 'kupu-kupu', 'sunda': 'kukupu'},
+        {'indonesia': 'monyet', 'sunda': 'monyet'},
+        {'indonesia': 'nanas', 'sunda': 'ganas'},
+        {'indonesia': 'pisang', 'sunda': 'cau'},
+        {'indonesia': 'rumah', 'sunda': 'imah'},
+        {'indonesia': 'semangka', 'sunda': 'samangka'},
+        {'indonesia': 'singa', 'sunda': 'singa'},
+      ];
+    } else {
+      // Default atau buku lain
+      return [];
+    }
+  }
 
   @override
   void initState() {
@@ -853,6 +880,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   Widget _buildSenaraiKataPage() {
+    final kataData = _getKataDataForBook(widget.bookId);
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(24),
@@ -970,20 +999,20 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     ),
                   ),
 
-                  // MODIFIKASI: Konten tabel dengan Scrollbar
+                  // Konten tabel dengan Scrollbar
                   Expanded(
                     child: Scrollbar(
                       controller: _senaraiKataScrollController,
-                      thumbVisibility: true, // Scrollbar selalu terlihat
-                      trackVisibility: true, // Track scrollbar terlihat
-                      thickness: 8, // Ketebalan scrollbar
-                      radius: const Radius.circular(4), // Border radius scrollbar
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      thickness: 8,
+                      radius: const Radius.circular(4),
                       child: ListView.builder(
                         controller: _senaraiKataScrollController,
                         padding: EdgeInsets.zero,
-                        itemCount: _kataData.length,
+                        itemCount: kataData.length,
                         itemBuilder: (context, index) {
-                          final kata = _kataData[index];
+                          final kata = kataData[index];
                           final isEven = index % 2 == 0;
 
                           return Container(
