@@ -5,6 +5,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../../models/book_model.dart';
 import '../../provider/book_views_provider.dart';
 import '../../provider/language_provider.dart';
+import 'book_description_modal_widget.dart';
 
 class BookCardWidget extends StatefulWidget {
   final BookModel book;
@@ -170,27 +171,38 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                     borderRadius: BorderRadius.circular(20),
                                     color: widget.book.secondaryColor,
                                   ),
-                                  child:Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: SingleChildScrollView(
-                                          child:
-                                          RichText(
-                                            textAlign: TextAlign.justify,
-                                            text: TextSpan(
-                                              children: [
-                                                WidgetSpan(child: SizedBox(width: 20)), // indentasi
-                                                TextSpan(
-                                                  text: widget.book.getDescription(languageProvider.selectedLanguage),
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                    height: 1.4,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                      )
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(20),
+                                      onTap: () {
+                                        final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => BookDescriptionModalWidget(
+                                            description: widget.book.getDescription(languageProvider.selectedLanguage),
+                                            backgroundColor: widget.book.primaryColor,
+                                            language: languageProvider.selectedLanguage,
+                                            title: "Sinopsis",
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: AutoSizeText(
+                                          widget.book.getDescription(languageProvider.selectedLanguage),
+                                          textAlign: TextAlign.justify,
+                                          maxLines: 5,
+                                          minFontSize: 10,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            height: 1.4,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
