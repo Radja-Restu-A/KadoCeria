@@ -161,7 +161,7 @@ class InteractiveObject {
 enum Language {
   indonesia('indonesia', {
     'indonesia': 'Bahasa Indonesia',
-    'sunda': 'Basa Indonesia'
+    'sunda': 'Basa Indonésia'
   }),
   sunda('sunda', {
     'indonesia': 'Bahasa Sunda',

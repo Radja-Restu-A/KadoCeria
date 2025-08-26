@@ -27,7 +27,7 @@ class TeksProvider {
       'stop': 'Eureun',
       'onepage': 'Regepkeun kaca ieu',
       'fullbook': 'Regepkeun carita ieu',
-      'endreading': 'Rengse',
+      'endreading': 'Réngsé',
       'audioError': 'Punten, sigana aya masalah pikeun sora di kaca ieu',
       'ok': 'Oke',
       'continue': 'Teruskeun',

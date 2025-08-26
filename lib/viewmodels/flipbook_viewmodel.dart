@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../models/book_model.dart';
 import '../services/audio_service.dart';
@@ -11,6 +13,21 @@ enum AudioErrorType {
 }
 
 typedef AudioErrorCallback = void Function(AudioErrorType errorType, String errorMessage);
+typedef StoryLoadedCallback = void Function();
+
+class LayoutCalculationResult {
+  final double headerHeight;
+  final double contentHeight;
+  final double footerHeight;
+  final double? imageAspectRatio;
+
+  LayoutCalculationResult({
+    required this.headerHeight,
+    required this.contentHeight,
+    required this.footerHeight,
+    this.imageAspectRatio,
+  });
+}
 
 class FlipbookViewModel extends ChangeNotifier {
   late AudioService _audioService;
@@ -27,17 +44,20 @@ class FlipbookViewModel extends ChangeNotifier {
   bool _isPlayingFullBook = false;
   String? _error;
 
+  // Layout calculation state
+  double? _imageAspectRatio;
+  bool _isCalculatingLayout = false;
+
   // Track currently playing object audio for multiple objects support
   String? _currentPlayingObjectAudio;
 
   // Navigation state to prevent double clicks
   bool _isNavigating = false;
 
-  // Callback for auto-navigation
+  // Callbacks
   VoidCallback? _onAutoNavigate;
-
-  // Audio error modal
   AudioErrorCallback? _onAudioError;
+  StoryLoadedCallback? _onStoryLoaded;
 
   // Constructor
   FlipbookViewModel() {
@@ -58,6 +78,8 @@ class FlipbookViewModel extends ChangeNotifier {
   bool get isNavigating => _isNavigating;
   String? get currentPlayingObjectAudio => _currentPlayingObjectAudio;
   bool get hasAnyAudioPlaying => _isPlayingPageAudio || _isPlayingFullBook;
+  double? get imageAspectRatio => _imageAspectRatio;
+  bool get isCalculatingLayout => _isCalculatingLayout;
 
   // Updated page checking logic to include last page widget
   bool get isFirstPage => _currentPage == 0;
@@ -66,13 +88,20 @@ class FlipbookViewModel extends ChangeNotifier {
   // Dan update totalPages:
   int get totalPages => _story != null ? _story!.pages.length + 2 : 0; // +2 untuk senarai kata dan last page
 
-  // Set auto-navigation callback
+  // Check if story is loaded and layout is ready
+  bool get isReadyForDisplay => _story != null && _imageAspectRatio != null && !_isLoading;
+
+  // Set callbacks
   void setAutoNavigationCallback(VoidCallback callback) {
     _onAutoNavigate = callback;
   }
 
   void setAudioErrorCallback(AudioErrorCallback callback) {
     _onAudioError = callback;
+  }
+
+  void setStoryLoadedCallback(StoryLoadedCallback callback) {
+    _onStoryLoaded = callback;
   }
 
   // Public methods
@@ -84,9 +113,19 @@ class FlipbookViewModel extends ChangeNotifier {
     _currentPage = 0;
     _setNavigating(false);
     _currentPlayingObjectAudio = null;
+    _imageAspectRatio = null;
 
     try {
       _story = await _storyRepository.getStory(storyId);
+
+      // Calculate image aspect ratio after story is loaded
+      await _calculateImageAspectRatio();
+
+      // Notify that story is loaded
+      if (_onStoryLoaded != null) {
+        _onStoryLoaded!();
+      }
+
       notifyListeners();
     } catch (e) {
       _setError('Failed to load story: $e');
@@ -95,8 +134,160 @@ class FlipbookViewModel extends ChangeNotifier {
     }
   }
 
+  // Extract aspect ratio calculation logic from UI
+  Future<void> _calculateImageAspectRatio() async {
+    if (_story == null || _story!.pages.isEmpty) {
+      _imageAspectRatio = 4 / 3; // fallback
+      return;
+    }
+
+    _isCalculatingLayout = true;
+    notifyListeners();
+
+    try {
+      final firstPage = _story!.pages.first;
+      final firstPageImage = firstPage.image;
+
+      // Pastikan image tidak null dan tidak kosong
+      if (firstPageImage == null || firstPageImage.isEmpty) {
+        _imageAspectRatio = 4 / 3; // fallback
+        return;
+      }
+
+      // Create a completer to handle async image loading
+      final completer = Completer<double>();
+
+      final ImageStream stream = AssetImage(firstPageImage).resolve(ImageConfiguration.empty);
+      late ImageStreamListener listener;
+
+      listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        final double ratio = info.image.width / info.image.height;
+        stream.removeListener(listener);
+        completer.complete(ratio);
+      }, onError: (exception, stackTrace) {
+        stream.removeListener(listener);
+        completer.complete(4 / 3); // fallback on error
+      });
+
+      stream.addListener(listener);
+
+      // Wait for the aspect ratio calculation with timeout
+      _imageAspectRatio = await completer.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => 4 / 3, // fallback on timeout
+      );
+
+    } catch (e) {
+      print('Error calculating aspect ratio: $e');
+      _imageAspectRatio = 4 / 3; // fallback
+    } finally {
+      _isCalculatingLayout = false;
+      notifyListeners();
+    }
+  }
+
+  // Extract responsive layout calculation from UI
+  LayoutCalculationResult calculateResponsiveLayout(BoxConstraints constraints) {
+    if (_imageAspectRatio == null) {
+      // Return default layout if aspect ratio not calculated yet
+      return LayoutCalculationResult(
+        headerHeight: constraints.maxHeight * 0.15,
+        contentHeight: constraints.maxHeight * 0.70,
+        footerHeight: constraints.maxHeight * 0.15,
+        imageAspectRatio: _imageAspectRatio,
+      );
+    }
+
+    final availableWidth = constraints.maxWidth;
+    final availableHeight = constraints.maxHeight;
+
+    // Hitung tinggi content berdasarkan lebar dan aspect ratio
+    final contentHeight = availableWidth / _imageAspectRatio!;
+
+    // Pastikan content tidak melebihi 70% dari tinggi layar
+    final maxContentHeight = availableHeight * 0.7;
+    final finalContentHeight = contentHeight > maxContentHeight
+        ? maxContentHeight
+        : contentHeight;
+
+    // Hitung sisa tinggi untuk header dan footer
+    final remainingHeight = availableHeight - finalContentHeight;
+    final headerHeight = remainingHeight * 0.3;
+    final footerHeight = remainingHeight * 0.7;
+
+    return LayoutCalculationResult(
+      headerHeight: headerHeight,
+      contentHeight: finalContentHeight,
+      footerHeight: footerHeight,
+      imageAspectRatio: _imageAspectRatio,
+    );
+  }
+
+  // Check if we're on special pages
+  bool get isOnSenaraiKataPage => _story != null && _currentPage == _story!.pages.length;
+  bool get isOnCompletionPage => _story != null && _currentPage > _story!.pages.length;
+  bool get isOnFinalCompletionPage => _story != null && _currentPage > _story!.pages.length;
+
+  List<Map<String, String>> getSenaraiKata(String bookId) {
+    switch (bookId) {
+      case '1':
+        return SakeclakSenaraiKata();
+      case '2':
+        return JanitiSenaraiKata();
+      default:
+        return standarSenaraiKata();
+    }
+  }
+
+  List<Map<String, String>> SakeclakSenaraiKata() {
+    return [
+      {'indonesia': 'awan', 'sunda': 'awan'},
+      {'indonesia': 'bambu', 'sunda': 'awi'},
+      {'indonesia': 'kapal', 'sunda': 'parahu'},
+      {'indonesia': 'kucing', 'sunda': 'ucing'},
+      {'indonesia': 'layang-layang', 'sunda': 'langlayangan'},
+      {'indonesia': 'matahari', 'sunda': 'panonpoé'},
+      {'indonesia': 'ombak', 'sunda': 'ombak'},
+      {'indonesia': 'orang-orangan sawah', 'sunda': 'bebegig sawah'},
+      {'indonesia': 'panci', 'sunda': 'panci'},
+      {'indonesia': 'rumah', 'sunda': 'imah'},
+      {'indonesia': 'saung', 'sunda': 'saung'},
+      {'indonesia': 'selokan', 'sunda': 'solokan'},
+      {'indonesia': 'sungai', 'sunda': 'walungan'},
+      {'indonesia': 'tempat sampah', 'sunda': 'wadah runtah'},
+      {'indonesia': 'tungku api', 'sunda': 'hawu'},
+    ];
+  }
+
+  List<Map<String, String>> JanitiSenaraiKata() {
+    return [
+      {'indonesia': 'anggur', 'sunda': 'anggur'},
+      {'indonesia': 'apel', 'sunda': 'apel'},
+      {'indonesia': 'beruang', 'sunda': 'biruang'},
+      {'indonesia': 'buaya', 'sunda': 'buhaya'},
+      {'indonesia': 'bunga', 'sunda': 'kembang'},
+      {'indonesia': 'burung', 'sunda': 'manuk'},
+      {'indonesia': 'gajah', 'sunda': 'gajah'},
+      {'indonesia': 'jerapah', 'sunda': 'jarapah'},
+      {'indonesia': 'kupu-kupu', 'sunda': 'kukupu'},
+      {'indonesia': 'monyet', 'sunda': 'monyet'},
+      {'indonesia': 'nanas', 'sunda': 'ganas'},
+      {'indonesia': 'pisang', 'sunda': 'cau'},
+      {'indonesia': 'rumah', 'sunda': 'imah'},
+      {'indonesia': 'semangka', 'sunda': 'samangka'},
+      {'indonesia': 'singa', 'sunda': 'singa'},
+    ];
+  }
+
+  List<Map<String, String>> standarSenaraiKata() {
+    // Return a default set or empty list
+    return [
+      {'indonesia': 'Ditunggu', 'sunda': 'Diantos'},
+    ];
+  }
+
+  // Audio control methods
   Future<void> playPageAudio(String storyId) async {
-    // ✅ TAMBAHAN: Cek apakah ada audio lain yang sedang diputar
     if (_isPlayingPageAudio || _isPlayingFullBook || _story == null) return;
 
     _setPlayingPageAudio(true);
@@ -173,10 +364,9 @@ class FlipbookViewModel extends ChangeNotifier {
         } catch (e) {
           print('Error playing audio for page ${i + 1}: $e');
 
-          // ✅ MODIFIKASI: Panggil callback error untuk full book
           if (_onAudioError != null) {
             _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
-            return; // Stop execution and wait for user decision
+            return;
           }
         }
       }
@@ -198,7 +388,6 @@ class FlipbookViewModel extends ChangeNotifier {
     } catch (e) {
       print('Full book audio error: $e');
 
-      // ✅ MODIFIKASI: Panggil callback error
       if (_onAudioError != null) {
         _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
       }
@@ -236,7 +425,7 @@ class FlipbookViewModel extends ChangeNotifier {
       return;
     }
 
-    // ✅ PERBAIKAN: Hanya lanjutkan playFullBookAudio jika masih ada story pages yang tersisa
+    // Hanya lanjutkan playFullBookAudio jika masih ada story pages yang tersisa
     await playFullBookAudio(storyId);
   }
 
@@ -245,7 +434,6 @@ class FlipbookViewModel extends ChangeNotifier {
     _audioService.stopAudio();
   }
 
-  // ✅ MODIFIED: Updated playObjectAudio to always play both languages (Sunda first, then Indonesia)
   Future<void> playObjectAudio(String storyId, String audioFile) async {
     // Stop current object audio if different audio is requested
     if (_isPlayingObjectAudio && _currentPlayingObjectAudio != audioFile) {
@@ -266,13 +454,13 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingObjectAudio(true);
 
     try {
-      // ✅ NEW: Always generate both audio paths (Sunda first, then Indonesia)
+      // Always generate both audio paths (Sunda first, then Indonesia)
       final audioPaths = await _storyService.generateObjectAudioPathsBothLanguages(storyId, audioFile);
 
       print('Playing object audio in both languages (Sunda -> Indonesia)');
       print('Object audio paths: $audioPaths');
 
-      // ✅ NEW: Always play both languages sequentially
+      // Always play both languages sequentially
       await _audioService.playSequentialAudio(audioPaths);
 
       // Add delay for better UX
@@ -342,7 +530,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _currentPlayingObjectAudio = null;
   }
 
-  // Updated methods for multiple interactive objects support
+  // Layout calculation methods for interactive objects
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
     return _storyService.calculatePageLayout(page, constraints);
   }
@@ -411,6 +599,7 @@ class FlipbookViewModel extends ChangeNotifier {
     _isPlayingObjectAudio = false;
     _isPlayingFullBook = false;
     _currentPlayingObjectAudio = null;
+    _imageAspectRatio = null;
     _story = null;
 
     // Dispose audio service
