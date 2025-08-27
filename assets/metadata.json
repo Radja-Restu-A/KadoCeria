@@ -13,6 +13,7 @@
       "pages": [
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page1.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/page1_backsound.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [

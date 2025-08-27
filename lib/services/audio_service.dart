@@ -4,8 +4,32 @@ import 'package:flutter/services.dart';
 
 class AudioService {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioBacksound = AudioPlayer();
 
   AudioPlayer get audioPlayer => _audioPlayer;
+  AudioPlayer get audioBacksound => _audioBacksound;
+
+  //Backsound
+  Future<void> playAudioLoop(String audioPath) async {
+    try {
+      await _audioBacksound.stop();
+      await _audioBacksound.setAsset(audioPath);
+      await _audioBacksound.setLoopMode(LoopMode.one);
+      await _audioBacksound.setVolume(0.3);
+      await _audioBacksound.play();
+    } catch (e) {
+      print('Error playing loop audio: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> stopBacksoundAudio() async {
+    try {
+      await _audioBacksound.stop();
+    } catch (e) {
+      print('Error stopping backsound: $e');
+    }
+  }
 
   Future<void> playAudio(String path) async {
     try {
@@ -118,5 +142,8 @@ class AudioService {
     debugPrint('Disposing audio player...');
     _audioPlayer.dispose();
     debugPrint('Audio player disposed successfully');
+    debugPrint('Disposing backsound player...');
+    _audioBacksound.dispose();
+    debugPrint('Audio backsound disposed successfully');
   }
 }

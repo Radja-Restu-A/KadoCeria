@@ -74,12 +74,13 @@ class BookModel {
 }
 
 class StoryPage {
-  final String? image;
+  final String? image, backsound;
   final double? widthImage, heightImage;
   final List<InteractiveObject> interactiveObjects;
 
   StoryPage({
     this.image,
+    this.backsound,
     this.widthImage,
     this.heightImage,
     this.interactiveObjects = const [],
@@ -108,6 +109,7 @@ class StoryPage {
 
     return StoryPage(
       image: json['image'],
+      backsound: json['backsound'],
       widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
       heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
       interactiveObjects: objects,
@@ -117,6 +119,7 @@ class StoryPage {
   Map<String, dynamic> toJson() {
     return {
       'image': image,
+      'backsound': backsound,
       'widthImage': widthImage,
       'heightImage': heightImage,
       'interactiveObjects': interactiveObjects.map((obj) => obj.toJson()).toList(),

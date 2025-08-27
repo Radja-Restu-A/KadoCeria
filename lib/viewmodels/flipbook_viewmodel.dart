@@ -42,6 +42,7 @@ class FlipbookViewModel extends ChangeNotifier {
   bool _isPlayingPageAudio = false;
   bool _isPlayingObjectAudio = false;
   bool _isPlayingFullBook = false;
+  bool _isPlayingBacksoundAudio = false;
   String? _error;
 
   // Layout calculation state
@@ -74,6 +75,7 @@ class FlipbookViewModel extends ChangeNotifier {
   bool get isPlayingPageAudio => _isPlayingPageAudio;
   bool get isPlayingObjectAudio => _isPlayingObjectAudio;
   bool get isPlayingFullBook => _isPlayingFullBook;
+  bool get isPlayingBacksoundAudio => _isPlayingBacksoundAudio;
   String? get error => _error;
   bool get isNavigating => _isNavigating;
   String? get currentPlayingObjectAudio => _currentPlayingObjectAudio;
@@ -286,6 +288,44 @@ class FlipbookViewModel extends ChangeNotifier {
     ];
   }
 
+  Future<void> playBacksoundAudio(String storyId) async {
+    if (_story == null || _currentPage >= _story!.pages.length) return;
+
+    final currentStorypage = _story!.pages[_currentPage];
+
+    if (currentStorypage.backsound == null || currentStorypage.backsound!.isEmpty) {
+      print("No backsound available for page ${_currentPage + 1}");
+      return;
+    }
+
+    if (_isPlayingBacksoundAudio) {
+      stopBacksoundAudio();
+      return;
+    }
+
+    _setPlayingBacksound(true);
+
+    try{
+      final backsoundPath = currentStorypage.backsound!;
+
+      print('Playing backsound: $backsoundPath');
+      print('Current page: ${_currentPage + 1}');
+
+      await _audioService.playAudioLoop(backsoundPath);
+    }catch (e){
+      print('Backsound playback error: $e');
+      _setError('Failed to play backsound: $e');
+      _setPlayingBacksound(false);
+    }
+  }
+
+  void stopBacksoundAudio() {
+    if (_isPlayingBacksoundAudio) {
+      _audioService.stopBacksoundAudio(); // Anda perlu menambahkan ini di AudioService
+      _setPlayingBacksound(false);
+    }
+  }
+
   // Audio control methods
   Future<void> playPageAudio(String storyId) async {
     if (_isPlayingPageAudio || _isPlayingFullBook || _story == null) return;
@@ -294,7 +334,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
     try {
       final pageNumber = _currentPage + 1;
-      final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+      final audioPaths = await _storyService.generateAudioNarationPaths(storyId, pageNumber, _selectedLanguage);
 
       print('Attempting to play audio from paths: $audioPaths');
 
@@ -330,7 +370,7 @@ class FlipbookViewModel extends ChangeNotifier {
         try {
           // Play audio for current page FIRST
           final pageNumber = i + 1;
-          final audioPaths = await _storyService.generateAudioPaths(storyId, pageNumber, _selectedLanguage);
+          final audioPaths = await _storyService.generateAudioNarationPaths(storyId, pageNumber, _selectedLanguage);
 
           print('Playing page $pageNumber audio with language: $_selectedLanguage');
           print('Audio paths: $audioPaths');
@@ -455,7 +495,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
     try {
       // Always generate both audio paths (Sunda first, then Indonesia)
-      final audioPaths = await _storyService.generateObjectAudioPathsBothLanguages(storyId, audioFile);
+      final audioPaths = await _storyService.generateObjectAudioPaths(storyId, audioFile);
 
       print('Playing object audio in both languages (Sunda -> Indonesia)');
       print('Object audio paths: $audioPaths');
@@ -524,6 +564,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
   void stopAudio() {
     _audioService.stopAudio();
+    stopBacksoundAudio();
     _setPlayingPageAudio(false);
     _setPlayingObjectAudio(false);
     _setPlayingFullBook(false);
@@ -555,6 +596,11 @@ class FlipbookViewModel extends ChangeNotifier {
   // Private methods
   void _setLoading(bool loading) {
     _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setPlayingBacksound(bool playing) {
+    _isPlayingBacksoundAudio = playing;
     notifyListeners();
   }
 

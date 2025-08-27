@@ -87,10 +87,21 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       // Initialize additional pages after story is loaded
       _initializeAdditionalPages();
 
+      _startBacksoundAudio();
+
       setState(() {
         // Force rebuild to show the content
       });
     }
+  }
+
+  void _startBacksoundAudio() {
+    // Delay sedikit untuk memastikan UI sudah stable
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted && _viewModel.story != null) {
+        _viewModel.playBacksoundAudio(widget.bookId);
+      }
+    });
   }
 
   @override
@@ -127,6 +138,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       _viewModel.stopAudio();
     }
     _viewModel.setCurrentPage(index);
+    _startBacksoundAudio();
   }
 
   @override

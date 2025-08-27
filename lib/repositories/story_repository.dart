@@ -87,5 +87,4 @@ class StoryRepository {
       throw Exception('Failed to get book descriptions: $e');
     }
   }
-
 }

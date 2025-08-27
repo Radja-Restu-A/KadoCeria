@@ -77,37 +77,6 @@ class StoryService {
     );
   }
 
-  // New method to get audio paths for all interactive objects in a page
-  Future<List<String>> generateInteractiveObjectAudioPaths(String storyId, StoryPage page) async {
-    List<String> audioPaths = [];
-
-    for (InteractiveObject obj in page.interactiveObjects) {
-      if (obj.audioObject != null && obj.audioObject!.isNotEmpty) {
-        final audioPath = await generateObjectAudioPath(storyId, obj.audioObject!);
-        audioPaths.add(audioPath);
-      }
-    }
-
-    return audioPaths;
-  }
-
-  Future<List<String>> generateAudioPaths(String storyId, int pageNumber, Language language) async {
-    final folderName = await _getFolderNameById(storyId);
-    final basePath = 'assets/$folderName';
-
-    switch (language) {
-      case Language.indonesia:
-        return ['$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3'];
-      case Language.sunda:
-        return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3'];
-      case Language.keduanya:
-        return [
-          '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3',
-          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
-        ];
-    }
-  }
-
   Future<String> _getFolderNameById(String storyId) async {
     // Implementasi untuk mendapatkan folderName dari metadata berdasarkan ID
     if (_cachedBook != null && _cachedBook!.id == storyId) {
@@ -125,35 +94,32 @@ class StoryService {
     throw Exception('Book with ID $storyId not found');
   }
 
-  // ✅ DEPRECATED: Keep for backward compatibility
-  Future<String> generateObjectAudioPath(String storyId, String audioFile) async {
+  Future<List<String>> generateAudioNarationPaths(String storyId, int pageNumber, Language language) async {
     final folderName = await _getFolderNameById(storyId);
-    return 'assets/$folderName/audio_objek/$audioFile';
-  }
-
-  // ✅ NEW: Generate object audio paths based on language selection (kept for potential future use)
-  Future<List<String>> generateObjectAudioPaths(String storyId, String audioFile, Language language) async {
-    final folderName = await _getFolderNameById(storyId);
-    final basePath = 'assets/$folderName/audio_objek';
-
-    // Extract base filename without extension (e.g., "page1_objek1" from "page1_objek1.mp3")
-    final baseFileName = audioFile.split('.').first;
+    final basePath = 'assets/$folderName';
 
     switch (language) {
       case Language.indonesia:
-        return ['$basePath/${baseFileName}_indonesia.mp3'];
+        return ['$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3'];
       case Language.sunda:
-        return ['$basePath/${baseFileName}_sunda.mp3'];
+        return ['$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3'];
       case Language.keduanya:
         return [
-          '$basePath/${baseFileName}_sunda.mp3',
-          '$basePath/${baseFileName}_indonesia.mp3',
+          '$basePath/audio_narasi_sunda/page${pageNumber}_narasi_sunda.mp3',
+          '$basePath/audio_narasi_indonesia/page${pageNumber}_narasi_indonesia.mp3',
         ];
     }
   }
 
+  Future<String> generateBacksoundAudioPath(String storyId, int pageNumber) async {
+    final folderName = await _getFolderNameById(storyId);
+    final basePath = 'assets/$folderName/audio_backsound';
+
+    return '$basePath/page$pageNumber.mp3';
+  }
+
   // ✅ NEW: Generate object audio paths for both languages (Sunda first, then Indonesia)
-  Future<List<String>> generateObjectAudioPathsBothLanguages(String storyId, String audioFile) async {
+  Future<List<String>> generateObjectAudioPaths(String storyId, String audioFile) async {
     final folderName = await _getFolderNameById(storyId);
     final basePath = 'assets/$folderName/audio_objek';
 
