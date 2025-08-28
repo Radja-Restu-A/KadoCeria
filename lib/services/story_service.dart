@@ -111,13 +111,6 @@ class StoryService {
     }
   }
 
-  Future<String> generateBacksoundAudioPath(String storyId, int pageNumber) async {
-    final folderName = await _getFolderNameById(storyId);
-    final basePath = 'assets/$folderName/audio_backsound';
-
-    return '$basePath/page$pageNumber.mp3';
-  }
-
   // ✅ NEW: Generate object audio paths for both languages (Sunda first, then Indonesia)
   Future<List<String>> generateObjectAudioPaths(String storyId, String audioFile) async {
     final folderName = await _getFolderNameById(storyId);
@@ -131,11 +124,6 @@ class StoryService {
       '$basePath/${baseFileName}_sunda.mp3',
       '$basePath/${baseFileName}_indonesia.mp3',
     ];
-  }
-
-  Future<String> generateImagePath(String storyId, String imageName) async {
-    final folderName = await _getFolderNameById(storyId);
-    return 'assets/$folderName/halaman/$imageName';
   }
 
   bool isFirstPage(int currentPage) {

@@ -12,11 +12,12 @@ class AudioService {
   //Backsound
   Future<void> playAudioLoop(String audioPath) async {
     try {
-      await _audioBacksound.stop();
-      await _audioBacksound.setAsset(audioPath);
-      await _audioBacksound.setLoopMode(LoopMode.one);
-      await _audioBacksound.setVolume(0.3);
-      await _audioBacksound.play();
+      if (await _assetExists(audioPath)) {
+        await _audioBacksound.setAsset(audioPath);
+        await _audioBacksound.setLoopMode(LoopMode.one);
+        await _audioBacksound.setVolume(0.7);
+        await _audioBacksound.play();
+      }
     } catch (e) {
       print('Error playing loop audio: $e');
       rethrow;
@@ -26,6 +27,7 @@ class AudioService {
   Future<void> stopBacksoundAudio() async {
     try {
       await _audioBacksound.stop();
+      print('Success Stopping Audio');
     } catch (e) {
       print('Error stopping backsound: $e');
     }
@@ -35,6 +37,8 @@ class AudioService {
     try {
       debugPrint('Attempting to play audio from path: $path');
       await _audioPlayer.stop();
+
+      await _audioBacksound.setVolume(0.2);
 
       // Check if asset exists before trying to load it
       if (await _assetExists(path)) {
@@ -57,6 +61,7 @@ class AudioService {
         debugPrint('Starting audio playback...');
         await _audioPlayer.play();
         debugPrint('Audio playback started successfully');
+        await _audioBacksound.setVolume(0.7);
       } else {
         debugPrint('Error: Audio asset not found at path: $path');
         throw Exception('Audio asset not found: $path');
@@ -64,27 +69,34 @@ class AudioService {
     } catch (e, stackTrace) {
       debugPrint('Error playing audio: $e');
       debugPrint('Stack trace: $stackTrace');
+      await _audioBacksound.setVolume(0.7);
       rethrow;
     }
   }
 
   Future<void> playSequentialAudio(List<String> paths) async {
     debugPrint('Starting sequential audio playback for ${paths.length} files');
-    for (String path in paths) {
-      try {
-        debugPrint('Playing sequential audio: $path');
-        await playAudio(path);
 
-        debugPrint('Waiting for current audio to complete...');
-        await _audioPlayer.playerStateStream
-            .where((state) => state.processingState == ProcessingState.completed)
-            .first;
-        debugPrint('Audio completed, moving to next file');
+    await _audioBacksound.setVolume(0.2);
+    try {
+      for (String path in paths) {
+        try {
+          debugPrint('Playing sequential audio: $path');
+          await playAudio(path);
 
-      } catch (e) {
-        debugPrint('Error in sequential audio playback: $e');
-        continue;
+          debugPrint('Waiting for current audio to complete...');
+          await _audioPlayer.playerStateStream
+              .where((state) =>
+          state.processingState == ProcessingState.completed)
+              .first;
+          debugPrint('Audio completed, moving to next file');
+        } catch (e) {
+          debugPrint('Error in sequential audio playback: $e');
+          continue;
+        }
       }
+    }finally{
+      await _audioBacksound.setVolume(0.7);
     }
     debugPrint('Sequential audio playback completed');
   }
@@ -106,8 +118,18 @@ class AudioService {
       debugPrint('Stopping audio playback...');
       await _audioPlayer.stop();
       debugPrint('Audio playback stopped successfully');
+      await _audioBacksound.setVolume(0.7);
     } catch (e, stackTrace) {
       debugPrint('Error stopping audio: $e');
+      debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> stopBacksound() async {
+    try{
+      await _audioBacksound.stop();
+    } catch (e, stackTrace) {
+      debugPrint('Error stopping backsound: $e');
       debugPrint('Stack trace: $stackTrace');
     }
   }

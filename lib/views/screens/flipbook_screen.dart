@@ -96,17 +96,16 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   }
 
   void _startBacksoundAudio() {
-    // Delay sedikit untuk memastikan UI sudah stable
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted && _viewModel.story != null) {
-        _viewModel.playBacksoundAudio(widget.bookId);
-      }
-    });
+    if (mounted && _viewModel.story != null) {
+      _viewModel.playBacksoundAudio(widget.bookId);
+    }
   }
 
   @override
   void dispose() {
     _viewModel.stopAudio();
+    //kondisi stop backsound ketika nama nya beda
+    _viewModel.stopBacksoundAudio();
     _senaraiKataScrollController.dispose();
     _viewModel.dispose();
     super.dispose();
@@ -135,10 +134,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
     // Stop audio saat page flip manual HANYA jika bukan full book mode
     if (!_viewModel.isPlayingFullBook &&
         (_viewModel.isPlayingPageAudio || _viewModel.isPlayingObjectAudio)) {
-      _viewModel.stopAudio();
+      // _viewModel.stopAudio();
     }
     _viewModel.setCurrentPage(index);
-    _startBacksoundAudio();
+    if (!_viewModel.isOnSenaraiKataPage && !_viewModel.isOnCompletionPage) {
+      _startBacksoundAudio();
+    } else {
+      _viewModel.stopBacksoundAudio();
+    }
   }
 
   @override

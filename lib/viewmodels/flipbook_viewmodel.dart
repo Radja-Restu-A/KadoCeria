@@ -44,6 +44,7 @@ class FlipbookViewModel extends ChangeNotifier {
   bool _isPlayingFullBook = false;
   bool _isPlayingBacksoundAudio = false;
   String? _error;
+  String _currentBacksoundPath = '';
 
   // Layout calculation state
   double? _imageAspectRatio;
@@ -291,38 +292,67 @@ class FlipbookViewModel extends ChangeNotifier {
   Future<void> playBacksoundAudio(String storyId) async {
     if (_story == null || _currentPage >= _story!.pages.length) return;
 
+    if (isOnSenaraiKataPage || isOnCompletionPage) {
+      if (_isPlayingBacksoundAudio) {
+        debugPrint("On additional page, stopping backsound");
+        stopBacksoundAudio();
+      }
+      return;
+    }
+
     final currentStorypage = _story!.pages[_currentPage];
 
+    // Jika page saat ini tidak ada backsound
     if (currentStorypage.backsound == null || currentStorypage.backsound!.isEmpty) {
       print("No backsound available for page ${_currentPage + 1}");
+      if (_isPlayingBacksoundAudio) {
+        stopBacksoundAudio();
+      }
       return;
     }
 
-    if (_isPlayingBacksoundAudio) {
-      stopBacksoundAudio();
-      return;
+    final currentBacksoundPath = currentStorypage.backsound!;
+
+    // Cek apakah backsound yang akan diputar sama dengan yang sedang berjalan
+    if (_isPlayingBacksoundAudio && _currentBacksoundPath == currentBacksoundPath) {
+      print("Same backsound continuing: $currentBacksoundPath for page ${_currentPage + 1}");
+      return; // Tidak perlu restart jika backsound sama
     }
 
-    _setPlayingBacksound(true);
+    try {
+      // Jika ada backsound yang sedang berjalan dan berbeda, stop dulu
+      if (_isPlayingBacksoundAudio && _currentBacksoundPath != currentBacksoundPath) {
+        print("Switching backsound from '$_currentBacksoundPath' to '$currentBacksoundPath'");
+        stopBacksoundAudio();
+        // Tambah delay singkat untuk memastikan audio sebelumnya benar-benar stop
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
 
-    try{
-      final backsoundPath = currentStorypage.backsound!;
+      // Update state dan mulai backsound baru
+      _currentBacksoundPath = currentBacksoundPath;
+      _setPlayingBacksound(true);
 
-      print('Playing backsound: $backsoundPath');
+      print('Playing backsound: $currentBacksoundPath');
       print('Current page: ${_currentPage + 1}');
 
-      await _audioService.playAudioLoop(backsoundPath);
-    }catch (e){
+      // Gunakan AudioService yang sudah ada untuk play audio loop
+      await _audioService.playAudioLoop(currentBacksoundPath);
+
+    } catch (e) {
       print('Backsound playback error: $e');
       _setError('Failed to play backsound: $e');
       _setPlayingBacksound(false);
+      _currentBacksoundPath = '';
     }
   }
 
+// Update method stopBacksoundAudio untuk clear tracking path
   void stopBacksoundAudio() {
     if (_isPlayingBacksoundAudio) {
-      _audioService.stopBacksoundAudio(); // Anda perlu menambahkan ini di AudioService
+      print("Stopping backsound: $_currentBacksoundPath");
+      _audioService.stopBacksoundAudio();
       _setPlayingBacksound(false);
+      _currentBacksoundPath = ''; // Clear tracking path
     }
   }
 
@@ -411,19 +441,19 @@ class FlipbookViewModel extends ChangeNotifier {
         }
       }
 
-      // Navigate to the last page if we finished all story pages
-      if (_isPlayingFullBook && _currentPage < totalPages - 1) {
-        print('Navigating to last page (buildLastPage)');
-
-        // Update to last page
-        _currentPage = _story!.pages.length;
-        notifyListeners();
-
-        // Trigger navigation to last page
-        if (_onAutoNavigate != null) {
-          _onAutoNavigate!();
-        }
-      }
+      // // Navigate to the last page if we finished all story pages
+      // if (_isPlayingFullBook && _currentPage < totalPages - 1) {
+      //   print('Navigating to last page (buildLastPage)');
+      //
+      //   // Update to last page
+      //   _currentPage = _story!.pages.length;
+      //   notifyListeners();
+      //
+      //   // Trigger navigation to last page
+      //   if (_onAutoNavigate != null) {
+      //     _onAutoNavigate!();
+      //   }
+      // }
 
     } catch (e) {
       print('Full book audio error: $e');
@@ -562,13 +592,15 @@ class FlipbookViewModel extends ChangeNotifier {
     }
   }
 
+
   void stopAudio() {
     _audioService.stopAudio();
-    stopBacksoundAudio();
+    _setPlayingBacksound(false);
     _setPlayingPageAudio(false);
     _setPlayingObjectAudio(false);
     _setPlayingFullBook(false);
     _currentPlayingObjectAudio = null;
+    _currentBacksoundPath = ''; // Clear tracking path
   }
 
   // Layout calculation methods for interactive objects

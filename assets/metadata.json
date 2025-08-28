@@ -13,7 +13,7 @@
       "pages": [
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page1.png",
-          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/page1_backsound.mp3",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/cerah.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -42,42 +42,49 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page2.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page3.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page4.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page5.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page6.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page7.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page8.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -99,12 +106,14 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page9.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page10.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -119,6 +128,7 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page11.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -133,30 +143,35 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page12.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page13.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page14.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page15.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page16.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/tungku_api.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -178,12 +193,14 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page17.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page18.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -198,6 +215,7 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page19.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -212,18 +230,21 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page20.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/tungku_api.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page21.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page22.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/sungai.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -245,30 +266,35 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page23.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/tuang_air.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page24.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page25.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page26.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page27.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/ombak.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -283,6 +309,7 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page28.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/ombak.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
@@ -297,12 +324,14 @@
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page29.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page30.png",
+          "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan_menuju_reda.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": []
