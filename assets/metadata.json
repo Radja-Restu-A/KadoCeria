@@ -353,6 +353,7 @@
       "pages": [
         {
           "image": "assets/dongeng_janiti/halaman/page1.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": [
@@ -374,6 +375,7 @@
         },
         {
           "image": "assets/dongeng_janiti/halaman/page2.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": [
@@ -388,96 +390,112 @@
         },
         {
           "image": "assets/dongeng_janiti/halaman/page3.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/siram.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page4.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page5.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page6.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page7.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page8.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page9.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page10.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page11.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page12.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page13.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page14.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page15.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/jam.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page16.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page17.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page18.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": [
@@ -534,12 +552,14 @@
         },
         {
           "image": "assets/dongeng_janiti/halaman/page19.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/angkasa.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page20.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": [
@@ -582,54 +602,63 @@
         },
         {
           "image": "assets/dongeng_janiti/halaman/page21.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page22.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page23.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page24.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page25.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page26.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page27.jpg",
+          "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page28.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
         },
         {
           "image": "assets/dongeng_janiti/halaman/page29.jpg",
+          "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
           "interactiveObjects": []
