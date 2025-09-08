@@ -35,6 +35,10 @@ class TeksProvider {
   };
 
   static String getString(String key, Language language) {
-    return _strings[language.code]?[key] ?? _strings['indonesia']![key]!;
+    try{
+      return _strings[language.code]?[key] ?? _strings['indonesia']![key]!;
+    }catch(e){
+      throw Exception('Failed to get string for key $key and language ${language.code}: $e');
+    }
   }
 }
