@@ -7,7 +7,11 @@ class LanguageProvider extends ChangeNotifier {
   Language get selectedLanguage => _selectedLanguage;
 
   void setLanguage(Language language) {
-    _selectedLanguage = language;
-    notifyListeners();
+    try{
+      _selectedLanguage = language;
+      notifyListeners();
+    }catch (e){
+      throw Exception('Failed to set language: $e');
+    }
   }
 }
