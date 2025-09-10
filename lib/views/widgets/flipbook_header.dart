@@ -9,6 +9,7 @@ class FlipbookHeader extends StatelessWidget {
   final Color bookSecondaryColor;
   final FlipbookViewModel viewModel;
   final bool isLanguageDropdownOpen;
+  final bool isFlipping;
   final VoidCallback onLanguageDropdownToggle;
   final Function(Language) onLanguageSelect;
 
@@ -18,6 +19,7 @@ class FlipbookHeader extends StatelessWidget {
     required this.bookSecondaryColor,
     required this.viewModel,
     required this.isLanguageDropdownOpen,
+    required this.isFlipping,
     required this.onLanguageDropdownToggle,
     required this.onLanguageSelect,
   });
@@ -58,14 +60,15 @@ class FlipbookHeader extends StatelessWidget {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         final bool isAudioPlaying = viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook;
+        final bool isDisabled = isAudioPlaying || isFlipping; // ADD FLIPPING CHECK
 
         return GestureDetector(
-          onTap: isAudioPlaying ? null : onLanguageDropdownToggle,
+          onTap: isDisabled ? null : onLanguageDropdownToggle, // MODIFY CONDITION
           child: Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isAudioPlaying
+              color: isDisabled
                   ? Colors.grey.withValues(alpha: 0.5)
                   : bookSecondaryColor,
               borderRadius: BorderRadius.circular(36),
@@ -77,7 +80,7 @@ class FlipbookHeader extends StatelessWidget {
                   child: Text(
                     viewModel.selectedLanguage.getDisplayName(languageProvider.selectedLanguage),
                     style: TextStyle(
-                      color: isAudioPlaying
+                      color: isDisabled
                           ? Colors.white.withValues(alpha: 0.5)
                           : Colors.white,
                       fontSize: 16,
@@ -92,7 +95,7 @@ class FlipbookHeader extends StatelessWidget {
                   isLanguageDropdownOpen
                       ? Icons.keyboard_arrow_up_rounded
                       : Icons.keyboard_arrow_down_rounded,
-                  color: isAudioPlaying
+                  color: isDisabled
                       ? Colors.white.withValues(alpha: 0.5)
                       : Colors.white,
                   size: 20,

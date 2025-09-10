@@ -11,6 +11,8 @@ class FlipbookFooter extends StatelessWidget {
   final Color bookSecondaryColor;
   final FlipbookViewModel viewModel;
   final GlobalKey<PageFlipWidgetState> controller;
+  final bool isFlipping;
+  final Function(bool)? onFlippingStateChanged;
 
   const FlipbookFooter({
     super.key,
@@ -19,6 +21,8 @@ class FlipbookFooter extends StatelessWidget {
     required this.bookSecondaryColor,
     required this.viewModel,
     required this.controller,
+    required this.isFlipping,
+    required this.onFlippingStateChanged,
   });
 
   @override
@@ -63,11 +67,11 @@ class FlipbookFooter extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: isPlaying
+              onPressed: (isFlipping) ? null : (isPlaying
                   ? () => viewModel.stopFullBookAudio()
-                  : () => viewModel.playFullBookAudio(bookId),
+                  : () => viewModel.playFullBookAudio(bookId)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlaying || playingOnePage
+                backgroundColor: isPlaying || playingOnePage || isFlipping
                     ? Colors.grey.withValues(alpha: 0.5)
                     : bookSecondaryColor,
                 foregroundColor: const Color(0xFF4FC3F7),
@@ -81,6 +85,94 @@ class FlipbookFooter extends StatelessWidget {
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
                     : (playingOnePage ? "" : TeksProvider.getString('fullbook', languageProvider.selectedLanguage)),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
+            ),
+          );
+        }
+    );
+  }
+
+  Widget _buildPageAudioButton(BuildContext context) {
+    // Show completion button on final completion page
+    if (viewModel.isOnCompletionPage) {
+      return Consumer2<FlipbookViewModel, LanguageProvider>(
+          builder: (context, flipbookViewModel, languageProvider, child) {
+            return SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: ElevatedButton(
+                onPressed: isFlipping ? null :() {
+                  viewModel.stopAudio();
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isFlipping ? Colors.grey.withValues(alpha: 0.5) : bookSecondaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 4,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.home_rounded, size: 18, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      TeksProvider.getString('endreading', languageProvider.selectedLanguage),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+      );
+    }
+
+    // Hide page audio button on Senarai Kata page
+    if (viewModel.isOnSenaraiKataPage) {
+      return const SizedBox.shrink();
+    }
+
+    // Normal page audio button for regular story pages
+    return Consumer2<FlipbookViewModel, LanguageProvider>(
+        builder: (context, viewModel, languageProvider, child) {
+          final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
+          final bool isPlayingFullBook = viewModel.isPlayingFullBook;
+          return SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: ElevatedButton(
+              onPressed: (isFlipping) ? null : // ADD FLIPPING CHECK
+              (isPlayingPageAudio
+                  ? () => viewModel.stopAudio()
+                  : () => viewModel.playPageAudio(bookId)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isPlayingPageAudio || isPlayingFullBook || isFlipping
+                    ? Colors.grey.withValues(alpha: 0.5)
+                    : bookSecondaryColor,
+                foregroundColor: const Color(0xFF4FC3F7),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+              ),
+              child: Text(
+                isPlayingPageAudio
+                    ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
+                    : (isPlayingFullBook ? "" : TeksProvider.getString('onepage', languageProvider.selectedLanguage)),
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white
+                ),
               ),
             ),
           );
@@ -119,9 +211,11 @@ class FlipbookFooter extends StatelessWidget {
                   (viewModel.isFirstPage ||
                       viewModel.isPlayingFullBook ||
                       viewModel.isNavigating ||
-                      viewModel.isPlayingPageAudio)
+                      viewModel.isPlayingPageAudio ||
+                      isFlipping)
                       ? null
                       : () async {
+                    onFlippingStateChanged?.call(true);
                     await viewModel.previousPage();
                     controller.currentState?.previousPage();
                   },
@@ -144,9 +238,11 @@ class FlipbookFooter extends StatelessWidget {
                   (viewModel.isOnFinalCompletionPage ||
                       viewModel.isPlayingFullBook ||
                       viewModel.isNavigating ||
-                      viewModel.isPlayingPageAudio)
+                      viewModel.isPlayingPageAudio ||
+                      isFlipping)
                       ? null
                       : () async {
+                    onFlippingStateChanged?.call(true);
                     await viewModel.nextPage();
                     controller.currentState?.nextPage();
                   },
@@ -196,93 +292,6 @@ class FlipbookFooter extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildPageAudioButton(BuildContext context) {
-    // Show completion button on final completion page
-    if (viewModel.isOnCompletionPage) {
-      return Consumer2<FlipbookViewModel, LanguageProvider>(
-          builder: (context, flipbookViewModel, languageProvider, child) {
-            return SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  viewModel.stopAudio();
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: bookSecondaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  elevation: 4,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.home_rounded, size: 18, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      TeksProvider.getString('endreading', languageProvider.selectedLanguage),
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-      );
-    }
-
-    // Hide page audio button on Senarai Kata page
-    if (viewModel.isOnSenaraiKataPage) {
-      return const SizedBox.shrink();
-    }
-
-    // Normal page audio button for regular story pages
-    return Consumer2<FlipbookViewModel, LanguageProvider>(
-        builder: (context, viewModel, languageProvider, child) {
-          final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
-          final bool isPlayingFullBook = viewModel.isPlayingFullBook;
-          return SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: ElevatedButton(
-              onPressed: isPlayingPageAudio
-                  ? () => viewModel.stopAudio()
-                  : () => viewModel.playPageAudio(bookId),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isPlayingPageAudio || isPlayingFullBook
-                    ? Colors.grey.withValues(alpha: 0.5)
-                    : bookSecondaryColor,
-                foregroundColor: const Color(0xFF4FC3F7),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-              child: Text(
-                isPlayingPageAudio
-                    ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : (isPlayingFullBook ? "" : TeksProvider.getString('onepage', languageProvider.selectedLanguage)),
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white
-                ),
-              ),
-            ),
-          );
-        }
     );
   }
 }

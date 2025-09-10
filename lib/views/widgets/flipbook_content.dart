@@ -13,6 +13,7 @@ class FlipbookContent extends StatelessWidget {
   final GlobalKey<PageFlipWidgetState> controller;
   final FlipbookAdditionalPages additionalPages;
   final Function(int) onPageFlipped;
+  final bool isFlipping;
 
   const FlipbookContent({
     super.key,
@@ -23,6 +24,7 @@ class FlipbookContent extends StatelessWidget {
     required this.controller,
     required this.additionalPages,
     required this.onPageFlipped,
+    required this.isFlipping,
   });
 
   @override
@@ -42,7 +44,7 @@ class FlipbookContent extends StatelessWidget {
           ),
 
           // Overlay untuk memblokir gesture saat full book audio diputar
-          if (viewModel.isPlayingFullBook)
+          if (viewModel.isPlayingFullBook || isFlipping)
             Positioned.fill(
               child: AbsorbPointer(
                 absorbing: true,
