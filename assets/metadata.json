@@ -14,25 +14,30 @@
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page1.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/cerah.mp3",
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page1_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page1_narasi_sunda.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek2.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek2_sunda.mp3",
               "x": 86,
               "y": 0,
               "width": 218,
               "height": 264
             },
             {
-              "audioObject": "page1_objek3.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek3_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek3_sunda.mp3",
               "x": 512,
               "y": 861,
               "width": 1139,
               "height": 721
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page1_objek1_sunda.mp3",
               "x": 527,
               "y": 1931,
               "width": 299,
@@ -45,42 +50,54 @@
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page2_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page2_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page3.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page3_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page3_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page4.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page4_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page4_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page5.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page5_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page5_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page6.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page6_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page6_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page7.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page7_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page7_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page8.png",
@@ -89,27 +106,33 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page8_objek2.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page8_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page8_objek2_sunda.mp3",
               "x": 289,
               "y": 319,
               "width": 286,
               "height": 337
             },
             {
-              "audioObject": "page8_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page8_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page8_objek1_sunda.mp3",
               "x": 0,
               "y": 1475,
               "width": 1180,
               "height": 860
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page8_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page8_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page9.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page9_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page9_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page10.png",
@@ -118,13 +141,16 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page10_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page10_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page10_objek1_sunda.mp3",
               "x": 31,
               "y": 636,
               "width": 822,
               "height": 654
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page10_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page10_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page11.png",
@@ -133,41 +159,52 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page11_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page11_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page11_objek1_sunda.mp3",
               "x": 221,
               "y": 1589,
               "width": 380,
               "height": 421
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page11_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page11_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page12.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page12_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page12_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page13.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page13_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page13_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page14.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page14_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page14_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page15.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page15_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page15_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page16.png",
@@ -176,27 +213,33 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page16_objek2.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page16_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page16_objek2_sunda.mp3",
               "x": 367,
               "y": 1374,
               "width": 701,
               "height": 373
             },
             {
-              "audioObject": "page16_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page16_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page16_objek1_sunda.mp3",
               "x": 438,
               "y": 1778,
               "width": 621,
               "height": 363
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page16_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page16_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page17.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page17_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page17_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page18.png",
@@ -205,13 +248,16 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page18_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page18_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page18_objek1_sunda.mp3",
               "x": 469,
               "y": 299,
               "width": 717,
               "height": 879
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page18_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page18_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page19.png",
@@ -220,27 +266,34 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page19_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page19_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page19_objek1_sunda.mp3",
               "x": 71,
               "y": 114,
               "width": 1529,
               "height": 605
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page19_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page19_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page20.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/tungku_api.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page20_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page20_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page21.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page21_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page21_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page22.png",
@@ -249,48 +302,60 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page22_objek2.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page22_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page22_objek2_sunda.mp3",
               "x": 833,
               "y": 1166,
               "width": 271,
               "height": 435
             },
             {
-              "audioObject": "page22_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page22_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page22_objek1_sunda.mp3",
               "x": 924,
               "y": 1632,
               "width": 271,
               "height": 256
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page22_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page22_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page23.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/tuang_air.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page23_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page23_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page24.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page24_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page24_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page25.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page25_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page25_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page26.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/angin.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page26_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page26_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page27.png",
@@ -299,13 +364,16 @@
           "heightImage": 2339,
           "interactiveObjects": [
             {
-              "audioObject": "page27_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page27_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page27_objek1_sunda.mp3",
               "x": 317,
               "y": 517,
               "width": 357,
               "height": 168
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page27_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page27_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page28.png",
@@ -315,26 +383,34 @@
           "interactiveObjects": [
             {
               "audioObject": "page28_objek1.mp3",
+              "audioObjectId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page28_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_objek/page28_objek1_sunda.mp3",
               "x": 913,
               "y": 874,
               "width": 603,
               "height": 620
             }
-          ]
+          ],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page28_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page28_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page29.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page29_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page29_narasi_sunda.mp3"
         },
         {
           "image": "assets/sakeclak_cihujan_hayang_ka_sagara/halaman/page30.png",
           "backsound": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_backsound/hujan_menuju_reda.mp3",
           "widthImage": 1654,
           "heightImage": 2339,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_indonesia/page30_narasi_indonesia.mp3",
+          "narationSd": "assets/sakeclak_cihujan_hayang_ka_sagara/audio_narasi_sunda/page30_narasi_sunda.mp3"
         }
       ],
       "primaryColor": "#35B1FF",
@@ -358,20 +434,24 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page1_objek2.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page1_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page1_objek2_sunda.mp3",
               "x": 145,
               "y": 347,
               "width": 935,
               "height": 445
             },
             {
-              "audioObject": "page1_objek1.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page1_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page1_objek1_sunda.mp3",
               "x": 704,
               "y": 871,
               "width": 119,
               "height": 100
             }
-          ]
+          ],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page1_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page1_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page2.jpg",
@@ -380,118 +460,151 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page2_objek1.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page2_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page2_objek1_sunda.mp3",
               "x": 264,
               "y": 1339,
               "width": 209,
               "height": 235
             }
-          ]
+          ],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page2_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page2_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page3.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/siram.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page3_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page3_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page4.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page4_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page4_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page5.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page5_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page5_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page6.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page6_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page6_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page7.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page7_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page7_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page8.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page8_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page8_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page9.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page9_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page9_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page10.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page10_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page10_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page11.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page11_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page11_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page12.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page12_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page12_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page13.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page13_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page13_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page14.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page14_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page14_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page15.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/jam.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page15_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page15_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page16.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page16_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page16_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page17.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page17_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page17_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page18.jpg",
@@ -500,7 +613,8 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page18_objek1.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek1_sunda.mp3",
               "x": 235,
               "y": 1288,
               "width": 121,
@@ -508,54 +622,65 @@
             },
             {
               "audioObject": "page18_objek3.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek3_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek3_sunda.mp3",
               "x": 379,
               "y": 1259,
               "width": 214,
               "height": 156
             },
             {
-              "audioObject": "page18_objek6.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek6_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek6_sunda.mp3",
               "x": 622,
               "y": 1197,
               "width": 117,
               "height": 81
             },
             {
-              "audioObject": "page18_objek4.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek4_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek4_sunda.mp3",
               "x": 613,
               "y": 1370,
               "width": 96,
               "height": 162
             },
             {
-              "audioObject": "page18_objek2.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek2_sunda.mp3",
               "x": 60,
               "y": 1430,
               "width": 323,
               "height": 209
             },
             {
-              "audioObject": "page18_objek7.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek7_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek7_sunda.mp3",
               "x": 894,
               "y": 1379,
               "width": 147,
               "height": 130
             },
             {
-              "audioObject": "page18_objek5.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page18_objek5_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page18_objek5_sunda.mp3",
               "x": 765,
               "y": 1090,
               "width": 116,
               "height": 361
             }
-          ]
+          ],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page18_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page18_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page19.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/angkasa.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page19_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page19_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page20.jpg",
@@ -564,104 +689,129 @@
           "heightImage": 1754,
           "interactiveObjects": [
             {
-              "audioObject": "page20_objek1.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page20_objek1_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page20_objek1_sunda.mp3",
               "x": 3,
               "y": 718,
               "width": 232,
               "height": 359
             },
             {
-              "audioObject": "page20_objek2.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page20_objek2_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page20_objek2_sunda.mp3",
               "x": 615,
               "y": 836,
               "width": 213,
               "height": 121
             },
             {
-              "audioObject": "page20_objek3.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page20_objek3_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page20_objek3_sunda.mp3",
               "x": 987,
               "y": 769,
               "width": 233,
               "height": 219
             },
             {
-              "audioObject": "page20_objek4.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page20_objek4_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page20_objek4_sunda.mp3",
               "x": 31,
               "y": 1481,
               "width": 235,
               "height": 232
             },
             {
-              "audioObject": "page20_objek5.mp3",
+              "audioObjectId": "assets/dongeng_janiti/audio_objek/page20_objek5_indonesia.mp3",
+              "audioObjectSd": "assets/dongeng_janiti/audio_objek/page20_objek5_sunda.mp3",
               "x": 956,
               "y": 1418,
               "width": 176,
               "height": 150
             }
-          ]
+          ],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page20_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page20_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page21.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page21_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page21_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page22.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page22_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page22_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page23.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page23_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page23_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page24.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page24_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page24_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page25.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/menulis.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page25_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page25_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page26.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page26_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page26_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page27.jpg",
           "backsound": null,
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page27_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page27_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page28.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/burung.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page28_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page28_narasi_sunda.mp3"
         },
         {
           "image": "assets/dongeng_janiti/halaman/page29.jpg",
           "backsound": "assets/dongeng_janiti/audio_backsound/magic.mp3",
           "widthImage": 1241,
           "heightImage": 1754,
-          "interactiveObjects": []
+          "interactiveObjects": [],
+          "narationId": "assets/dongeng_janiti/audio_narasi_indonesia/page29_narasi_indonesia.mp3",
+          "narationSd": "assets/dongeng_janiti/audio_narasi_sunda/page29_narasi_sunda.mp3"
         }
       ],
       "primaryColor": "#39D447",

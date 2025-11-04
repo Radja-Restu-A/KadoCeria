@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import '../models/book_model.dart';
 import '../services/audio_service.dart';
-import '../services/story_service.dart';
+import '../services/book_service.dart';
 import '../repositories/story_repository.dart';
 
 enum AudioErrorType {
@@ -31,7 +29,7 @@ class LayoutCalculationResult {
 
 class FlipbookViewModel extends ChangeNotifier {
   late AudioService _audioService;
-  late StoryService _storyService;
+  late BookService _bookService;
   late StoryRepository _storyRepository;
 
   // State variables
@@ -64,7 +62,7 @@ class FlipbookViewModel extends ChangeNotifier {
   // Constructor
   FlipbookViewModel() {
     _audioService = AudioService();
-    _storyService = StoryService();
+    _bookService = BookService();
     _storyRepository = StoryRepository();
   }
 
@@ -234,15 +232,15 @@ class FlipbookViewModel extends ChangeNotifier {
   List<Map<String, String>> getSenaraiKata(String bookId) {
     switch (bookId) {
       case '1':
-        return SakeclakSenaraiKata();
+        return sakeclakSenaraiKata();
       case '2':
-        return JanitiSenaraiKata();
+        return janitiSenaraiKata();
       default:
         return standarSenaraiKata();
     }
   }
 
-  List<Map<String, String>> SakeclakSenaraiKata() {
+  List<Map<String, String>> sakeclakSenaraiKata() {
     return [
       {'indonesia': 'awan', 'sunda': 'awan'},
       {'indonesia': 'bambu', 'sunda': 'awi'},
@@ -262,7 +260,7 @@ class FlipbookViewModel extends ChangeNotifier {
     ];
   }
 
-  List<Map<String, String>> JanitiSenaraiKata() {
+  List<Map<String, String>> janitiSenaraiKata() {
     return [
       {'indonesia': 'anggur', 'sunda': 'anggur'},
       {'indonesia': 'apel', 'sunda': 'apel'},
@@ -363,10 +361,30 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingPageAudio(true);
 
     try {
-      final pageNumber = _currentPage + 1;
-      final audioPaths = await _storyService.generateAudioNarationPaths(storyId, pageNumber, _selectedLanguage);
+      final page = _story!.pages[_currentPage];
+      final List<String> audioPaths = [];
 
-      print('Attempting to play audio from paths: $audioPaths');
+      switch (_selectedLanguage) {
+        case Language.indonesia:
+          if (page.narationId != null) audioPaths.add(page.narationId!);
+          break;
+
+        case Language.sunda:
+          if (page.narationSd != null) audioPaths.add(page.narationSd!);
+          break;
+
+        case Language.keduanya:
+          if (page.narationSd != null) audioPaths.add(page.narationSd!);
+          if (page.narationId != null) audioPaths.add(page.narationId!);
+          break;
+      }
+
+      if (audioPaths.isEmpty) {
+        print('No narration audio found for page ${_currentPage + 1}');
+        return;
+      }
+
+      print('Playing page ${_currentPage + 1} audio: $audioPaths');
 
       if (_selectedLanguage == Language.keduanya) {
         await _audioService.playSequentialAudio(audioPaths);
@@ -376,10 +394,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
     } catch (e, stackTrace) {
       print('Audio playback error: $e\n$stackTrace');
-
-      if (_onAudioError != null) {
-        _onAudioError!(AudioErrorType.pageAudio, e.toString());
-      }
+      _onAudioError?.call(AudioErrorType.pageAudio, e.toString());
     } finally {
       _setPlayingPageAudio(false);
     }
@@ -391,80 +406,57 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingFullBook(true);
 
     try {
-      // Start from current page, play all story pages
       for (int i = _currentPage; i < _story!.pages.length; i++) {
-        if (!_isPlayingFullBook) {
-          break;
-        }
+        if (!_isPlayingFullBook) break;
 
-        try {
-          // Play audio for current page FIRST
-          final pageNumber = i + 1;
-          final audioPaths = await _storyService.generateAudioNarationPaths(storyId, pageNumber, _selectedLanguage);
+        final page = _story!.pages[i];
+        final List<String> audioPaths = [];
 
-          print('Playing page $pageNumber audio with language: $_selectedLanguage');
-          print('Audio paths: $audioPaths');
-
-          if (_selectedLanguage == Language.keduanya) {
-            await _audioService.playSequentialAudio(audioPaths);
-          } else {
-            await _audioService.playAudio(audioPaths.first);
-          }
-
-          if (!_isPlayingFullBook) {
+        // Ambil path berdasarkan bahasa
+        switch (_selectedLanguage) {
+          case Language.indonesia:
+            if (page.narationId != null) audioPaths.add(page.narationId!);
             break;
-          }
-
-          // Add small delay between pages for better UX
-          await Future.delayed(const Duration(milliseconds: 500));
-
-          // Navigate to next page
-          _currentPage = i + 1;
-          notifyListeners();
-
-          if (_onAutoNavigate != null) {
-            _onAutoNavigate!();
-          } else {
-            print('Warning: Auto navigation callback not set');
-          }
-
-          // Small delay after page flip
-          await Future.delayed(const Duration(milliseconds: 800));
-
-        } catch (e) {
-          print('Error playing audio for page ${i + 1}: $e');
-
-          if (_onAudioError != null) {
-            _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
-            return;
-          }
+          case Language.sunda:
+            if (page.narationSd != null) audioPaths.add(page.narationSd!);
+            break;
+          case Language.keduanya:
+            if (page.narationSd != null) audioPaths.add(page.narationSd!);
+            if (page.narationId != null) audioPaths.add(page.narationId!);
+            break;
         }
+
+        if (audioPaths.isEmpty) {
+          print('Skipping page ${i + 1} — no narration audio.');
+          continue;
+        }
+
+        print('Playing page ${i + 1} audio: $audioPaths');
+
+        if (_selectedLanguage == Language.keduanya) {
+          await _audioService.playSequentialAudio(audioPaths);
+        } else {
+          await _audioService.playAudio(audioPaths.first);
+        }
+
+        // Delay kecil agar tidak tumpang tindih
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Navigasi otomatis ke halaman berikutnya
+        _currentPage = i + 1;
+        notifyListeners();
+        _onAutoNavigate?.call();
+
+        await Future.delayed(const Duration(milliseconds: 800));
       }
-
-      // // Navigate to the last page if we finished all story pages
-      // if (_isPlayingFullBook && _currentPage < totalPages - 1) {
-      //   print('Navigating to last page (buildLastPage)');
-      //
-      //   // Update to last page
-      //   _currentPage = _story!.pages.length;
-      //   notifyListeners();
-      //
-      //   // Trigger navigation to last page
-      //   if (_onAutoNavigate != null) {
-      //     _onAutoNavigate!();
-      //   }
-      // }
-
     } catch (e) {
       print('Full book audio error: $e');
-
-      if (_onAudioError != null) {
-        _onAudioError!(AudioErrorType.fullBookAudio, e.toString());
-      }
+      _onAudioError?.call(AudioErrorType.fullBookAudio, e.toString());
     } finally {
       _setPlayingFullBook(false);
     }
   }
+
 
   Future<void> continueFullBookFromNextPage(String storyId) async {
     if (_story == null) {
@@ -505,36 +497,54 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> playObjectAudio(String storyId, String audioFile) async {
-    // Stop current object audio if different audio is requested
-    if (_isPlayingObjectAudio && _currentPlayingObjectAudio != audioFile) {
+    // Hentikan audio sebelumnya bila ada yang sedang dimainkan
+    if (_isPlayingObjectAudio && _currentPlayingObjectAudio != null) {
       _audioService.stopAudio();
       _setPlayingObjectAudio(false);
       _currentPlayingObjectAudio = null;
     }
 
-    if (_isPlayingObjectAudio && _currentPlayingObjectAudio == audioFile) {
-      // If same audio is already playing, stop it
-      _audioService.stopAudio();
-      _setPlayingObjectAudio(false);
-      _currentPlayingObjectAudio = null;
-      return;
-    }
-
-    _setCurrentPlayingObjectAudio(audioFile);
     _setPlayingObjectAudio(true);
 
     try {
-      // Always generate both audio paths (Sunda first, then Indonesia)
-      final audioPaths = await _storyService.generateObjectAudioPaths(storyId, audioFile);
+      // Pastikan story sudah dimuat
+      if (_story == null) {
+        print('Story not loaded. Cannot play object audio.');
+        return;
+      }
 
-      print('Playing object audio in both languages (Sunda -> Indonesia)');
-      print('Object audio paths: $audioPaths');
+      // Cari semua object interaktif di seluruh halaman
+      final allObjects = _story!.pages.expand((page) => page.interactiveObjects).toList();
 
-      // Always play both languages sequentially
+      // Temukan objek berdasarkan audioFile yang dikirim dari UI
+      final matchedObject = allObjects.firstWhere(
+            (obj) => obj.audioObjectId == audioFile || obj.audioObjectSd == audioFile,
+        orElse: () => throw Exception('Interactive object not found for $audioFile'),
+      );
+
+      // Kumpulkan path audio yang akan diputar
+      final List<String> audioPaths = [];
+
+      if (matchedObject.audioObjectSd != null) {
+        audioPaths.add(matchedObject.audioObjectSd!); // Sunda dulu
+      }
+
+      if (matchedObject.audioObjectId != null) {
+        audioPaths.add(matchedObject.audioObjectId!); // Indonesia kemudian
+      }
+
+      if (audioPaths.isEmpty) {
+        print('No audio paths found for object: $audioFile');
+        return;
+      }
+
+      _currentPlayingObjectAudio = audioFile;
+      print('Playing object audios sequentially (Sunda → Indonesia): $audioPaths');
+
+      // Selalu mainkan dua bahasa berurutan
       await _audioService.playSequentialAudio(audioPaths);
 
-      // Add delay for better UX
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 300));
 
     } catch (e) {
       print('Object audio playback error: $e');
@@ -544,6 +554,7 @@ class FlipbookViewModel extends ChangeNotifier {
       _currentPlayingObjectAudio = null;
     }
   }
+
 
   void changeLanguage(Language newLanguage) {
     if (_selectedLanguage != newLanguage) {
@@ -605,20 +616,20 @@ class FlipbookViewModel extends ChangeNotifier {
 
   // Layout calculation methods for interactive objects
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
-    return _storyService.calculatePageLayout(page, constraints);
+    return _bookService.calculatePageLayout(page, constraints);
   }
 
   List<PageLayout> calculateInteractiveObjectsLayout(StoryPage page, BoxConstraints constraints) {
-    return _storyService.calculateInteractiveObjectsLayout(page, constraints);
+    return _bookService.calculateInteractiveObjectsLayout(page, constraints);
   }
 
   // Helper methods for interactive objects
   bool hasInteractiveObjects(StoryPage page) {
-    return _storyService.hasInteractiveObjects(page);
+    return _bookService.hasInteractiveObjects(page);
   }
 
   int getInteractiveObjectsCount(StoryPage page) {
-    return _storyService.getInteractiveObjectsCount(page);
+    return _bookService.getInteractiveObjectsCount(page);
   }
 
   void clearError() {
@@ -658,11 +669,6 @@ class FlipbookViewModel extends ChangeNotifier {
 
   void _setError(String? error) {
     _error = error;
-    notifyListeners();
-  }
-
-  void _setCurrentPlayingObjectAudio(String? audioFile) {
-    _currentPlayingObjectAudio = audioFile;
     notifyListeners();
   }
 

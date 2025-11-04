@@ -74,13 +74,15 @@ class BookModel {
 }
 
 class StoryPage {
-  final String? image, backsound;
+  final String? image, backsound, narationId, narationSd;
   final double? widthImage, heightImage;
   final List<InteractiveObject> interactiveObjects;
 
   StoryPage({
     this.image,
     this.backsound,
+    this.narationId,
+    this.narationSd,
     this.widthImage,
     this.heightImage,
     this.interactiveObjects = const [],
@@ -88,18 +90,7 @@ class StoryPage {
 
   factory StoryPage.fromJson(Map<String, dynamic> json) {
     List<InteractiveObject> objects = [];
-
-    // Handle backward compatibility - jika masih menggunakan format lama
-    if (json.containsKey('audioObjek') || json.containsKey('x')) {
-      objects.add(InteractiveObject(
-        audioObject: json['audioObjek'],
-        x: json['x'] != null ? (json['x'] as num).toDouble() : null,
-        y: json['y'] != null ? (json['y'] as num).toDouble() : null,
-        width: json['width'] != null ? (json['width'] as num).toDouble() : null,
-        height: json['height'] != null ? (json['height'] as num).toDouble() : null,
-      ));
-    }
-
+    
     // Handle new format - multiple interactive objects
     if (json.containsKey('interactiveObjects')) {
       objects = (json['interactiveObjects'] as List)
@@ -110,6 +101,8 @@ class StoryPage {
     return StoryPage(
       image: json['image'],
       backsound: json['backsound'],
+      narationId: json['narationId'],
+      narationSd: json['narationSd'],
       widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
       heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
       interactiveObjects: objects,
@@ -120,6 +113,8 @@ class StoryPage {
     return {
       'image': image,
       'backsound': backsound,
+      'narationId': narationId,
+      'narationSd': narationSd,
       'widthImage': widthImage,
       'heightImage': heightImage,
       'interactiveObjects': interactiveObjects.map((obj) => obj.toJson()).toList(),
@@ -128,11 +123,12 @@ class StoryPage {
 }
 
 class InteractiveObject {
-  final String? audioObject;
+  final String? audioObjectId, audioObjectSd;
   final double? x, y, width, height;
 
   InteractiveObject({
-    this.audioObject,
+    this.audioObjectId,
+    this.audioObjectSd,
     this.x,
     this.y,
     this.width,
@@ -141,7 +137,8 @@ class InteractiveObject {
 
   factory InteractiveObject.fromJson(Map<String, dynamic> json) {
     return InteractiveObject(
-      audioObject: json['audioObject'] ?? json['audioObjek'], // backward compatibility
+      audioObjectId: json['audioObjectId'],
+      audioObjectSd: json['audioObjectSd'],
       x: json['x'] != null ? (json['x'] as num).toDouble() : null,
       y: json['y'] != null ? (json['y'] as num).toDouble() : null,
       width: json['width'] != null ? (json['width'] as num).toDouble() : null,
@@ -151,7 +148,8 @@ class InteractiveObject {
 
   Map<String, dynamic> toJson() {
     return {
-      'audioObject': audioObject,
+      'audioObjectId': audioObjectId,
+      'audioObjectSd': audioObjectSd,
       'x': x,
       'y': y,
       'width': width,

@@ -38,9 +38,9 @@ class FlipbookContent extends StatelessWidget {
           PageFlipWidget(
             key: controller,
             backgroundColor: Colors.white,
-            children: _buildPages(),
             lastPage: _buildLastPage(),
             onPageFlipped: onPageFlipped,
+            children: _buildPages(),
           ),
 
           // Overlay untuk memblokir gesture saat full book audio diputar
@@ -149,7 +149,8 @@ class FlipbookContent extends StatelessWidget {
         continue;
       }
 
-      final audioObject = obj.audioObject;
+      final audioObject = obj.audioObjectSd ?? obj.audioObjectId;
+
       if (audioObject == null || audioObject.isEmpty) {
         continue;
       }
