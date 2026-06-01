@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kado_ceria/views/widgets/language_card_widget.dart';
 import 'package:provider/provider.dart';
 import '../../provider/language_provider.dart';
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 import 'dashboard_screen.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {

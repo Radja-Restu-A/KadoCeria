@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:kado_ceria/provider/teks_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 import '../../provider/book_views_provider.dart';
 import '../../provider/language_provider.dart';
 import 'book_description_modal_widget.dart';
 
 class BookCardWidget extends StatefulWidget {
-  final BookModel book;
+  final BookSummaryModel book;
+  final String status; // Tambahkan ini untuk mengubah tampilan tombol
   final VoidCallback onTap;
 
   const BookCardWidget({
     Key? key,
     required this.book,
+    required this.status,
     required this.onTap,
   }) : super(key: key);
 
@@ -27,22 +29,30 @@ class _BookCardWidgetState extends State<BookCardWidget> {
     super.initState();
     // Initialize views immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BookViewsProvider>().initViews(widget.book.id);
+      context.read<BookViewsProvider>().initViews(widget.book.idBuku);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Konversi String Hex dari API menjadi Objek Color Flutter
+    final Color primaryColor = widget.book.primaryColor.startsWith('#')
+        ? Color(int.parse(widget.book.primaryColor.replaceAll('#', '0xFF')))
+        : Colors.blue; // Fallback color
+    final Color secondaryColor = widget.book.secondaryColor.startsWith('#')
+        ? Color(int.parse(widget.book.secondaryColor.replaceAll('#', '0xFF')))
+        : Colors.lightBlueAccent;
+
     return GestureDetector(
       onTap: () {
-        context.read<BookViewsProvider>().incrementViews(widget.book.id);
+        context.read<BookViewsProvider>().incrementViews(widget.book.idBuku);
         widget.onTap();
       },
       child : Consumer<LanguageProvider>(
         builder: (context, languageProvider, _) {
           return Container(
             decoration: BoxDecoration(
-              color: widget.book.primaryColor,
+              color: primaryColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -74,7 +84,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                               height: 155,
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(20),
-                                                color: widget.book.secondaryColor,
+                                                color: secondaryColor,
                                               ),
                                               child: Stack(
                                                   children: [
@@ -88,7 +98,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                           height: 80,
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(20),
-                                                            color: widget.book.primaryColor,
+                                                            color: primaryColor,
                                                           ),
                                                         ),
                                                       ),
@@ -100,10 +110,18 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                         height: 80,
                                                         decoration: BoxDecoration(
                                                           borderRadius: BorderRadius.circular(20),
-                                                          color: widget.book.primaryColor,
+                                                          color: primaryColor,
                                                           image: DecorationImage(
-                                                            image: AssetImage(widget.book.coverImagePath),
+                                                            // PERUBAHAN DEFENSIVE: Cek awalan string sebelum memutuskan provider
+                                                            image: (widget.book.coverImagePath.startsWith('http://') ||
+                                                                widget.book.coverImagePath.startsWith('https://'))
+                                                                ? NetworkImage(widget.book.coverImagePath) as ImageProvider
+                                                                : AssetImage(widget.book.coverImagePath),
                                                             fit: BoxFit.cover,
+                                                            // Opsional: Tambahkan onError agar tidak crash jika link S3 mati/file lokal hilang
+                                                            onError: (exception, stackTrace) {
+                                                              debugPrint('Gagal memuat gambar sampul: $exception');
+                                                            },
                                                           ),
                                                         ),
                                                       ),
@@ -114,7 +132,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                         width: 20,
                                                         height: 20,
                                                         decoration: BoxDecoration(
-                                                            color: widget.book.primaryColor,
+                                                            color: primaryColor,
                                                             shape: BoxShape.circle
                                                         ),
                                                       ),
@@ -125,7 +143,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                         width: 13,
                                                         height: 13,
                                                         decoration: BoxDecoration(
-                                                            color: widget.book.primaryColor,
+                                                            color: primaryColor,
                                                             shape: BoxShape.circle
                                                         ),
                                                       ),
@@ -153,7 +171,9 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                 SizedBox(
                                   height: 50,
                                   child: AutoSizeText(
-                                    widget.book.getTitle(languageProvider.selectedLanguage),
+                                    languageProvider.selectedLanguage == 'id'
+                                        ? widget.book.judulBukuIndonesia
+                                        : widget.book.judulBukuSunda,
                                     maxLines: 2,
                                     minFontSize: 12,
                                     overflow: TextOverflow.ellipsis,
@@ -169,7 +189,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                   height: 100,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: widget.book.secondaryColor,
+                                    color: secondaryColor,
                                   ),
                                   child: Material(
                                     color: Colors.transparent,
@@ -180,8 +200,10 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                         showDialog(
                                           context: context,
                                           builder: (context) => BookDescriptionModalWidget(
-                                            description: widget.book.getDescription(languageProvider.selectedLanguage),
-                                            backgroundColor: widget.book.primaryColor,
+                                            description: languageProvider.selectedLanguage == 'id'
+                                                ? widget.book.descriptionsIndonesia
+                                                : widget.book.descriptionsSunda,
+                                            backgroundColor: primaryColor,
                                             language: languageProvider.selectedLanguage,
                                             title: "Sinopsis",
                                           ),
@@ -190,7 +212,9 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8),
                                         child: AutoSizeText(
-                                          widget.book.getDescription(languageProvider.selectedLanguage),
+                                          languageProvider.selectedLanguage == 'id'
+                                              ? widget.book.descriptionsIndonesia
+                                              : widget.book.descriptionsSunda,
                                           textAlign: TextAlign.justify,
                                           maxLines: 5,
                                           minFontSize: 10,
@@ -220,7 +244,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                               height: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: widget.book.primaryColor,
+                                color: primaryColor,
                               ),
                               child: Padding(
                                 padding: EdgeInsets.fromLTRB(0, 12, 0, 4),
@@ -229,7 +253,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                        '${TeksProvider.getString('author', languageProvider.selectedLanguage)}   : ${widget.book.author}',
+                                        '${TeksProvider.getString('author', languageProvider.selectedLanguage)}: ${widget.book.penulis}',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -238,7 +262,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                         )
                                     ),
                                     Text(
-                                        'Ilustrator: ${widget.book.illustrator}',
+                                        '${TeksProvider.getString('illustrator', languageProvider.selectedLanguage)}: ${widget.book.illustrator}',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -252,11 +276,34 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                             ),
                             Positioned(
                               right: 8,
+                              top: 8,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  widget.status == "READY"
+                                      ? TeksProvider.getString('read', languageProvider.selectedLanguage).toUpperCase()
+                                      : widget.status == "DOWNLOADING"
+                                          ? "..."
+                                          : TeksProvider.getString('download', languageProvider.selectedLanguage).toUpperCase(),
+                                  style: TextStyle(
+                                    color: primaryColor,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 8,
                               bottom: 8,
                               child: Consumer<BookViewsProvider>(
                                 builder: (context, provider, child) {
                                   return FutureBuilder<int>(
-                                    future: provider.viewsFutures[widget.book.id],
+                                    future: provider.viewsFutures[widget.book.idBuku],
                                     builder: (context, snapshot) {
                                       return Row(
                                         mainAxisSize: MainAxisSize.min,

@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 
 class BookDescriptionModalWidget extends StatelessWidget {
   final String description;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BookModel {
+class BookModelBundle {
   final String id;
   final Map<Language, String> titles;
   final String folderName;
@@ -11,8 +11,10 @@ class BookModel {
   final List<StoryPage> pages;
   final Color primaryColor;
   final Color secondaryColor;
+  final bool isBundled;
+  final String? localDirectoryPath;
 
-  BookModel({
+  BookModelBundle({
     required this.id,
     required this.titles,
     required this.folderName,
@@ -23,10 +25,12 @@ class BookModel {
     required this.pages,
     required this.primaryColor,
     required this.secondaryColor,
+    this.isBundled = true, // Default true agar buku lama Janiti tidak error
+    this.localDirectoryPath,
   });
 
-  factory BookModel.fromJson(Map<String, dynamic> json) {
-    return BookModel(
+  factory BookModelBundle.fromJson(Map<String, dynamic> json) {
+    return BookModelBundle(
       id: json['id'],
       titles: {
         Language.indonesia: json['title_id'],
@@ -49,6 +53,8 @@ class BookModel {
       secondaryColor: Color(
         int.parse(json['secondaryColor'].replaceFirst('#', '0xFF')),
       ),
+      isBundled: json['isBundled'] ?? true,
+      localDirectoryPath: json['localDirectoryPath'],
     );
   }
 
@@ -66,6 +72,8 @@ class BookModel {
       'pages': pages.map((page) => page.toJson()).toList(),
       'primaryColor': '#${primaryColor.toARGB32().toRadixString(16).substring(2)}',
       'secondaryColor': '#${secondaryColor.toARGB32().toRadixString(16).substring(2)}',
+      'isBundled': isBundled,
+      'localDirectoryPath': localDirectoryPath,
     };
   }
 
@@ -148,12 +156,12 @@ class InteractiveObject {
 
   Map<String, dynamic> toJson() {
     return {
-      'audioObjectId': audioObjectId,
-      'audioObjectSd': audioObjectSd,
-      'x': x,
-      'y': y,
-      'width': width,
-      'height': height,
+      if (audioObjectId != null) 'audioObjectId': audioObjectId,
+      if (audioObjectSd != null) 'audioObjectSd': audioObjectSd,
+      if (x != null) 'x': x,
+      if (y != null) 'y': y,
+      if (width != null) 'width': width,
+      if (height != null) 'height': height,
     };
   }
 }
@@ -195,4 +203,67 @@ class PageLayout {
     this.interactiveWidth = 0.0,
     this.interactiveHeight = 0.0,
   });
+
+  factory PageLayout.fromJson(Map<String, dynamic> json) {
+    return PageLayout(
+      interactiveLeft: (json['interactiveLeft'] as num?)?.toDouble() ?? 0.0,
+      interactiveTop: (json['interactiveTop'] as num?)?.toDouble() ?? 0.0,
+      interactiveWidth: (json['interactiveWidth'] as num?)?.toDouble() ?? 0.0,
+      interactiveHeight: (json['interactiveHeight'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'interactiveLeft': interactiveLeft,
+      'interactiveTop': interactiveTop,
+      'interactiveWidth': interactiveWidth,
+      'interactiveHeight': interactiveHeight,
+    };
+  }
+}
+
+class BookSummaryModel {
+  final String idBuku;
+  final String judulBukuIndonesia;
+  final String judulBukuSunda;
+  final String penulis;
+  final String illustrator;
+  final String coverImagePath;
+  final String descriptionsIndonesia;
+  final String descriptionsSunda;
+  final String primaryColor;
+  final String secondaryColor;
+  final int version;
+  final String fileSize;
+  BookSummaryModel({
+    required this.idBuku,
+    required this.judulBukuIndonesia,
+    required this.judulBukuSunda,
+    required this.penulis,
+    required this.illustrator,
+    required this.coverImagePath,
+    required this.descriptionsIndonesia,
+    required this.descriptionsSunda,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.version,
+    required this.fileSize,
+  });
+  factory BookSummaryModel.fromJson(Map<String, dynamic> json) {
+    return BookSummaryModel(
+      idBuku: json['id_buku'] ?? '',
+      judulBukuIndonesia: json['judulBukuIndonesia'] ?? '',
+      judulBukuSunda: json['judulBukuSunda'] ?? '',
+      penulis: json['penulis'] ?? '',
+      illustrator: json['illustrator'] ?? '',
+      coverImagePath: json['coverImagePath'] ?? '',
+      descriptionsIndonesia: json['descriptionsIndonesia'] ?? '',
+      descriptionsSunda: json['descriptionsSunda'] ?? '',
+      primaryColor: json['primaryColor'] ?? '#FFFFFF',
+      secondaryColor: json['secondaryColor'] ?? '#FFFFFF',
+      version: json['version'] ?? 1,
+      fileSize: json['fileSize'] ?? '0 MB',
+    );
+  }
 }

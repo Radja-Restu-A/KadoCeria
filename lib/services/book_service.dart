@@ -1,10 +1,94 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../models/book_model.dart';
+import '../models/book_model_bundle.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive.dart';
 
 class BookService {
-  static BookModel? _cachedBook;
+  static BookModelBundle? _cachedBook;
+  final Dio _dio = Dio();
+  final String _baseUrl = 'https://api.kadoceria.com/api'; // Sesuaikan URL CMS Anda
+  // Mengambil katalog dari API 1
+  Future<List<BookSummaryModel>> fetchNetworkBookCatalog() async {
+    try {
+      final response = await _dio.get('$_baseUrl/get/dataInformasiBuku');
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => BookSummaryModel.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Gagal memuat katalog buku dari server: $e');
+    }
+  }
+  // Mengunduh berkas ZIP dari API 2 dan mengekstraknya secara lokal
+  Future<String> downloadAndExtractBookArchive(String bookId) async {
+    try {
+      // 1. Dapatkan URL Unduhan S3 dari API 2
+      final response = await _dio.get('$_baseUrl/get/kontenBuku?id=$bookId');
+      if (response.statusCode != 200 || response.data == null) {
+        throw Exception('Gagal mendapatkan tautan unduhan konten.');
+      }
+      String downloadUrl = response.data['downloadUrl'];
+      // 2. Tentukan jalur direktori internal dokumen aplikasi aman
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String savePath = '${appDocDir.path}/tmp_$bookId.zip';
+      String targetExtractionPath = '${appDocDir.path}/books/buku_$bookId';
+      // 3. Proses pengunduhan fisik berkas zip ke penyimpanan
+      await _dio.download(downloadUrl, savePath);
+      // 4. Ekstraksi berkas zip menggunakan paket archive
+      var bytes = File(savePath).readAsBytesSync();
+      var archive = ZipDecoder().decodeBytes(bytes);
+      for (var file in archive) {
+        var filename = file.name;
+        if (file.isFile) {
+          var data = file.content as List<int>;
+          File('$targetExtractionPath/$filename')
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(data);
+        } else {
+          Directory('$targetExtractionPath/$filename').createSync(recursive: true);
+        }
+      }
+      // 5. Hapus berkas zip sementara setelah sukses diekstrak demi menghemat memori
+      final tempZipFile = File(savePath);
+      if (tempZipFile.existsSync()) tempZipFile.deleteSync();
+      return targetExtractionPath; // Mengembalikan path lokal absolut folder buku
+    } catch (e) {
+      throw Exception('Proses unduhan atau ekstraksi buku gagal: $e');
+    }
+  }
+
+  // Tambahkan method ini di dalam BookService
+  Future<List<BookSummaryModel>> fetchLocalBundledCatalog() async {
+    try {
+      final String jsonString = await rootBundle.loadString('assets/metadata.json');
+      final Map<String, dynamic> fullData = json.decode(jsonString);
+      final List<dynamic> jsonData = fullData['books'] ?? [];
+
+      return jsonData.map((json) => BookSummaryModel(
+        idBuku: json['id']?.toString() ?? '',
+        judulBukuIndonesia: json['title_id'] ?? 'Tanpa Judul',
+        judulBukuSunda: json['title_su'] ?? 'Tanpa Judul',
+        penulis: json['author'] ?? 'Tidak diketahui',
+        illustrator: json['illustrator'] ?? 'Tidak diketahui',
+        // Path lokal (contoh: assets/images/cover_janiti.webp)
+        coverImagePath: json['coverImagePath'] ?? '',
+        descriptionsIndonesia: json['description_id'] ?? '-',
+        descriptionsSunda: json['description_su'] ?? '-',
+        primaryColor: json['primaryColor'] ?? '#FFFFFF',
+        secondaryColor: json['secondaryColor'] ?? '#FFFFFF',
+        version: 1,
+        fileSize: 'Bundled',
+      )).toList();
+    } catch (e) {
+      debugPrint('Gagal memuat metadata lokal: $e');
+      return []; // Mengembalikan list kosong alih-alih melempar error yang mematikan aplikasi
+    }
+  }
 
   // Updated method to handle multiple interactive objects
   List<PageLayout> calculateInteractiveObjectsLayout(StoryPage page, BoxConstraints constraints) {
@@ -105,23 +189,40 @@ class BookService {
   }
 
   // Main method for load all book from metadata.json
-  static Future<List<BookModel>> loadBooks() async {
+  static Future<List<BookModelBundle>> loadBooks() async {
     try {
       final String response = await rootBundle.loadString('assets/metadata.json');
       final Map<String, dynamic> data = json.decode(response);
       final List<dynamic> booksJson = data['books'];
 
-      return booksJson.map((json) => BookModel.fromJson(json)).toList();
+      return booksJson.map((json) => BookModelBundle.fromJson(json)).toList();
     } catch (e) {
       print('Error loading books: $e');
       return [];
     }
   }
 
-  // Method for load one book by ID (optional)
-  static Future<BookModel?> loadBookById(String id) async {
+  static Future<BookModelBundle?> getBook(String bookId) async {
+    if (_cachedBook != null && _cachedBook!.id == bookId) {
+      return _cachedBook;
+    }
+
     try {
-      final List<BookModel> books = await loadBooks();
+      final String response = await rootBundle.loadString('assets/books/$bookId/data.json');
+      final Map<String, dynamic> data = json.decode(response);
+
+      _cachedBook = BookModelBundle.fromJson(data);
+      return _cachedBook;
+    } catch (e) {
+      debugPrint('Error loading book $bookId: $e');
+      return null;
+    }
+  }
+
+  // Method for load one book by ID (optional)
+  static Future<BookModelBundle?> loadBookById(String id) async {
+    try {
+      final List<BookModelBundle> books = await loadBooks();
       return books.firstWhere((book) => book.id == id);
     } catch (e) {
       print('Error loading book with id $id: $e');

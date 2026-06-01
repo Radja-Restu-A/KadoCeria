@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:page_flip/page_flip.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 import '../widgets/flipbook_audio_error_modal.dart';
 import '../widgets/flipbook_addtional_pages.dart';
 import '../widgets/flipbook_header.dart';

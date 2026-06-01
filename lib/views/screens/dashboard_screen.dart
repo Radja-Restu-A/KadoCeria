@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../models/book_model_bundle.dart';
 import '../../viewmodels/book_viewmodel.dart';
 import '../../provider/language_provider.dart';
 import '../../provider/teks_provider.dart';
@@ -130,38 +131,101 @@ class DashboardScreen extends StatelessWidget {
       );
     }
 
+    final downloadedBooks = viewModel.books.where((b) =>
+    viewModel.bookStates[b.idBuku] == "READY"
+    ).toList();
+
+    final onlineBooks = viewModel.books.where((b) =>
+    viewModel.bookStates[b.idBuku] != "READY"
+    ).toList();
+
     return RefreshIndicator(
       onRefresh: viewModel.refreshBooks,
-      child: ListView.builder(
+      child: ListView(
         padding: const EdgeInsets.all(20),
-        itemCount: viewModel.books.length,
-        itemBuilder: (context, index) {
-          final book = viewModel.books[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Consumer<LanguageProvider>(
-              builder: (context, languageProvider, _) {
-                return BookCardWidget(
-                  book: book,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FlipbookScreen(
-                          bookId: book.id,
-                          bookTitle: book.getTitle(languageProvider.selectedLanguage),
-                          bookPrimaryColor: book.primaryColor,
-                          bookSecondaryColor: book.secondaryColor,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+        children: [
+          if (downloadedBooks.isNotEmpty) ...[
+            _buildSectionHeader(TeksProvider.getString('myLibrary', languageProvider.selectedLanguage)),
+            const SizedBox(height: 10),
+            ...downloadedBooks.map((book) => Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _buildBookCard(context, book, viewModel, languageProvider),
+            )),
+            const SizedBox(height: 20),
+          ],
+          if (onlineBooks.isNotEmpty) ...[
+            _buildSectionHeader(TeksProvider.getString('discover', languageProvider.selectedLanguage)),
+            const SizedBox(height: 10),
+            ...onlineBooks.map((book) => Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _buildBookCard(context, book, viewModel, languageProvider),
+            )),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF4FC3F7),
+      ),
+    );
+  }
+
+  Widget _buildBookCard(
+      BuildContext context,
+      dynamic book,
+      BookViewModel viewModel,
+      LanguageProvider languageProvider,
+      ) {
+    final String bookState = viewModel.bookStates[book.idBuku] ?? "NOT_DOWNLOADED";
+    final String currentTitle = languageProvider.selectedLanguage == Language.indonesia
+        ? book.judulBukuIndonesia
+        : book.judulBukuSunda;
+
+    Color primaryColor;
+    try {
+      primaryColor = Color(int.parse(book.primaryColor.replaceAll('#', '0xFF')));
+    } catch (e) {
+      primaryColor = const Color(0xFF4FC3F7);
+    }
+
+    Color secondaryColor;
+    try {
+      secondaryColor = Color(int.parse(book.secondaryColor.replaceAll('#', '0xFF')));
+    } catch (e) {
+      secondaryColor = const Color(0xFF81D4FA);
+    }
+
+    return BookCardWidget(
+      book: book,
+      status: bookState,
+      onTap: () {
+        if (bookState == "READY") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FlipbookScreen(
+                bookId: book.idBuku,
+                bookTitle: currentTitle,
+                bookPrimaryColor: primaryColor,
+                bookSecondaryColor: secondaryColor,
+              ),
             ),
           );
-        },
-      ),
+        } else if (bookState == "NOT_DOWNLOADED") {
+          viewModel.triggerDownloadBook(book.idBuku, book.version);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Buku sedang diunduh...')),
+          );
+        }
+      },
     );
   }
 }

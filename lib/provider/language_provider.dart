@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/book_model.dart';
+import '../models/book_model_bundle.dart';
 
 class LanguageProvider extends ChangeNotifier {
   Language _selectedLanguage = Language.indonesia;

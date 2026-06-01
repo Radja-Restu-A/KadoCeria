@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/language_provider.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 
 class FlipbookHeader extends StatelessWidget {
   final Color bookPrimaryColor;

@@ -1,6 +1,7 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
 
 class AudioService {
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -10,16 +11,29 @@ class AudioService {
   AudioPlayer get audioBacksound => _audioBacksound;
 
   //Backsound
-  Future<void> playAudioLoop(String audioPath) async {
+  Future<void> playAudioLoop(String audioPath, {required bool isBundled}) async {
     try {
-      if (await _assetExists(audioPath)) {
-        await _audioBacksound.setAsset(audioPath);
-        await _audioBacksound.setLoopMode(LoopMode.one);
-        await _audioBacksound.setVolume(0.7);
-        await _audioBacksound.play();
+      if (isBundled) {
+        // Jika buku bawaan
+        if (await _assetExists(audioPath)) {
+          await _audioBacksound.setAsset(audioPath);
+        } else {
+          throw Exception('Backsound asset not found: $audioPath');
+        }
+      } else {
+        // Jika buku unduhan
+        if (File(audioPath).existsSync()) {
+          await _audioBacksound.setFilePath(audioPath);
+        } else {
+          throw Exception('Local backsound file not found: $audioPath');
+        }
       }
+
+      await _audioBacksound.setLoopMode(LoopMode.one);
+      await _audioBacksound.setVolume(0.7);
+      await _audioBacksound.play();
     } catch (e) {
-      print('Error playing loop audio: $e');
+      debugPrint('Error playing loop audio: $e');
       rethrow;
     }
   }
@@ -33,18 +47,37 @@ class AudioService {
     }
   }
 
-  Future<void> playAudio(String path) async {
+  Future<void> playAudio(String path, {required bool isBundled}) async {
     try {
       debugPrint('Attempting to play audio from path: $path');
       await _audioPlayer.stop();
 
+      // Turunkan volume backsound saat narasi berbicara
       await _audioBacksound.setVolume(0.2);
 
-      // Check if asset exists before trying to load it
-      if (await _assetExists(path)) {
-        debugPrint('Audio asset found, setting up player...');
-        await _audioPlayer.setAsset(path);
+      bool canPlay = false;
 
+      if (isBundled) {
+        // Logika Lama: Pengecekan aset di bundle aplikasi
+        if (await _assetExists(path)) {
+          canPlay = true;
+          debugPrint('Audio asset found, setting up player...');
+          await _audioPlayer.setAsset(path);
+        } else {
+          debugPrint('Error: Audio asset not found at path: $path');
+        }
+      } else {
+        // Logika Baru: Pengecekan file fisik di penyimpanan HP
+        if (File(path).existsSync()) {
+          canPlay = true;
+          debugPrint('Local audio file found, setting up player...');
+          await _audioPlayer.setFilePath(path);
+        } else {
+          debugPrint('Error: Local audio file not found at path: $path');
+        }
+      }
+
+      if (canPlay) {
         // Subscribe to player state changes
         _audioPlayer.playerStateStream.listen((state) {
           debugPrint('Player state changed: ${state.processingState}');
@@ -61,20 +94,22 @@ class AudioService {
         debugPrint('Starting audio playback...');
         await _audioPlayer.play();
         debugPrint('Audio playback started successfully');
+
+        // Kembalikan volume backsound setelah narasi selesai
         await _audioBacksound.setVolume(0.7);
       } else {
-        debugPrint('Error: Audio asset not found at path: $path');
-        throw Exception('Audio asset not found: $path');
+        throw Exception('Audio file not found: $path');
       }
     } catch (e, stackTrace) {
       debugPrint('Error playing audio: $e');
       debugPrint('Stack trace: $stackTrace');
+      // Pastikan volume kembali normal meskipun terjadi error
       await _audioBacksound.setVolume(0.7);
       rethrow;
     }
   }
 
-  Future<void> playSequentialAudio(List<String> paths) async {
+  Future<void> playSequentialAudio(List<String> paths, {bool isBundled = true}) async {
     debugPrint('Starting sequential audio playback for ${paths.length} files');
 
     await _audioBacksound.setVolume(0.2);
@@ -82,7 +117,7 @@ class AudioService {
       for (String path in paths) {
         try {
           debugPrint('Playing sequential audio: $path');
-          await playAudio(path);
+          await playAudio(path, isBundled: isBundled);
 
           debugPrint('Waiting for current audio to complete...');
           await _audioPlayer.playerStateStream

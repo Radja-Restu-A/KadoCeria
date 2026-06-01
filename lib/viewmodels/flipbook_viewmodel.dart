@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../models/book_model.dart';
+import '../models/book_model_bundle.dart';
 import '../services/audio_service.dart';
 import '../services/book_service.dart';
 import '../repositories/story_repository.dart';
@@ -33,7 +33,7 @@ class FlipbookViewModel extends ChangeNotifier {
   late StoryRepository _storyRepository;
 
   // State variables
-  BookModel? _story;
+  BookModelBundle? _story;
   int _currentPage = 0;
   Language _selectedLanguage = Language.indonesia;
   bool _isLoading = false;
@@ -67,7 +67,7 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   // Getters
-  BookModel? get story => _story;
+  BookModelBundle? get story => _story;
   int get currentPage => _currentPage;
   Language get selectedLanguage => _selectedLanguage;
   bool get isLoading => _isLoading;
@@ -334,8 +334,7 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Current page: ${_currentPage + 1}');
 
       // Gunakan AudioService yang sudah ada untuk play audio loop
-      await _audioService.playAudioLoop(currentBacksoundPath);
-
+      await _audioService.playAudioLoop(currentBacksoundPath, isBundled: _story!.isBundled);
     } catch (e) {
       print('Backsound playback error: $e');
       _setError('Failed to play backsound: $e');
@@ -387,9 +386,9 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Playing page ${_currentPage + 1} audio: $audioPaths');
 
       if (_selectedLanguage == Language.keduanya) {
-        await _audioService.playSequentialAudio(audioPaths);
+        await _audioService.playSequentialAudio(audioPaths, isBundled: _story!.isBundled);
       } else {
-        await _audioService.playAudio(audioPaths.first);
+        await _audioService.playAudio(audioPaths.first, isBundled: _story!.isBundled);
       }
 
     } catch (e, stackTrace) {
@@ -434,9 +433,9 @@ class FlipbookViewModel extends ChangeNotifier {
         print('Playing page ${i + 1} audio: $audioPaths');
 
         if (_selectedLanguage == Language.keduanya) {
-          await _audioService.playSequentialAudio(audioPaths);
+          await _audioService.playSequentialAudio(audioPaths, isBundled: _story!.isBundled);
         } else {
-          await _audioService.playAudio(audioPaths.first);
+          await _audioService.playAudio(audioPaths.first, isBundled: _story!.isBundled);
         }
 
         // Delay kecil agar tidak tumpang tindih
@@ -542,7 +541,7 @@ class FlipbookViewModel extends ChangeNotifier {
       print('Playing object audios sequentially (Sunda → Indonesia): $audioPaths');
 
       // Selalu mainkan dua bahasa berurutan
-      await _audioService.playSequentialAudio(audioPaths);
+      await _audioService.playSequentialAudio(audioPaths, isBundled: _story!.isBundled);
 
       await Future.delayed(const Duration(milliseconds: 300));
 

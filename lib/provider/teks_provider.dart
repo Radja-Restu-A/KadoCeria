@@ -1,4 +1,4 @@
-import '../models/book_model.dart';
+import '../models/book_model_bundle.dart';
 
 class TeksProvider {
   static final Map<String, Map<String, String>> _strings = {
@@ -9,6 +9,9 @@ class TeksProvider {
       'loading': 'Memuat...',
       'error': 'Terjadi Kesalahan',
       'author' : 'Penulis',
+      'illustrator': 'Ilustrator',
+      'read': 'Baca',
+      'download': 'Unduh',
       'stop': 'Hentikan',
       'onepage' : 'Dengarkan halaman ini',
       'fullbook' : 'Dengarkan seluruh cerita',
@@ -16,6 +19,8 @@ class TeksProvider {
       'audioError': 'Maaf, sepertinya ada masalah untuk suara di halaman ini',
       'ok': 'Oke',
       'continue': 'Lanjut',
+      'myLibrary': 'Koleksi Saya',
+      'discover': 'Jelajahi Buku Baru',
     },
     'sunda': {
       'appTitle': 'Balai Bahasa Provinsi Jawa Barat',
@@ -24,6 +29,9 @@ class TeksProvider {
       'loading': 'Ngamuat...',
       'error': 'Aya Kasalahan',
       'author': 'Panulis',
+      'illustrator': 'Ilustrator',
+      'read': 'Baca',
+      'download': 'Unduh',
       'stop': 'Eureun',
       'onepage': 'Regepkeun kaca ieu',
       'fullbook': 'Regepkeun carita ieu',
@@ -31,6 +39,8 @@ class TeksProvider {
       'audioError': 'Punten, sigana aya masalah pikeun sora di kaca ieu',
       'ok': 'Oke',
       'continue': 'Teruskeun',
+      'myLibrary': 'Koléksi Abdi',
+      'discover': 'Kotéktak Buku Anyar',
     },
   };
 

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:page_flip/page_flip.dart';
 import '../../viewmodels/flipbook_viewmodel.dart';
-import '../../models/book_model.dart';
+import '../../models/book_model_bundle.dart';
 import '../widgets/kids_interactive_area_widget.dart';
 import '../widgets/flipbook_addtional_pages.dart';
+import 'dart:io';
 
 class FlipbookContent extends StatelessWidget {
   final String bookId;
@@ -100,26 +101,59 @@ class FlipbookContent extends StatelessWidget {
       );
     }
 
-    return Positioned.fill(
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[300],
-            child: const Center(
-              child: Icon(
-                Icons.broken_image,
-                size: 64,
-                color: Colors.grey,
+    // Ambil flag status dan path folder ekstraksi dari ViewModel
+    // Pastikan BookModelBundle sudah memiliki properti isBundled dan localDirectoryPath
+    final bool isBundled = viewModel.story!.isBundled;
+    final String? localDir = viewModel.story!.localDirectoryPath;
+
+    if (isBundled) {
+      // 1. JALUR LAMA: Buku bawaan (Dongeng Janiti) menggunakan Image.asset
+      return Positioned.fill(
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey[300],
+              child: const Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 64,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    } else {
+      // 2. JALUR BARU: Buku hasil unduhan CMS menggunakan Image.file
+      // Menggabungkan direktori penempatan buku di HP dengan relative path gambar
+      final String fullLocalImagePath = '$localDir/$imagePath';
+
+      return Positioned.fill(
+        child: Image.file(
+          File(fullLocalImagePath),
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey[300],
+              child: const Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 64,
+                  color: Colors.grey,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
   }
 
   List<Widget> _buildInteractiveAreas(StoryPage page, List<PageLayout> layouts) {
@@ -151,6 +185,9 @@ class FlipbookContent extends StatelessWidget {
 
       final audioObject = obj.audioObjectSd ?? obj.audioObjectId;
 
+      final bool isBundled = viewModel.story!.isBundled;
+      final String? localDir = viewModel.story!.localDirectoryPath;
+
       if (audioObject == null || audioObject.isEmpty) {
         continue;
       }
@@ -164,11 +201,11 @@ class FlipbookContent extends StatelessWidget {
           child: KidsInteractiveArea(
             key: Key('interactive_${i}_$audioObject'),
             storyId: bookId,
-            audioFile: audioObject,
+            audioFile: isBundled ? audioObject : '$localDir/$audioObject',
             isPlaying: viewModel.isPlayingObjectAudio && viewModel.currentPlayingObjectAudio == audioObject,
             onTap: () => viewModel.playObjectAudio(bookId, audioObject),
             primaryColor: bookPrimaryColor,
-            secondaryColor: bookPrimaryColor,
+            secondaryColor: bookSecondaryColor,
           ),
         ),
       );

@@ -1,9 +1,9 @@
-import '../models/book_model.dart';
+import '../models/book_model_bundle.dart';
 import '../services/book_service.dart';
 
 class StoryRepository {
   // Load all available books
-  Future<List<BookModel>> getAllBooks() async {
+  Future<List<BookModelBundle>> getAllBooks() async {
     try {
       return await BookService.loadBooks();
     } catch (e) {
@@ -12,7 +12,7 @@ class StoryRepository {
   }
 
   // Load book by ID
-  Future<BookModel?> getBookById(String bookId) async {
+  Future<BookModelBundle?> getBookById(String bookId) async {
     try {
       return await BookService.loadBookById(bookId);
     } catch (e) {
@@ -21,9 +21,9 @@ class StoryRepository {
   }
 
   // Load book by ID (with exception if not found)
-  Future<BookModel> getStory(String storyId) async {
+  Future<BookModelBundle> getStory(String storyId) async {
     try {
-      final BookModel? book = await BookService.loadBookById(storyId);
+      final BookModelBundle? book = await BookService.loadBookById(storyId);
       if (book == null) {
         throw Exception('Book with id $storyId not found');
       }
