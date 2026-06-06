@@ -9,17 +9,24 @@ import 'package:archive/archive.dart';
 
 class BookService {
   static BookModelBundle? _cachedBook;
-  final Dio _dio = Dio();
-  final String _baseUrl = 'https://api.kadoceria.com/api'; // Sesuaikan URL CMS Anda
+  final Dio _dio = Dio(BaseOptions(
+    baseUrl: 'http://192.168.1.14:39246/api', // Simpan base URL di sini
+    connectTimeout: const Duration(seconds: 10), // Wajib: agar tidak loading selamanya
+    receiveTimeout: const Duration(seconds: 10),
+  )); // Sesuaikan URL CMS Anda
   // Mengambil katalog dari API 1
   Future<List<BookSummaryModel>> fetchNetworkBookCatalog() async {
     try {
-      final response = await _dio.get('$_baseUrl/get/dataInformasiBuku');
+      final response = await _dio.get('/get/dataInformasiBuku');
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
         return data.map((json) => BookSummaryModel.fromJson(json)).toList();
       }
       return [];
+    } on DioException catch (e) {
+      // 3. Tangkap error Dio secara spesifik untuk mempermudah debugging
+      debugPrint('Dio Error: ${e.message}');
+      throw Exception('Gagal memuat katalog: ${e.response?.statusCode ?? e.type}');
     } catch (e) {
       throw Exception('Gagal memuat katalog buku dari server: $e');
     }
@@ -28,7 +35,7 @@ class BookService {
   Future<String> downloadAndExtractBookArchive(String bookId) async {
     try {
       // 1. Dapatkan URL Unduhan S3 dari API 2
-      final response = await _dio.get('$_baseUrl/get/kontenBuku?id=$bookId');
+      final response = await _dio.get('/get/kontenBuku?id=$bookId');
       if (response.statusCode != 200 || response.data == null) {
         throw Exception('Gagal mendapatkan tautan unduhan konten.');
       }
