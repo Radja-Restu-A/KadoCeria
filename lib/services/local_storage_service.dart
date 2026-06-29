@@ -15,7 +15,6 @@ class LocalStorageService {
   }
 // Memeriksa apakah buku sudah ada di lokal perangkat
   Future<bool> isBookDownloaded(String bookId) async {
-// Buku Janiti selalu dianggap sudah diunduh karena bersifat bawaan (bundled) if (bookId == 'janiti' || bookId == 'buku_01') return true;
     final prefs = await SharedPreferences.getInstance();
     List<String> downloadedIds = prefs.getStringList(_downloadedKey) ?? [];
     return downloadedIds.contains(bookId);

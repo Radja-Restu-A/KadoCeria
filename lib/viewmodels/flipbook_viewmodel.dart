@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/book_model_bundle.dart';
 import '../services/audio_service.dart';
@@ -107,6 +108,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
   // Public methods
   Future<void> loadStory(String storyId) async {
+    debugPrint('[FlipbookViewModel] Loading story with ID: $storyId');
     _setLoading(true);
     _setError(null);
 
@@ -118,6 +120,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
     try {
       _story = await _storyRepository.getStory(storyId);
+      debugPrint('[FlipbookViewModel] Story object retrieved. isBundled: ${_story?.isBundled}');
 
       // Calculate image aspect ratio after story is loaded
       await _calculateImageAspectRatio();
@@ -129,6 +132,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
+      debugPrint('[FlipbookViewModel] ERROR loading story: $e');
       _setError('Failed to load story: $e');
     } finally {
       _setLoading(false);
@@ -137,7 +141,9 @@ class FlipbookViewModel extends ChangeNotifier {
 
   // Extract aspect ratio calculation logic from UI
   Future<void> _calculateImageAspectRatio() async {
+    debugPrint('[FlipbookViewModel] Starting aspect ratio calculation...');
     if (_story == null || _story!.pages.isEmpty) {
+      debugPrint('[FlipbookViewModel] Story or pages is empty, using fallback ratio');
       _imageAspectRatio = 4 / 3; // fallback
       return;
     }
@@ -148,9 +154,11 @@ class FlipbookViewModel extends ChangeNotifier {
     try {
       final firstPage = _story!.pages.first;
       final firstPageImage = firstPage.image;
+      debugPrint('[FlipbookViewModel] First page image path: $firstPageImage');
 
       // Pastikan image tidak null dan tidak kosong
       if (firstPageImage == null || firstPageImage.isEmpty) {
+        debugPrint('[FlipbookViewModel] Image path is null/empty, using fallback');
         _imageAspectRatio = 4 / 3; // fallback
         return;
       }
@@ -158,14 +166,30 @@ class FlipbookViewModel extends ChangeNotifier {
       // Create a completer to handle async image loading
       final completer = Completer<double>();
 
-      final ImageStream stream = AssetImage(firstPageImage).resolve(ImageConfiguration.empty);
+      ImageProvider imageProvider;
+      if (_story!.isBundled) {
+        debugPrint('[FlipbookViewModel] Using AssetImage for aspect ratio');
+        imageProvider = AssetImage(firstPageImage);
+      } else {
+        final localPath = '${_story!.localDirectoryPath}/$firstPageImage';
+        debugPrint('[FlipbookViewModel] Using FileImage for aspect ratio at: $localPath');
+        final file = File(localPath);
+        if (!file.existsSync()) {
+          debugPrint('[FlipbookViewModel] WARNING: Local image file does NOT exist!');
+        }
+        imageProvider = FileImage(file);
+      }
+
+      final ImageStream stream = imageProvider.resolve(ImageConfiguration.empty);
       late ImageStreamListener listener;
 
       listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
         final double ratio = info.image.width / info.image.height;
+        debugPrint('[FlipbookViewModel] Aspect ratio calculated: $ratio (synch: $synchronousCall)');
         stream.removeListener(listener);
         completer.complete(ratio);
       }, onError: (exception, stackTrace) {
+        debugPrint('[FlipbookViewModel] ERROR in ImageStreamListener: $exception');
         stream.removeListener(listener);
         completer.complete(4 / 3); // fallback on error
       });
@@ -174,12 +198,16 @@ class FlipbookViewModel extends ChangeNotifier {
 
       // Wait for the aspect ratio calculation with timeout
       _imageAspectRatio = await completer.future.timeout(
-        const Duration(seconds: 5),
-        onTimeout: () => 4 / 3, // fallback on timeout
+        const Duration(seconds: 10), // Increased timeout to 10s for debugging
+        onTimeout: () {
+          debugPrint('[FlipbookViewModel] TIMEOUT during aspect ratio calculation');
+          return 4 / 3;
+        },
       );
+      debugPrint('[FlipbookViewModel] Final aspect ratio set: $_imageAspectRatio');
 
     } catch (e) {
-      print('Error calculating aspect ratio: $e');
+      debugPrint('[FlipbookViewModel] CRITICAL ERROR calculating aspect ratio: $e');
       _imageAspectRatio = 4 / 3; // fallback
     } finally {
       _isCalculatingLayout = false;
@@ -287,6 +315,15 @@ class FlipbookViewModel extends ChangeNotifier {
     ];
   }
 
+  // Helper to resolve paths based on bundle status
+  String _resolvePath(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (_story!.isBundled) return path;
+    // Jika path sudah mengandung localDirectoryPath (absolut), jangan tambahkan lagi
+    if (path.startsWith(_story!.localDirectoryPath!)) return path;
+    return '${_story!.localDirectoryPath}/$path';
+  }
+
   Future<void> playBacksoundAudio(String storyId) async {
     if (_story == null || _currentPage >= _story!.pages.length) return;
 
@@ -309,7 +346,7 @@ class FlipbookViewModel extends ChangeNotifier {
       return;
     }
 
-    final currentBacksoundPath = currentStorypage.backsound!;
+    final currentBacksoundPath = _resolvePath(currentStorypage.backsound);
 
     // Cek apakah backsound yang akan diputar sama dengan yang sedang berjalan
     if (_isPlayingBacksoundAudio && _currentBacksoundPath == currentBacksoundPath) {
@@ -365,16 +402,16 @@ class FlipbookViewModel extends ChangeNotifier {
 
       switch (_selectedLanguage) {
         case Language.indonesia:
-          if (page.narationId != null) audioPaths.add(page.narationId!);
+          if (page.narationId != null) audioPaths.add(_resolvePath(page.narationId));
           break;
 
         case Language.sunda:
-          if (page.narationSd != null) audioPaths.add(page.narationSd!);
+          if (page.narationSd != null) audioPaths.add(_resolvePath(page.narationSd));
           break;
 
         case Language.keduanya:
-          if (page.narationSd != null) audioPaths.add(page.narationSd!);
-          if (page.narationId != null) audioPaths.add(page.narationId!);
+          if (page.narationSd != null) audioPaths.add(_resolvePath(page.narationSd));
+          if (page.narationId != null) audioPaths.add(_resolvePath(page.narationId));
           break;
       }
 
@@ -414,14 +451,14 @@ class FlipbookViewModel extends ChangeNotifier {
         // Ambil path berdasarkan bahasa
         switch (_selectedLanguage) {
           case Language.indonesia:
-            if (page.narationId != null) audioPaths.add(page.narationId!);
+            if (page.narationId != null) audioPaths.add(_resolvePath(page.narationId));
             break;
           case Language.sunda:
-            if (page.narationSd != null) audioPaths.add(page.narationSd!);
+            if (page.narationSd != null) audioPaths.add(_resolvePath(page.narationSd));
             break;
           case Language.keduanya:
-            if (page.narationSd != null) audioPaths.add(page.narationSd!);
-            if (page.narationId != null) audioPaths.add(page.narationId!);
+            if (page.narationSd != null) audioPaths.add(_resolvePath(page.narationSd));
+            if (page.narationId != null) audioPaths.add(_resolvePath(page.narationId));
             break;
         }
 
@@ -525,11 +562,11 @@ class FlipbookViewModel extends ChangeNotifier {
       final List<String> audioPaths = [];
 
       if (matchedObject.audioObjectSd != null) {
-        audioPaths.add(matchedObject.audioObjectSd!); // Sunda dulu
+        audioPaths.add(_resolvePath(matchedObject.audioObjectSd)); // Sunda dulu
       }
 
       if (matchedObject.audioObjectId != null) {
-        audioPaths.add(matchedObject.audioObjectId!); // Indonesia kemudian
+        audioPaths.add(_resolvePath(matchedObject.audioObjectId)); // Indonesia kemudian
       }
 
       if (audioPaths.isEmpty) {

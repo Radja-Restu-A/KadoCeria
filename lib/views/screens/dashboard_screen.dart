@@ -206,6 +206,7 @@ class DashboardScreen extends StatelessWidget {
       book: book,
       status: bookState,
       onTap: () {
+        debugPrint('[DashboardScreen] Book tapped: ${book.judulBukuIndonesia} (ID: ${book.idBuku}, Status: $bookState)');
         if (bookState == "READY") {
           Navigator.push(
             context,
@@ -219,13 +220,135 @@ class DashboardScreen extends StatelessWidget {
             ),
           );
         } else if (bookState == "NOT_DOWNLOADED") {
-          viewModel.triggerDownloadBook(book.idBuku, book.version);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Buku sedang diunduh...')),
-          );
+          _showDownloadValidation(context, book, viewModel, languageProvider);
+        } else if (bookState == "DOWNLOADING") {
+          _showDownloadStatusDialog(context, book, viewModel, languageProvider, resume: true);
         }
       },
+    );
+  }
+
+  void _showDownloadValidation(
+      BuildContext context,
+      dynamic book,
+      BookViewModel viewModel,
+      LanguageProvider languageProvider,
+      ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          TeksProvider.getString('download', languageProvider.selectedLanguage),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Yakin ingin mengunduh buku ini?"),
+            const SizedBox(height: 8),
+            Text(
+              "Judul: ${languageProvider.selectedLanguage == Language.indonesia ? book.judulBukuIndonesia : book.judulBukuSunda}",
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            Text("Ukuran: ${book.fileSize}"),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showDownloadStatusDialog(context, book, viewModel, languageProvider);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4FC3F7),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text("Unduh"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDownloadStatusDialog(
+      BuildContext context,
+      dynamic book,
+      BookViewModel viewModel,
+      LanguageProvider languageProvider, {
+        bool resume = false,
+      }) {
+    bool? isSuccess;
+    String statusMessage = "Sedang mengunduh dan mengekstrak...";
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          // Mulai download jika bukan resume
+          if (!resume && isSuccess == null) {
+            resume = true; // Set ke true agar tidak trigger berulang
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              viewModel.triggerDownloadBook(book.idBuku, book.version, context).then((result) {
+                if (context.mounted) {
+                  setState(() {
+                    isSuccess = result;
+                    statusMessage = result ? "Unduhan Berhasil!" : "Unduhan Gagal. Silakan coba lagi.";
+                  });
+                }
+              });
+            });
+          } else if (resume && isSuccess == null && viewModel.bookStates[book.idBuku] != "DOWNLOADING") {
+            // Kasus jika dialog dibuka saat status sudah bukan downloading (sudah selesai di background)
+            isSuccess = viewModel.bookStates[book.idBuku] == "READY";
+            statusMessage = isSuccess! ? "Unduhan Berhasil!" : "Unduhan Gagal.";
+          }
+
+          return AlertDialog(
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSuccess == null)
+                    const CircularProgressIndicator(color: Color(0xFF4FC3F7))
+                  else
+                    Icon(
+                      isSuccess! ? Icons.check_circle : Icons.error,
+                      color: isSuccess! ? Colors.green : Colors.red,
+                      size: 60,
+                    ),
+                  const SizedBox(height: 20),
+                  Text(
+                    statusMessage,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              if (isSuccess != null)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4FC3F7),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(100, 40),
+                    ),
+                    child: const Text("OKE"),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

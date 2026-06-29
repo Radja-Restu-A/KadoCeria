@@ -10,7 +10,7 @@ import 'package:archive/archive.dart';
 class BookService {
   static BookModelBundle? _cachedBook;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.14:39246/api', // Simpan base URL di sini
+    baseUrl: 'http://192.168.1.5/cms-kadoceria/public/api', // Simpan base URL di sini
     connectTimeout: const Duration(seconds: 10), // Wajib: agar tidak loading selamanya
     receiveTimeout: const Duration(seconds: 10),
   )); // Sesuaikan URL CMS Anda
@@ -33,6 +33,7 @@ class BookService {
   }
   // Mengunduh berkas ZIP dari API 2 dan mengekstraknya secara lokal
   Future<String> downloadAndExtractBookArchive(String bookId) async {
+    debugPrint('[BookService] Starting download for bookId: $bookId');
     try {
       // 1. Dapatkan URL Unduhan S3 dari API 2
       final response = await _dio.get('/get/kontenBuku?id=$bookId');
@@ -40,13 +41,31 @@ class BookService {
         throw Exception('Gagal mendapatkan tautan unduhan konten.');
       }
       String downloadUrl = response.data['downloadUrl'];
+      debugPrint('[BookService] Download URL obtained: $downloadUrl');
+
       // 2. Tentukan jalur direktori internal dokumen aplikasi aman
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String savePath = '${appDocDir.path}/tmp_$bookId.zip';
       String targetExtractionPath = '${appDocDir.path}/books/buku_$bookId';
+
+      debugPrint('[BookService] Save Path: $savePath');
+      debugPrint('[BookService] Extraction Path: $targetExtractionPath');
+
+      // Pastikan folder target tersedia
+      final targetDir = Directory(targetExtractionPath);
+      if (targetDir.existsSync()) {
+        debugPrint('[BookService] Target directory exists, deleting...');
+        targetDir.deleteSync(recursive: true);
+      }
+      targetDir.createSync(recursive: true);
+
       // 3. Proses pengunduhan fisik berkas zip ke penyimpanan
+      debugPrint('[BookService] Downloading ZIP file...');
       await _dio.download(downloadUrl, savePath);
+      debugPrint('[BookService] ZIP Downloaded successfully');
+
       // 4. Ekstraksi berkas zip menggunakan paket archive
+      debugPrint('[BookService] Starting extraction...');
       var bytes = File(savePath).readAsBytesSync();
       var archive = ZipDecoder().decodeBytes(bytes);
       for (var file in archive) {
@@ -56,15 +75,20 @@ class BookService {
           File('$targetExtractionPath/$filename')
             ..createSync(recursive: true)
             ..writeAsBytesSync(data);
+          debugPrint('[BookService] Extracted file: $filename');
         } else {
           Directory('$targetExtractionPath/$filename').createSync(recursive: true);
+          debugPrint('[BookService] Created directory: $filename');
         }
       }
       // 5. Hapus berkas zip sementara setelah sukses diekstrak demi menghemat memori
       final tempZipFile = File(savePath);
       if (tempZipFile.existsSync()) tempZipFile.deleteSync();
-      return targetExtractionPath; // Mengembalikan path lokal absolut folder buku
+      
+      debugPrint('[BookService] Extraction complete. Folder path: $targetExtractionPath');
+      return targetExtractionPath;
     } catch (e) {
+      debugPrint('[BookService] CRITICAL ERROR during download/extract: $e');
       throw Exception('Proses unduhan atau ekstraksi buku gagal: $e');
     }
   }
@@ -210,31 +234,59 @@ class BookService {
   }
 
   static Future<BookModelBundle?> getBook(String bookId) async {
+    debugPrint('[BookService] Attempting to get book data for ID: $bookId');
     if (_cachedBook != null && _cachedBook!.id == bookId) {
+      debugPrint('[BookService] Returning cached book');
       return _cachedBook;
     }
 
     try {
-      final String response = await rootBundle.loadString('assets/books/$bookId/data.json');
-      final Map<String, dynamic> data = json.decode(response);
+      // 1. Coba muat dari Asset (Buku Bawaan)
+      try {
+        final assetPath = 'assets/books/$bookId/data.json';
+        debugPrint('[BookService] Checking assets at: $assetPath');
+        final String response = await rootBundle.loadString(assetPath);
+        final Map<String, dynamic> data = json.decode(response);
+        _cachedBook = BookModelBundle.fromJson(data);
+        debugPrint('[BookService] Successfully loaded from ASSETS');
+        return _cachedBook;
+      } catch (e) {
+        debugPrint('[BookService] Not found in assets or error: $e');
+      }
 
-      _cachedBook = BookModelBundle.fromJson(data);
-      return _cachedBook;
+      // 2. Coba muat dari Penyimpanan Lokal (Buku Unduhan)
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      File localDataFile = File('${appDocDir.path}/books/buku_$bookId/data.json');
+      debugPrint('[BookService] Checking local storage at: ${localDataFile.path}');
+      
+      if (await localDataFile.exists()) {
+        debugPrint('[BookService] Local data file FOUND');
+        final String response = await localDataFile.readAsString();
+        final Map<String, dynamic> data = json.decode(response);
+        
+        // Pastikan isBundled diset ke false untuk buku unduhan
+        Map<String, dynamic> modData = Map.from(data);
+        modData['isBundled'] = false;
+        modData['localDirectoryPath'] = '${appDocDir.path}/books/buku_$bookId';
+        
+        _cachedBook = BookModelBundle.fromJson(modData);
+        debugPrint('[BookService] Successfully loaded from LOCAL STORAGE');
+        return _cachedBook;
+      } else {
+        debugPrint('[BookService] Local data file NOT found');
+      }
+      
+      return null;
     } catch (e) {
-      debugPrint('Error loading book $bookId: $e');
+      debugPrint('[BookService] CRITICAL ERROR loading book $bookId: $e');
       return null;
     }
   }
 
   // Method for load one book by ID (optional)
   static Future<BookModelBundle?> loadBookById(String id) async {
-    try {
-      final List<BookModelBundle> books = await loadBooks();
-      return books.firstWhere((book) => book.id == id);
-    } catch (e) {
-      print('Error loading book with id $id: $e');
-      return null;
-    }
+    // Gunakan getBook yang sudah mendukung pengecekan ganda (asset + local)
+    return await getBook(id);
   }
 
   // Method for load complete metadata (optional)

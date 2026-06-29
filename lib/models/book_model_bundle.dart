@@ -31,27 +31,28 @@ class BookModelBundle {
 
   factory BookModelBundle.fromJson(Map<String, dynamic> json) {
     return BookModelBundle(
-      id: json['id'],
+      id: json['id']?.toString() ?? '',
       titles: {
-        Language.indonesia: json['title_id'],
-        Language.sunda: json['title_su'],
+        Language.indonesia: json['title_id']?.toString() ?? 'No Title',
+        Language.sunda: json['title_su']?.toString() ?? 'No Title',
       },
-      folderName: json['folderName'],
+      folderName: json['folderName']?.toString() ?? '',
       descriptions: {
-        Language.indonesia: json['description_id'],
-        Language.sunda: json['description_su'],
+        Language.indonesia: json['description_id']?.toString() ?? '',
+        Language.sunda: json['description_su']?.toString() ?? '',
       },
-      author: json['author'],
-      illustrator: json['illustrator'],
-      coverImagePath: json['coverImagePath'],
-      pages: (json['pages'] as List)
-          .map((e) => StoryPage.fromJson(e))
-          .toList(),
+      author: json['author']?.toString() ?? 'Unknown',
+      illustrator: json['illustrator']?.toString() ?? 'Unknown',
+      coverImagePath: json['coverImagePath'] ?? '',
+      pages: (json['pages'] as List?)
+              ?.map((e) => StoryPage.fromJson(e))
+              .toList() ??
+          [],
       primaryColor: Color(
-        int.parse(json['primaryColor'].replaceFirst('#', '0xFF')),
+        int.parse((json['primaryColor']?.toString() ?? '#4FC3F7').replaceFirst('#', '0xFF')),
       ),
       secondaryColor: Color(
-        int.parse(json['secondaryColor'].replaceFirst('#', '0xFF')),
+        int.parse((json['secondaryColor']?.toString() ?? '#81D4FA').replaceFirst('#', '0xFF')),
       ),
       isBundled: json['isBundled'] ?? true,
       localDirectoryPath: json['localDirectoryPath'],
