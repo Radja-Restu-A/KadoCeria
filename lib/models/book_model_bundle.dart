@@ -43,16 +43,25 @@ class BookModelBundle {
       },
       author: json['author']?.toString() ?? 'Unknown',
       illustrator: json['illustrator']?.toString() ?? 'Unknown',
-      coverImagePath: json['coverImagePath'] ?? '',
+      // Mengakomodasi format API lama dan baru
+      coverImagePath: json['coverImage']?.toString() ?? json['coverImagePath']?.toString() ?? '',
       pages: (json['pages'] as List?)
-              ?.map((e) => StoryPage.fromJson(e))
-              .toList() ??
+          ?.map((e) => StoryPage.fromJson(e as Map<String, dynamic>))
+          .toList() ??
           [],
       primaryColor: Color(
-        int.parse((json['primaryColor']?.toString() ?? '#4FC3F7').replaceFirst('#', '0xFF')),
+        int.parse((
+            (json['theme']?['primary'])?.toString() ??
+                json['primaryColor']?.toString() ??
+                '#4FC3F7'
+        ).replaceFirst('#', '0xFF')),
       ),
       secondaryColor: Color(
-        int.parse((json['secondaryColor']?.toString() ?? '#81D4FA').replaceFirst('#', '0xFF')),
+        int.parse((
+            (json['theme']?['secondary'])?.toString() ??
+                json['secondaryColor']?.toString() ??
+                '#81D4FA'
+        ).replaceFirst('#', '0xFF')),
       ),
       isBundled: json['isBundled'] ?? true,
       localDirectoryPath: json['localDirectoryPath'],
@@ -101,17 +110,18 @@ class StoryPage {
     List<InteractiveObject> objects = [];
     
     // Handle new format - multiple interactive objects
-    if (json.containsKey('interactiveObjects')) {
+    if (json['interactiveObjects'] != null) {
       objects = (json['interactiveObjects'] as List)
-          .map((e) => InteractiveObject.fromJson(e))
+          .map((e) => InteractiveObject.fromJson(e as Map<String, dynamic>))
           .toList();
     }
 
     return StoryPage(
-      image: json['image'],
-      backsound: json['backsound'],
-      narationId: json['narationId'],
-      narationSd: json['narationSd'],
+      // Paksa konversi ke String secara aman
+      image: json['image']?.toString(),
+      backsound: json['backsound']?.toString(),
+      narationId: json['narationId']?.toString(),
+      narationSd: json['narationSd']?.toString(),
       widthImage: json['widthImage'] != null ? (json['widthImage'] as num).toDouble() : null,
       heightImage: json['heightImage'] != null ? (json['heightImage'] as num).toDouble() : null,
       interactiveObjects: objects,
@@ -146,8 +156,8 @@ class InteractiveObject {
 
   factory InteractiveObject.fromJson(Map<String, dynamic> json) {
     return InteractiveObject(
-      audioObjectId: json['audioObjectId'],
-      audioObjectSd: json['audioObjectSd'],
+      audioObjectId: json['audioObjectId']?.toString(),
+      audioObjectSd: json['audioObjectSd']?.toString(),
       x: json['x'] != null ? (json['x'] as num).toDouble() : null,
       y: json['y'] != null ? (json['y'] as num).toDouble() : null,
       width: json['width'] != null ? (json['width'] as num).toDouble() : null,
@@ -253,18 +263,21 @@ class BookSummaryModel {
   });
   factory BookSummaryModel.fromJson(Map<String, dynamic> json) {
     return BookSummaryModel(
-      idBuku: json['id_buku'] ?? '',
-      judulBukuIndonesia: json['judulBukuIndonesia'] ?? '',
-      judulBukuSunda: json['judulBukuSunda'] ?? '',
-      penulis: json['penulis'] ?? '',
-      illustrator: json['illustrator'] ?? '',
-      coverImagePath: json['coverImagePath'] ?? '',
-      descriptionsIndonesia: json['descriptionsIndonesia'] ?? '',
-      descriptionsSunda: json['descriptionsSunda'] ?? '',
-      primaryColor: json['primaryColor'] ?? '#FFFFFF',
-      secondaryColor: json['secondaryColor'] ?? '#FFFFFF',
-      version: json['version'] ?? 1,
-      fileSize: json['fileSize'] ?? '0 MB',
+      // Tambahkan pelindung ?.toString() di setiap variabel bertipe String
+      idBuku: json['id_buku']?.toString() ?? json['id']?.toString() ?? '',
+      judulBukuIndonesia: json['judulBukuIndonesia']?.toString() ?? '',
+      judulBukuSunda: json['judulBukuSunda']?.toString() ?? '',
+      penulis: json['penulis']?.toString() ?? '',
+      illustrator: json['illustrator']?.toString() ?? '',
+      // Antisipasi perubahan key gambar sampul dari CMS
+      coverImagePath: json['coverImage']?.toString() ?? json['coverImagePath']?.toString() ?? '',
+      descriptionsIndonesia: json['descriptionsIndonesia']?.toString() ?? '',
+      descriptionsSunda: json['descriptionsSunda']?.toString() ?? '',
+      primaryColor: json['primaryColor']?.toString() ?? '#FFFFFF',
+      secondaryColor: json['secondaryColor']?.toString() ?? '#FFFFFF',
+      // Parsing angka yang aman
+      version: int.tryParse(json['version']?.toString() ?? '1') ?? 1,
+      fileSize: json['fileSize']?.toString() ?? '0 MB',
     );
   }
 }

@@ -182,8 +182,8 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           onTap: _closeLanguageDropdown,
           child: Consumer<FlipbookViewModel>(
             builder: (context, viewModel, child) {
-              // Show loading while story is loading or layout is being calculated
-              if (!viewModel.isReadyForDisplay) {
+              // 1. Cek apakah masih dalam proses memuat
+              if (viewModel.isLoading) {
                 return Container(
                   color: widget.bookPrimaryColor,
                   child: const Center(
@@ -192,18 +192,33 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 );
               }
 
+              // 2. Cek apakah ada error dari latar belakang
+              if (viewModel.error != null) {
+                return Container(
+                  color: widget.bookPrimaryColor,
+                  child: Center(
+                    child: Text(
+                      viewModel.error!,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              }
+
+              // 3. Cek apakah data buku gagal dimuat
               if (viewModel.story == null) {
                 return Container(
                   color: widget.bookPrimaryColor,
                   child: const Center(
                     child: Text(
-                      'No story loaded',
+                      'Gagal memuat buku. Data korup atau tidak ditemukan.',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                 );
               }
 
+              // 4. Jika siap, render UI buku
               return Container(
                 color: widget.bookPrimaryColor,
                 child: SafeArea(

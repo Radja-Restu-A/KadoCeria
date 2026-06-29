@@ -222,7 +222,7 @@ class DashboardScreen extends StatelessWidget {
         } else if (bookState == "NOT_DOWNLOADED") {
           _showDownloadValidation(context, book, viewModel, languageProvider);
         } else if (bookState == "DOWNLOADING") {
-          _showDownloadStatusDialog(context, book, viewModel, languageProvider, resume: true);
+          _showDownloadStatusDialog(context, book, viewModel, languageProvider);
         }
       },
     );
@@ -262,6 +262,7 @@ class DashboardScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
+              viewModel.triggerDownloadBook(book.idBuku, book.version, context);
               _showDownloadStatusDialog(context, book, viewModel, languageProvider);
             },
             style: ElevatedButton.styleFrom(
@@ -279,76 +280,72 @@ class DashboardScreen extends StatelessWidget {
       BuildContext context,
       dynamic book,
       BookViewModel viewModel,
-      LanguageProvider languageProvider, {
-        bool resume = false,
-      }) {
-    bool? isSuccess;
-    String statusMessage = "Sedang mengunduh dan mengekstrak...";
-
+      LanguageProvider languageProvider,
+      ) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          // Mulai download jika bukan resume
-          if (!resume && isSuccess == null) {
-            resume = true; // Set ke true agar tidak trigger berulang
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              viewModel.triggerDownloadBook(book.idBuku, book.version, context).then((result) {
-                if (context.mounted) {
-                  setState(() {
-                    isSuccess = result;
-                    statusMessage = result ? "Unduhan Berhasil!" : "Unduhan Gagal. Silakan coba lagi.";
-                  });
-                }
-              });
-            });
-          } else if (resume && isSuccess == null && viewModel.bookStates[book.idBuku] != "DOWNLOADING") {
-            // Kasus jika dialog dibuka saat status sudah bukan downloading (sudah selesai di background)
-            isSuccess = viewModel.bookStates[book.idBuku] == "READY";
-            statusMessage = isSuccess! ? "Unduhan Berhasil!" : "Unduhan Gagal.";
-          }
+      builder: (context) {
+        // Menggunakan Consumer untuk memantau perubahan status di BookViewModel
+        return Consumer<BookViewModel>(
+          builder: (context, provider, child) {
+            // Ambil status unduhan saat ini dari provider
+            final String currentState = provider.bookStates[book.idBuku] ?? "NOT_DOWNLOADED";
 
-          return AlertDialog(
-            content: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isSuccess == null)
-                    const CircularProgressIndicator(color: Color(0xFF4FC3F7))
-                  else
-                    Icon(
-                      isSuccess! ? Icons.check_circle : Icons.error,
-                      color: isSuccess! ? Colors.green : Colors.red,
-                      size: 60,
+            Widget iconWidget;
+            String statusMessage;
+            bool showOkButton = false;
+
+            // Tentukan tampilan berdasarkan state dari BookViewModel
+            if (currentState == "DOWNLOADING") {
+              iconWidget = const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4FC3F7)),
+              );
+              statusMessage = "Sedang mengunduh dan mengekstrak...";
+            } else if (currentState == "READY") {
+              iconWidget = const Icon(Icons.check_circle, color: Colors.green, size: 60);
+              statusMessage = "Unduhan Berhasil!";
+              showOkButton = true;
+            } else {
+              iconWidget = const Icon(Icons.error, color: Colors.red, size: 60);
+              statusMessage = "Unduhan Gagal. Silakan coba lagi.";
+              showOkButton = true;
+            }
+
+            return AlertDialog(
+              content: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    iconWidget,
+                    const SizedBox(height: 20),
+                    Text(
+                      statusMessage,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
-                  const SizedBox(height: 20),
-                  Text(
-                    statusMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              if (isSuccess != null)
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4FC3F7),
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(100, 40),
-                    ),
-                    child: const Text("OKE"),
-                  ),
+                  ],
                 ),
-            ],
-          );
-        },
-      ),
+              ),
+              actions: [
+                if (showOkButton)
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4FC3F7),
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(100, 40),
+                      ),
+                      child: const Text("OKE"),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
