@@ -2,67 +2,42 @@ import 'package:just_audio/just_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'dart:async';
 
 class AudioService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final AudioPlayer _audioBacksound = AudioPlayer();
 
-  // Subscriptions management to prevent memory leaks and audio distortion
-  StreamSubscription<PlayerState>? _playerStateSubscription;
-  StreamSubscription<Duration>? _positionSubscription;
-
   AudioPlayer get audioPlayer => _audioPlayer;
   AudioPlayer get audioBacksound => _audioBacksound;
 
-  AudioService() {
-    _initListeners();
-  }
-
-  void _initListeners() {
-    // Shared listeners can be added here if needed
-  }
-
-  void _clearSubscriptions() {
-    _playerStateSubscription?.cancel();
-    _playerStateSubscription = null;
-    _positionSubscription?.cancel();
-    _positionSubscription = null;
-  }
+  String? _currentBacksoundPath;
+  String? _currentAudioPath;
 
   //Backsound
-  Future<void> playAudioLoop(String audioPath, {required bool isBundled}) async {
-    try {
-      debugPrint('[AudioService] PlayBacksound Start: $audioPath');
-      debugPrint('[AudioService] Current Backsound Speed: ${_audioBacksound.speed}');
-      
-      await _audioBacksound.stop();
-      // Reset speed dan pitch ke normal untuk mencegah percepatan audio
-      await _audioBacksound.setSpeed(1.0);
-      await _audioBacksound.setPitch(1.0);
+  Future<void> playAudioLoop(String audioPath, {bool isBundled = true}) async {
+    if (_currentBacksoundPath == audioPath && _audioBacksound.playing) {
+      debugPrint('Backsound already playing: $audioPath');
+      return;
+    }
 
-      if (isBundled) {
-        if (await _assetExists(audioPath)) {
+    try {
+      if (await _audioExists(audioPath, isBundled)) {
+        debugPrint('Stopping previous backsound...');
+        await _audioBacksound.stop();
+        
+        _currentBacksoundPath = audioPath;
+        if (isBundled) {
           await _audioBacksound.setAsset(audioPath);
         } else {
-          throw Exception('Backsound asset not found: $audioPath');
-        }
-      } else {
-        if (File(audioPath).existsSync()) {
           await _audioBacksound.setFilePath(audioPath);
-        } else {
-          throw Exception('Local backsound file not found: $audioPath');
         }
+        await _audioBacksound.setLoopMode(LoopMode.one);
+        await _audioBacksound.setVolume(0.7);
+        await _audioBacksound.play();
       }
-
-      await _audioBacksound.setLoopMode(LoopMode.one);
-      await _audioBacksound.setVolume(0.7);
-      
-      debugPrint('[AudioService] Waiting for Backsound to be ready...');
-      await _audioBacksound.play();
-      debugPrint('[AudioService] Backsound is playing');
     } catch (e) {
-      debugPrint('[AudioService] Error playing loop audio: $e');
+      debugPrint('Error playing loop audio: $e');
+      _currentBacksoundPath = null;
       rethrow;
     }
   }
@@ -70,120 +45,123 @@ class AudioService {
   Future<void> stopBacksoundAudio() async {
     try {
       await _audioBacksound.stop();
-      debugPrint('[AudioService] Success Stopping Backsound');
+      _currentBacksoundPath = null;
+      debugPrint('Success Stopping Audio');
     } catch (e) {
       debugPrint('Error stopping backsound: $e');
     }
   }
 
-  Future<void> playAudio(String path, {required bool isBundled}) async {
+  Future<void> playAudio(String path, {bool isBundled = true}) async {
+    if (_currentAudioPath == path && _audioPlayer.playing) {
+      debugPrint('Audio already playing: $path');
+      return;
+    }
+
     try {
-      debugPrint('[AudioService] PlayNarration Start: $path');
-      debugPrint('[AudioService] Current Narration Speed: ${_audioPlayer.speed}');
+      debugPrint('Attempting to play audio from path: $path (isBundled: $isBundled)');
       
-      // Stop and clear current subscriptions before playing new one
-      await stopAudio();
-      _clearSubscriptions();
+      // Ensure we stop and reset before playing new audio
+      await _audioPlayer.stop();
 
-      // Reset speed dan pitch ke normal
-      await _audioPlayer.setSpeed(1.0);
-      await _audioPlayer.setPitch(1.0);
-
-      // Turunkan volume backsound saat narasi berbicara
       await _audioBacksound.setVolume(0.2);
 
-      bool canPlay = false;
-
-      if (isBundled) {
-        if (await _assetExists(path)) {
-          canPlay = true;
-          debugPrint('[AudioService] Loading asset...');
+      // Check if audio exists before trying to load it
+      if (await _audioExists(path, isBundled)) {
+        debugPrint('Audio source found, setting up player...');
+        _currentAudioPath = path;
+        
+        if (isBundled) {
           await _audioPlayer.setAsset(path);
-        }
-      } else {
-        if (File(path).existsSync()) {
-          canPlay = true;
-          debugPrint('[AudioService] Loading file...');
+        } else {
           await _audioPlayer.setFilePath(path);
         }
-      }
 
-      if (canPlay) {
-        // Managed listeners for debugging (prevents leak)
-        _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
-          debugPrint('[AudioService] Player State: ${state.processingState}, playing: ${state.playing}');
-          if (state.processingState == ProcessingState.completed) {
-            debugPrint('[AudioService] Narration completed');
-          }
-        });
-
-        _positionSubscription = _audioPlayer.positionStream.listen((position) {
-          // Log periodically
-          if (position.inMilliseconds % 2000 < 100) {
-             debugPrint('[AudioService] Position: ${position.inSeconds}s');
-          }
-        });
-
-        debugPrint('[AudioService] Starting playback...');
+        debugPrint('Starting audio playback...');
         await _audioPlayer.play();
-        debugPrint('[AudioService] Playback started');
+        debugPrint('Audio playback started successfully');
         
+        // Restore volume after playback finishes or if it's not sequential
+        // Note: For sequential, playSequentialAudio handles volume restoration
       } else {
-        throw Exception('Audio file not found: $path');
+        debugPrint('Error: Audio source not found at path: $path');
+        throw Exception('Audio source not found: $path');
       }
     } catch (e, stackTrace) {
-      debugPrint('[AudioService] ERROR playing narration: $e');
+      debugPrint('Error playing audio: $e');
+      debugPrint('Stack trace: $stackTrace');
+      _currentAudioPath = null;
       await _audioBacksound.setVolume(0.7);
       rethrow;
     }
   }
 
   Future<void> playSequentialAudio(List<String> paths, {bool isBundled = true}) async {
-    debugPrint('[AudioService] Sequential playback started for ${paths.length} files');
+    debugPrint('Starting sequential audio playback for ${paths.length} files (isBundled: $isBundled)');
 
+    await _audioBacksound.setVolume(0.2);
     try {
       for (String path in paths) {
-        await playAudio(path, isBundled: isBundled);
-        
-        // Wait for completion specifically for sequential
-        await _audioPlayer.playerStateStream
-            .where((state) => state.processingState == ProcessingState.completed)
-            .first;
-            
-        await Future.delayed(const Duration(milliseconds: 200));
+        try {
+          debugPrint('Playing sequential audio: $path');
+          await playAudio(path, isBundled: isBundled);
+
+          debugPrint('Waiting for current audio to complete...');
+          await _audioPlayer.playerStateStream
+              .where((state) =>
+          state.processingState == ProcessingState.completed)
+              .first;
+          debugPrint('Audio completed, moving to next file');
+        } catch (e) {
+          debugPrint('Error in sequential audio playback: $e');
+          continue;
+        }
       }
-    } finally {
+    }finally{
       await _audioBacksound.setVolume(0.7);
-      debugPrint('[AudioService] Sequential playback finished');
     }
+    debugPrint('Sequential audio playback completed');
   }
 
-  Future<bool> _assetExists(String path) async {
-    try {
-      await rootBundle.load(path);
-      return true;
-    } catch (e) {
-      debugPrint('[AudioService] Asset NOT found: $path');
-      return false;
+  Future<bool> _audioExists(String path, bool isBundled) async {
+    if (isBundled) {
+      try {
+        await rootBundle.load(path);
+        debugPrint('Asset verification successful: $path');
+        return true;
+      } catch (e) {
+        debugPrint('Asset verification failed: $path');
+        return false;
+      }
+    } else {
+      final file = File(path);
+      final exists = await file.exists();
+      if (exists) {
+        debugPrint('File verification successful: $path');
+      } else {
+        debugPrint('File verification failed: $path');
+      }
+      return exists;
     }
   }
 
   Future<void> stopAudio() async {
     try {
-      if (_audioPlayer.playing) {
-        await _audioPlayer.stop();
-      }
-      // Reset volume in case it was lowered
+      debugPrint('Stopping audio playback...');
+      await _audioPlayer.stop();
+      _currentAudioPath = null;
+      debugPrint('Audio playback stopped successfully');
       await _audioBacksound.setVolume(0.7);
-      _clearSubscriptions();
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('Error stopping audio: $e');
+      debugPrint('Stack trace: $stackTrace');
     }
   }
 
   Future<void> stopBacksound() async {
     try{
       await _audioBacksound.stop();
+      _currentBacksoundPath = null;
     } catch (e, stackTrace) {
       debugPrint('Error stopping backsound: $e');
       debugPrint('Stack trace: $stackTrace');
@@ -194,6 +172,7 @@ class AudioService {
     try {
       debugPrint('Pausing audio playback...');
       await _audioPlayer.pause();
+      debugPrint('Audio playback paused successfully');
     } catch (e, stackTrace) {
       debugPrint('Error pausing audio: $e');
       debugPrint('Stack trace: $stackTrace');
@@ -204,6 +183,7 @@ class AudioService {
     try {
       debugPrint('Resuming audio playback...');
       await _audioPlayer.play();
+      debugPrint('Audio playback resumed successfully');
     } catch (e, stackTrace) {
       debugPrint('Error resuming audio: $e');
       debugPrint('Stack trace: $stackTrace');
@@ -216,7 +196,6 @@ class AudioService {
 
   void dispose() {
     debugPrint('Disposing audio player...');
-    _clearSubscriptions();
     _audioPlayer.dispose();
     debugPrint('Audio player disposed successfully');
     debugPrint('Disposing backsound player...');
