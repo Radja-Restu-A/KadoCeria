@@ -1,23 +1,22 @@
-# Walkthrough - Perbaikan Masalah Loading Selamanya
+# Walkthrough - Perbaikan Masalah Akses Buku Bundled dan Loading
 
-Saya telah memperbaiki masalah di mana buku hasil unduhan terjebak pada layar loading. Masalah ini disebabkan oleh kesalahan dalam mencari file gambar dan audio yang seharusnya diambil dari penyimpanan HP, tetapi aplikasi justru mencarinya di dalam folder internal aplikasi (Assets).
+Saya telah memperbaiki dua masalah utama: kegagalan membuka buku bawaan (Janiti/Sakeclak) dan masalah *loading* selamanya pada buku unduhan.
 
 ## Perbaikan yang Dilakukan
 
-### 1. Resolusi File yang Dinamis
-- **`FlipbookViewModel`**: Sekarang memiliki logika cerdas untuk membedakan lokasi file.
-    - Jika buku adalah **bawaan (Bundled)**, aplikasi menggunakan `AssetImage`.
-    - Jika buku adalah **hasil unduhan**, aplikasi menggunakan `FileImage` dengan jalur (*path*) absolut ke penyimpanan internal HP.
-- Hal ini memastikan proses perhitungan ukuran halaman (*aspect ratio*) selesai dengan sukses dan layar loading segera hilang.
+### 1. Perbaikan Akses Buku Bundled (Janiti & Sakeclak)
+- **Masalah**: Buku ID 1 dan 2 tidak memiliki file `data.json` sendiri karena datanya terpusat di `metadata.json`. Perubahan sebelumnya memaksa aplikasi mencari file yang tidak ada tersebut.
+- **Solusi**: Memperbarui `BookService.getBook` untuk menangani ID 1 dan 2 secara khusus dengan mengambil data langsung dari `metadata.json`. Sekarang buku bawaan kembali bisa dibuka dengan normal.
 
-### 2. Jalur Audio Absolut
-- Memperbarui fungsi pemutar audio (Narasi, Backsound, dan Objek) agar menggunakan `_resolvePath`. Sekarang, audio untuk buku unduhan akan diarahkan ke folder ekstraksi yang tepat di `/documents/books/buku_id/...`.
+### 2. Resolusi File Dinamis (Buku Unduhan)
+- **Masalah**: Aplikasi mencari gambar/suara buku unduhan di dalam folder internal aplikasi (*Assets*), bukan di penyimpanan HP.
+- **Solusi**: `FlipbookViewModel` kini menggunakan `FileImage` dan jalur file absolut untuk buku unduhan, sehingga perhitungan ukuran halaman selesai dan layar *loading* hilang.
 
 ### 3. Pembersihan Folder Ekstraksi
-- **`BookService`**: Menambahkan logika untuk membersihkan (menghapus) folder buku lama sebelum melakukan ekstraksi baru. Ini mencegah terjadinya konflik file atau sisa data dari unduhan sebelumnya yang gagal.
+- Menambahkan logika di `BookService` untuk menghapus data lama sebelum mengekstrak buku baru, menjamin integritas data unduhan.
 
 ## Hasil Verifikasi
 
-- **Logika Lokasi File**: Kode telah diperiksa untuk memastikan tidak ada lagi penggunaan `AssetImage` yang dipaksakan pada file unduhan.
-- **Integritas Folder**: Fungsi ekstraksi sekarang menjamin folder tujuan bersih dan siap diisi data baru.
-- **Analisis Statis**: Tidak ditemukan error sintaksis pada file yang dimodifikasi.
+- **Buku Bundled**: ID 1 dan 2 terbukti mengarah ke `metadata.json` yang benar.
+- **Buku Unduhan**: Proses *loading* kini singkat dan konten (gambar/audio) muncul dari penyimpanan internal HP.
+- **Analisis Statis**: Kode telah diverifikasi dan bebas dari error sintaksis yang menghalangi build.

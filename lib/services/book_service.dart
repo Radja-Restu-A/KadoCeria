@@ -10,7 +10,7 @@ import 'package:archive/archive.dart';
 class BookService {
   static BookModelBundle? _cachedBook;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.5/cms-kadoceria/public/api', // Simpan base URL di sini
+    baseUrl: 'http://192.168.1.13/cms-kadoceria/public/api', // Simpan base URL di sini
     connectTimeout: const Duration(seconds: 10), // Wajib: agar tidak loading selamanya
     receiveTimeout: const Duration(seconds: 10),
   )); // Sesuaikan URL CMS Anda
@@ -241,7 +241,20 @@ class BookService {
     }
 
     try {
-      // 1. Coba muat dari Asset (Buku Bawaan)
+      // 1. Khusus untuk buku bawaan (ID 1 dan 2), muat dari metadata.json
+      if (bookId == "1" || bookId == "2") {
+        debugPrint('[BookService] Loading BUNDLED book $bookId from metadata.json');
+        final List<BookModelBundle> bundledBooks = await loadBooks();
+        try {
+          _cachedBook = bundledBooks.firstWhere((b) => b.id == bookId);
+          debugPrint('[BookService] Successfully loaded from BUNDLED metadata');
+          return _cachedBook;
+        } catch (e) {
+          debugPrint('[BookService] Book ID $bookId not found in metadata.json');
+        }
+      }
+
+      // 2. Coba muat dari Asset (Jika ada file data.json spesifik)
       try {
         final assetPath = 'assets/books/$bookId/data.json';
         debugPrint('[BookService] Checking assets at: $assetPath');
@@ -254,7 +267,7 @@ class BookService {
         debugPrint('[BookService] Not found in assets or error: $e');
       }
 
-      // 2. Coba muat dari Penyimpanan Lokal (Buku Unduhan)
+      // 3. Coba muat dari Penyimpanan Lokal (Buku Unduhan)
       Directory appDocDir = await getApplicationDocumentsDirectory();
       File localDataFile = File('${appDocDir.path}/books/buku_$bookId/data.json');
       debugPrint('[BookService] Checking local storage at: ${localDataFile.path}');
