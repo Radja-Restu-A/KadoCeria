@@ -63,15 +63,20 @@ class FlipbookFooter extends StatelessWidget {
         builder: (context, flipbookViewModel, languageProvider, child) {
           final bool isPlaying = viewModel.isPlayingFullBook;
           final bool playingOnePage = viewModel.isPlayingPageAudio;
+          
+          final VoidCallback? onPressed = (isFlipping || playingOnePage) 
+              ? null 
+              : (isPlaying
+                  ? () => viewModel.stopFullBookAudio()
+                  : () => viewModel.playFullBookAudio(bookId));
+
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: (isFlipping) ? null : (isPlaying
-                  ? () => viewModel.stopFullBookAudio()
-                  : () => viewModel.playFullBookAudio(bookId)),
+              onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlaying || playingOnePage || isFlipping
+                backgroundColor: onPressed == null
                     ? Colors.grey.withValues(alpha: 0.5)
                     : bookSecondaryColor,
                 foregroundColor: const Color(0xFF4FC3F7),
@@ -83,7 +88,7 @@ class FlipbookFooter extends StatelessWidget {
               child: Text(
                 isPlaying
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : (playingOnePage ? "" : TeksProvider.getString('fullbook', languageProvider.selectedLanguage)),
+                    : TeksProvider.getString('fullbook', languageProvider.selectedLanguage),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
@@ -146,16 +151,20 @@ class FlipbookFooter extends StatelessWidget {
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
           final bool isPlayingFullBook = viewModel.isPlayingFullBook;
+          
+          final VoidCallback? onPressed = (isFlipping || isPlayingFullBook)
+              ? null
+              : (isPlayingPageAudio
+                  ? () => viewModel.stopAudio()
+                  : () => viewModel.playPageAudio(bookId));
+
           return SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ElevatedButton(
-              onPressed: (isFlipping) ? null : // ADD FLIPPING CHECK
-              (isPlayingPageAudio
-                  ? () => viewModel.stopAudio()
-                  : () => viewModel.playPageAudio(bookId)),
+              onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPlayingPageAudio || isPlayingFullBook || isFlipping
+                backgroundColor: onPressed == null
                     ? Colors.grey.withValues(alpha: 0.5)
                     : bookSecondaryColor,
                 foregroundColor: const Color(0xFF4FC3F7),
@@ -167,7 +176,7 @@ class FlipbookFooter extends StatelessWidget {
               child: Text(
                 isPlayingPageAudio
                     ? TeksProvider.getString('stop', languageProvider.selectedLanguage)
-                    : (isPlayingFullBook ? "" : TeksProvider.getString('onepage', languageProvider.selectedLanguage)),
+                    : TeksProvider.getString('onepage', languageProvider.selectedLanguage),
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

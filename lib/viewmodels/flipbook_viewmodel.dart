@@ -408,6 +408,7 @@ class FlipbookViewModel extends ChangeNotifier {
 
       if (audioPaths.isEmpty) {
         debugPrint('No narration audio found for page ${_currentPage + 1}');
+        _setPlayingPageAudio(false);
         return;
       }
 

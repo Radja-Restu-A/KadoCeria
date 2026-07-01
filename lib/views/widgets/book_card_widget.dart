@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:kado_ceria/provider/teks_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -116,7 +117,9 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                             image: (widget.book.coverImagePath.startsWith('http://') ||
                                                                 widget.book.coverImagePath.startsWith('https://'))
                                                                 ? NetworkImage(widget.book.coverImagePath) as ImageProvider
-                                                                : AssetImage(widget.book.coverImagePath),
+                                                                : (widget.book.coverImagePath.startsWith('/') || (widget.book.coverImagePath.length > 1 && widget.book.coverImagePath[1] == ':'))
+                                                                    ? FileImage(File(widget.book.coverImagePath)) as ImageProvider
+                                                                    : AssetImage(widget.book.coverImagePath),
                                                             fit: BoxFit.cover,
                                                             // Opsional: Tambahkan onError agar tidak crash jika link S3 mati/file lokal hilang
                                                             onError: (exception, stackTrace) {
@@ -171,7 +174,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                 SizedBox(
                                   height: 50,
                                   child: AutoSizeText(
-                                    languageProvider.selectedLanguage == 'id'
+                                    languageProvider.selectedLanguage == Language.indonesia
                                         ? widget.book.judulBukuIndonesia
                                         : widget.book.judulBukuSunda,
                                     maxLines: 2,
@@ -200,7 +203,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                         showDialog(
                                           context: context,
                                           builder: (context) => BookDescriptionModalWidget(
-                                            description: languageProvider.selectedLanguage == 'id'
+                                            description: languageProvider.selectedLanguage == Language.indonesia
                                                 ? widget.book.descriptionsIndonesia
                                                 : widget.book.descriptionsSunda,
                                             backgroundColor: primaryColor,
@@ -212,7 +215,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8),
                                         child: AutoSizeText(
-                                          languageProvider.selectedLanguage == 'id'
+                                          languageProvider.selectedLanguage == Language.indonesia
                                               ? widget.book.descriptionsIndonesia
                                               : widget.book.descriptionsSunda,
                                           textAlign: TextAlign.justify,

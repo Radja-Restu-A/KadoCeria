@@ -31,6 +31,55 @@ class BookService {
       throw Exception('Gagal memuat katalog buku dari server: $e');
     }
   }
+
+  /// Scans local storage for downloaded books and reconstructs their summary metadata.
+  Future<List<BookSummaryModel>> fetchDownloadedBooksMetadata() async {
+    List<BookSummaryModel> downloadedBooks = [];
+    try {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      Directory booksDir = Directory('${appDocDir.path}/books');
+
+      if (!await booksDir.exists()) {
+        return [];
+      }
+
+      List<FileSystemEntity> entities = await booksDir.list().toList();
+      for (var entity in entities) {
+        if (entity is Directory) {
+          File dataFile = File('${entity.path}/data.json');
+          if (await dataFile.exists()) {
+            try {
+              String content = await dataFile.readAsString();
+              Map<String, dynamic> data = json.decode(content);
+              
+              // Map data.json fields to BookSummaryModel fields
+              // Based on BookModelBundle.fromJson and BookSummaryModel.fromJson
+              downloadedBooks.add(BookSummaryModel(
+                idBuku: data['id']?.toString() ?? '',
+                judulBukuIndonesia: data['title_id']?.toString() ?? '',
+                judulBukuSunda: data['title_su']?.toString() ?? '',
+                penulis: data['author']?.toString() ?? '',
+                illustrator: data['illustrator']?.toString() ?? '',
+                // The coverImagePath in data.json is usually relative to the book folder
+                coverImagePath: '${entity.path}/${data['coverImagePath'] ?? data['coverImage'] ?? ''}',
+                descriptionsIndonesia: data['description_id']?.toString() ?? '',
+                descriptionsSunda: data['description_su']?.toString() ?? '',
+                primaryColor: (data['theme']?['primary'])?.toString() ?? data['primaryColor']?.toString() ?? '#4FC3F7',
+                secondaryColor: (data['theme']?['secondary'])?.toString() ?? data['secondaryColor']?.toString() ?? '#81D4FA',
+                version: int.tryParse(data['version']?.toString() ?? '1') ?? 1,
+                fileSize: 'Downloaded',
+              ));
+            } catch (e) {
+              debugPrint('Error parsing data.json in ${entity.path}: $e');
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching downloaded books metadata: $e');
+    }
+    return downloadedBooks;
+  }
   // Mengunduh berkas ZIP dari API 2 dan mengekstraknya secara lokal
   Future<String> downloadAndExtractBookArchive(String bookId) async {
     debugPrint('[BookService] Starting download for bookId: $bookId');

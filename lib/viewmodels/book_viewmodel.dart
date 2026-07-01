@@ -36,7 +36,17 @@ class BookViewModel extends ChangeNotifier {
       _books = List.from(localBooks);
       debugPrint('[BookViewModel] Local books loaded: ${_books.length}');
 
-      // Render layar secepat mungkin dengan data lokal (Dongeng Janiti & Sakeclak)
+      // 1b. Muat buku yang sudah diunduh dari local storage
+      debugPrint('[BookViewModel] Fetching downloaded books from storage...');
+      List<BookSummaryModel> downloadedBooks = await _bookService.fetchDownloadedBooksMetadata();
+      for (var downloadedBook in downloadedBooks) {
+        if (!_books.any((b) => b.idBuku == downloadedBook.idBuku)) {
+          _books.add(downloadedBook);
+        }
+      }
+      debugPrint('[BookViewModel] Total books after including downloaded: ${_books.length}');
+
+      // Render layar secepat mungkin dengan data lokal (Dongeng Janiti & Sakeclak + Downloaded)
       notifyListeners();
 
       // 2. NETWORK SYNC: Coba sinkronisasi dengan data API CMS
