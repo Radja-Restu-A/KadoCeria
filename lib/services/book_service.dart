@@ -10,11 +10,10 @@ import 'package:archive/archive.dart';
 class BookService {
   static BookModelBundle? _cachedBook;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.13/cms-kadoceria/public/api', // Simpan base URL di sini
-    connectTimeout: const Duration(seconds: 10), // Wajib: agar tidak loading selamanya
+    baseUrl: 'http://192.168.1.13/cms-kadoceria/public/api',
+    connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
-  )); // Sesuaikan URL CMS Anda
-  // Mengambil katalog dari API 1
+  ));
   Future<List<BookSummaryModel>> fetchNetworkBookCatalog() async {
     try {
       final response = await _dio.get('/get/dataInformasiBuku');
@@ -24,7 +23,6 @@ class BookService {
       }
       return [];
     } on DioException catch (e) {
-      // 3. Tangkap error Dio secara spesifik untuk mempermudah debugging
       debugPrint('Dio Error: ${e.message}');
       throw Exception('Gagal memuat katalog: ${e.response?.statusCode ?? e.type}');
     } catch (e) {
@@ -32,7 +30,6 @@ class BookService {
     }
   }
 
-  /// Scans local storage for downloaded books and reconstructs their summary metadata.
   Future<List<BookSummaryModel>> fetchDownloadedBooksMetadata() async {
     List<BookSummaryModel> downloadedBooks = [];
     try {
@@ -51,16 +48,12 @@ class BookService {
             try {
               String content = await dataFile.readAsString();
               Map<String, dynamic> data = json.decode(content);
-              
-              // Map data.json fields to BookSummaryModel fields
-              // Based on BookModelBundle.fromJson and BookSummaryModel.fromJson
               downloadedBooks.add(BookSummaryModel(
                 idBuku: data['id']?.toString() ?? '',
                 judulBukuIndonesia: data['title_id']?.toString() ?? '',
                 judulBukuSunda: data['title_su']?.toString() ?? '',
                 penulis: data['author']?.toString() ?? '',
                 illustrator: data['illustrator']?.toString() ?? '',
-                // The coverImagePath in data.json is usually relative to the book folder
                 coverImagePath: '${entity.path}/${data['coverImagePath'] ?? data['coverImage'] ?? ''}',
                 descriptionsIndonesia: data['description_id']?.toString() ?? '',
                 descriptionsSunda: data['description_su']?.toString() ?? '',
@@ -80,11 +73,9 @@ class BookService {
     }
     return downloadedBooks;
   }
-  // Mengunduh berkas ZIP dari API 2 dan mengekstraknya secara lokal
   Future<String> downloadAndExtractBookArchive(String bookId) async {
     debugPrint('[BookService] Starting download for bookId: $bookId');
     try {
-      // 1. Dapatkan URL Unduhan S3 dari API 2
       final response = await _dio.get('/get/kontenBuku?id=$bookId');
       if (response.statusCode != 200 || response.data == null) {
         throw Exception('Gagal mendapatkan tautan unduhan konten.');
@@ -92,7 +83,6 @@ class BookService {
       String downloadUrl = response.data['downloadUrl'];
       debugPrint('[BookService] Download URL obtained: $downloadUrl');
 
-      // 2. Tentukan jalur direktori internal dokumen aplikasi aman
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String savePath = '${appDocDir.path}/tmp_$bookId.zip';
       String targetExtractionPath = '${appDocDir.path}/books/buku_$bookId';
@@ -100,7 +90,6 @@ class BookService {
       debugPrint('[BookService] Save Path: $savePath');
       debugPrint('[BookService] Extraction Path: $targetExtractionPath');
 
-      // Pastikan folder target tersedia
       final targetDir = Directory(targetExtractionPath);
       if (targetDir.existsSync()) {
         debugPrint('[BookService] Target directory exists, deleting...');
@@ -108,12 +97,10 @@ class BookService {
       }
       targetDir.createSync(recursive: true);
 
-      // 3. Proses pengunduhan fisik berkas zip ke penyimpanan
       debugPrint('[BookService] Downloading ZIP file...');
       await _dio.download(downloadUrl, savePath);
       debugPrint('[BookService] ZIP Downloaded successfully');
 
-      // 4. Ekstraksi berkas zip menggunakan paket archive
       debugPrint('[BookService] Starting extraction...');
       var bytes = File(savePath).readAsBytesSync();
       var archive = ZipDecoder().decodeBytes(bytes);
@@ -130,7 +117,6 @@ class BookService {
           debugPrint('[BookService] Created directory: $filename');
         }
       }
-      // 5. Hapus berkas zip sementara setelah sukses diekstrak demi menghemat memori
       final tempZipFile = File(savePath);
       if (tempZipFile.existsSync()) tempZipFile.deleteSync();
       
@@ -142,7 +128,6 @@ class BookService {
     }
   }
 
-  // Tambahkan method ini di dalam BookService
   Future<List<BookSummaryModel>> fetchLocalBundledCatalog() async {
     try {
       final String jsonString = await rootBundle.loadString('assets/metadata.json');
@@ -155,7 +140,6 @@ class BookService {
         judulBukuSunda: json['title_su'] ?? 'Tanpa Judul',
         penulis: json['author'] ?? 'Tidak diketahui',
         illustrator: json['illustrator'] ?? 'Tidak diketahui',
-        // Path lokal (contoh: assets/images/cover_janiti.webp)
         coverImagePath: json['coverImagePath'] ?? '',
         descriptionsIndonesia: json['description_id'] ?? '-',
         descriptionsSunda: json['description_su'] ?? '-',
@@ -166,24 +150,20 @@ class BookService {
       )).toList();
     } catch (e) {
       debugPrint('Gagal memuat metadata lokal: $e');
-      return []; // Mengembalikan list kosong alih-alih melempar error yang mematikan aplikasi
+      return [];
     }
   }
 
-  // Updated method to handle multiple interactive objects
   List<PageLayout> calculateInteractiveObjectsLayout(StoryPage page, BoxConstraints constraints) {
     List<PageLayout> layouts = [];
 
-    // Handle null values dengan default values
-    final pageWidthImage = page.widthImage ?? 1.0; // Prevent division by zero
-    final pageHeightImage = page.heightImage ?? 1.0; // Prevent division by zero
+    final pageWidthImage = page.widthImage ?? 1.0;
+    final pageHeightImage = page.heightImage ?? 1.0;
 
-    // Validasi untuk mencegah division by zero
     if (pageWidthImage <= 0 || pageHeightImage <= 0) {
-      return layouts; // Return empty list jika dimensi image tidak valid
+      return layouts;
     }
 
-    // Validasi constraints
     if (constraints.maxWidth <= 0 || constraints.maxHeight <= 0) {
       return layouts;
     }
@@ -204,11 +184,9 @@ class BookService {
       imageOffsetY = (constraints.maxHeight - renderedHeight) / 2;
     }
 
-    // Prevent division by zero untuk scale calculations
     final scaleX = pageWidthImage > 0 ? renderedWidth / pageWidthImage : 1.0;
     final scaleY = pageHeightImage > 0 ? renderedHeight / pageHeightImage : 1.0;
 
-    // Calculate layout for each interactive object
     for (InteractiveObject obj in page.interactiveObjects) {
       final objX = obj.x ?? 0.0;
       final objY = obj.y ?? 0.0;
@@ -226,7 +204,6 @@ class BookService {
     return layouts;
   }
 
-  // Backward compatibility method - returns layout for first interactive object or default
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
     final layouts = calculateInteractiveObjectsLayout(page, constraints);
 
@@ -250,17 +227,14 @@ class BookService {
     return currentPage >= totalPages - 1;
   }
 
-  // Helper method to check if a page has interactive objects
   bool hasInteractiveObjects(StoryPage page) {
     return page.interactiveObjects.isNotEmpty;
   }
 
-  // Helper method to get count of interactive objects in a page
   int getInteractiveObjectsCount(StoryPage page) {
     return page.interactiveObjects.length;
   }
 
-  // Helper method to get specific interactive object by index
   InteractiveObject? getInteractiveObjectAt(StoryPage page, int index) {
     if (index >= 0 && index < page.interactiveObjects.length) {
       return page.interactiveObjects[index];
@@ -268,7 +242,6 @@ class BookService {
     return null;
   }
 
-  // Main method for load all book from metadata.json
   static Future<List<BookModelBundle>> loadBooks() async {
     try {
       final String response = await rootBundle.loadString('assets/metadata.json');
@@ -277,7 +250,7 @@ class BookService {
 
       return booksJson.map((json) => BookModelBundle.fromJson(json)).toList();
     } catch (e) {
-      print('Error loading books: $e');
+      debugPrint('Error loading books: $e');
       return [];
     }
   }
@@ -290,7 +263,6 @@ class BookService {
     }
 
     try {
-      // 1. Khusus untuk buku bawaan (ID 1 dan 2), muat dari metadata.json
       if (bookId == "1" || bookId == "2") {
         debugPrint('[BookService] Loading BUNDLED book $bookId from metadata.json');
         final List<BookModelBundle> bundledBooks = await loadBooks();
@@ -303,7 +275,6 @@ class BookService {
         }
       }
 
-      // 2. Coba muat dari Asset (Jika ada file data.json spesifik)
       try {
         final assetPath = 'assets/books/$bookId/data.json';
         debugPrint('[BookService] Checking assets at: $assetPath');
@@ -316,7 +287,6 @@ class BookService {
         debugPrint('[BookService] Not found in assets or error: $e');
       }
 
-      // 3. Coba muat dari Penyimpanan Lokal (Buku Unduhan)
       Directory appDocDir = await getApplicationDocumentsDirectory();
       File localDataFile = File('${appDocDir.path}/books/buku_$bookId/data.json');
       debugPrint('[BookService] Checking local storage at: ${localDataFile.path}');
@@ -326,7 +296,6 @@ class BookService {
         final String response = await localDataFile.readAsString();
         final Map<String, dynamic> data = json.decode(response);
         
-        // Pastikan isBundled diset ke false untuk buku unduhan
         Map<String, dynamic> modData = Map.from(data);
         modData['isBundled'] = false;
         modData['localDirectoryPath'] = '${appDocDir.path}/books/buku_$bookId';
@@ -345,19 +314,16 @@ class BookService {
     }
   }
 
-  // Method for load one book by ID (optional)
   static Future<BookModelBundle?> loadBookById(String id) async {
-    // Gunakan getBook yang sudah mendukung pengecekan ganda (asset + local)
     return await getBook(id);
   }
 
-  // Method for load complete metadata (optional)
   static Future<Map<String, dynamic>> loadMetadata() async {
     try {
       final String response = await rootBundle.loadString('assets/metadata.json');
       return json.decode(response);
     } catch (e) {
-      print('Error loading metadata: $e');
+      debugPrint('Error loading metadata: $e');
       return {};
     }
   }

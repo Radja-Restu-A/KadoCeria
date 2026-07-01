@@ -2,7 +2,6 @@ import '../models/book_model_bundle.dart';
 import '../services/book_service.dart';
 
 class StoryRepository {
-  // Load all available books
   Future<List<BookModelBundle>> getAllBooks() async {
     try {
       return await BookService.loadBooks();
@@ -11,7 +10,6 @@ class StoryRepository {
     }
   }
 
-  // Load book by ID
   Future<BookModelBundle?> getBookById(String bookId) async {
     try {
       return await BookService.loadBookById(bookId);
@@ -20,7 +18,6 @@ class StoryRepository {
     }
   }
 
-  // Load book by ID (with exception if not found)
   Future<BookModelBundle> getStory(String storyId) async {
     try {
       final BookModelBundle? book = await BookService.loadBookById(storyId);

@@ -10,7 +10,7 @@ import 'book_description_modal_widget.dart';
 
 class BookCardWidget extends StatefulWidget {
   final BookSummaryModel book;
-  final String status; // Tambahkan ini untuk mengubah tampilan tombol
+  final String status;
   final VoidCallback onTap;
 
   const BookCardWidget({
@@ -28,7 +28,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
   @override
   void initState() {
     super.initState();
-    // Initialize views immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<BookViewsProvider>().initViews(widget.book.idBuku);
     });
@@ -36,7 +35,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Konversi String Hex dari API menjadi Objek Color Flutter
     final Color primaryColor = widget.book.primaryColor.startsWith('#')
         ? Color(int.parse(widget.book.primaryColor.replaceAll('#', '0xFF')))
         : Colors.blue; // Fallback color
@@ -113,7 +111,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                           borderRadius: BorderRadius.circular(20),
                                                           color: primaryColor,
                                                           image: DecorationImage(
-                                                            // PERUBAHAN DEFENSIVE: Cek awalan string sebelum memutuskan provider
                                                             image: (widget.book.coverImagePath.startsWith('http://') ||
                                                                 widget.book.coverImagePath.startsWith('https://'))
                                                                 ? NetworkImage(widget.book.coverImagePath) as ImageProvider
@@ -121,7 +118,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                                                     ? FileImage(File(widget.book.coverImagePath)) as ImageProvider
                                                                     : AssetImage(widget.book.coverImagePath),
                                                             fit: BoxFit.cover,
-                                                            // Opsional: Tambahkan onError agar tidak crash jika link S3 mati/file lokal hilang
                                                             onError: (exception, stackTrace) {
                                                               debugPrint('Gagal memuat gambar sampul: $exception');
                                                             },
@@ -170,7 +166,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Replace the existing SizedBox and Text widget for the title with this:
                                 SizedBox(
                                   height: 50,
                                   child: AutoSizeText(
@@ -240,7 +235,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                       SizedBox(
                         height: 60,
                         width: double.infinity,
-                        child: Stack( // Wrap in Stack to allow Positioned
+                        child: Stack(
                           children: [
                             Container(
                               width: double.infinity,

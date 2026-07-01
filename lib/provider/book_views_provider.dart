@@ -13,7 +13,7 @@ class BookViewsProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('BookViewsProvider: Failed to initialize views for $bookId: $e');
+      debugPrint('BookViewsProvider: Failed to initialize views for $bookId: $e');
       viewsFutures[bookId] = Future.value(0);
       notifyListeners();
     }
@@ -24,7 +24,7 @@ class BookViewsProvider extends ChangeNotifier {
       await initViews(bookId);
       return await viewsFutures[bookId]!;
     } catch (e) {
-      print('BookViewsProvider: Failed to get views for $bookId: $e');
+      debugPrint('BookViewsProvider: Failed to get views for $bookId: $e');
       return 0;
     }
   }
@@ -33,14 +33,12 @@ class BookViewsProvider extends ChangeNotifier {
     try {
       await service.incrementBookViews(bookId);
 
-      // Refresh the future to get updated count
       viewsFutures[bookId] = service.getBookViews(bookId);
       notifyListeners();
 
-      print('BookViewsProvider: Successfully incremented views for $bookId');
+      debugPrint('BookViewsProvider: Successfully incremented views for $bookId');
     } catch (e) {
-      print('BookViewsProvider: Failed to increment views for $bookId: $e');
-      // Still notify listeners to update UI with local data
+      debugPrint('BookViewsProvider: Failed to increment views for $bookId: $e');
       viewsFutures[bookId] = service.getBookViews(bookId);
       notifyListeners();
     }
@@ -57,9 +55,9 @@ class BookViewsProvider extends ChangeNotifier {
       }
 
       notifyListeners();
-      print('BookViewsProvider: Force sync completed');
+      debugPrint('BookViewsProvider: Force sync completed');
     } catch (e) {
-      print('BookViewsProvider: Force sync failed: $e');
+      debugPrint('BookViewsProvider: Force sync failed: $e');
     }
   }
 
@@ -67,7 +65,7 @@ class BookViewsProvider extends ChangeNotifier {
     try {
       return await service.hasPendingViews();
     } catch (e) {
-      print('BookViewsProvider: Error checking pending views: $e');
+      debugPrint('BookViewsProvider: Error checking pending views: $e');
       return false;
     }
   }

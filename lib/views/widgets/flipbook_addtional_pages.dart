@@ -13,7 +13,6 @@ class FlipbookAdditionalPages {
     required this.kataDataSenarai,
   });
 
-  /// Creates the Senarai Kata (Word List) page
   Widget buildSenaraiKataPage() {
     return Container(
       color: Colors.white,
@@ -34,7 +33,6 @@ class FlipbookAdditionalPages {
     );
   }
 
-  /// Creates the final completion page with logo
   Widget buildLastPage() {
     return Container(
       color: Colors.white,

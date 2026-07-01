@@ -286,17 +286,14 @@ class DashboardScreen extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        // Menggunakan Consumer untuk memantau perubahan status di BookViewModel
         return Consumer<BookViewModel>(
           builder: (context, provider, child) {
-            // Ambil status unduhan saat ini dari provider
             final String currentState = provider.bookStates[book.idBuku] ?? "NOT_DOWNLOADED";
 
             Widget iconWidget;
             String statusMessage;
             bool showOkButton = false;
 
-            // Tentukan tampilan berdasarkan state dari BookViewModel
             if (currentState == "DOWNLOADING") {
               iconWidget = const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4FC3F7)),

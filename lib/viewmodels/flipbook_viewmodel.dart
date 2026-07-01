@@ -33,7 +33,6 @@ class FlipbookViewModel extends ChangeNotifier {
   late BookService _bookService;
   late StoryRepository _storyRepository;
 
-  // State variables
   BookModelBundle? _story;
   int _currentPage = 0;
   Language _selectedLanguage = Language.indonesia;
@@ -45,29 +44,23 @@ class FlipbookViewModel extends ChangeNotifier {
   String? _error;
   String _currentBacksoundPath = '';
 
-  // Layout calculation state
   double? _imageAspectRatio;
   bool _isCalculatingLayout = false;
 
-  // Track currently playing object audio for multiple objects support
   String? _currentPlayingObjectAudio;
 
-  // Navigation state to prevent double clicks
   bool _isNavigating = false;
 
-  // Callbacks
   VoidCallback? _onAutoNavigate;
   AudioErrorCallback? _onAudioError;
   StoryLoadedCallback? _onStoryLoaded;
 
-  // Constructor
   FlipbookViewModel() {
     _audioService = AudioService();
     _bookService = BookService();
     _storyRepository = StoryRepository();
   }
 
-  // Getters
   BookModelBundle? get story => _story;
   int get currentPage => _currentPage;
   Language get selectedLanguage => _selectedLanguage;
@@ -83,17 +76,13 @@ class FlipbookViewModel extends ChangeNotifier {
   double? get imageAspectRatio => _imageAspectRatio;
   bool get isCalculatingLayout => _isCalculatingLayout;
 
-  // Updated page checking logic to include last page widget
   bool get isFirstPage => _currentPage == 0;
   bool get isLastPage => _story != null ? _currentPage >= _story!.pages.length : false;
 
-  // Dan update totalPages:
   int get totalPages => _story != null ? _story!.pages.length + 2 : 0; // +2 untuk senarai kata dan last page
 
-  // Check if story is loaded and layout is ready
   bool get isReadyForDisplay => _story != null && _imageAspectRatio != null && !_isLoading;
 
-  // Set callbacks
   void setAutoNavigationCallback(VoidCallback callback) {
     _onAutoNavigate = callback;
   }
@@ -106,13 +95,11 @@ class FlipbookViewModel extends ChangeNotifier {
     _onStoryLoaded = callback;
   }
 
-  // Public methods
   Future<void> loadStory(String storyId) async {
     debugPrint('[FlipbookViewModel] Loading story with ID: $storyId');
     _setLoading(true);
     _setError(null);
 
-    // Reset current page when loading new story
     _currentPage = 0;
     _setNavigating(false);
     _currentPlayingObjectAudio = null;
@@ -122,10 +109,8 @@ class FlipbookViewModel extends ChangeNotifier {
       _story = await _storyRepository.getStory(storyId);
       debugPrint('[FlipbookViewModel] Story object retrieved. isBundled: ${_story?.isBundled}');
 
-      // Calculate image aspect ratio after story is loaded
       await _calculateImageAspectRatio();
 
-      // Notify that story is loaded
       if (_onStoryLoaded != null) {
         _onStoryLoaded!();
       }
@@ -139,7 +124,6 @@ class FlipbookViewModel extends ChangeNotifier {
     }
   }
 
-  // Extract aspect ratio calculation logic from UI
   Future<void> _calculateImageAspectRatio() async {
     debugPrint('[FlipbookViewModel] Starting aspect ratio calculation...');
     if (_story == null || _story!.pages.isEmpty) {
@@ -156,14 +140,12 @@ class FlipbookViewModel extends ChangeNotifier {
       final firstPageImage = firstPage.image;
       debugPrint('[FlipbookViewModel] First page image path: $firstPageImage');
 
-      // Pastikan image tidak null dan tidak kosong
       if (firstPageImage == null || firstPageImage.isEmpty) {
         debugPrint('[FlipbookViewModel] Image path is null/empty, using fallback');
         _imageAspectRatio = 4 / 3; // fallback
         return;
       }
 
-      // Create a completer to handle async image loading
       final completer = Completer<double>();
 
       ImageProvider imageProvider;
@@ -191,14 +173,13 @@ class FlipbookViewModel extends ChangeNotifier {
       }, onError: (exception, stackTrace) {
         debugPrint('[FlipbookViewModel] ERROR in ImageStreamListener: $exception');
         stream.removeListener(listener);
-        completer.complete(4 / 3); // fallback on error
+        completer.complete(4 / 3);
       });
 
       stream.addListener(listener);
 
-      // Wait for the aspect ratio calculation with timeout
       _imageAspectRatio = await completer.future.timeout(
-        const Duration(seconds: 10), // Increased timeout to 10s for debugging
+        const Duration(seconds: 10),
         onTimeout: () {
           debugPrint('[FlipbookViewModel] TIMEOUT during aspect ratio calculation');
           return 4 / 3;
@@ -208,17 +189,15 @@ class FlipbookViewModel extends ChangeNotifier {
 
     } catch (e) {
       debugPrint('[FlipbookViewModel] CRITICAL ERROR calculating aspect ratio: $e');
-      _imageAspectRatio = 4 / 3; // fallback
+      _imageAspectRatio = 4 / 3;
     } finally {
       _isCalculatingLayout = false;
       notifyListeners();
     }
   }
 
-  // Extract responsive layout calculation from UI
   LayoutCalculationResult calculateResponsiveLayout(BoxConstraints constraints) {
     if (_imageAspectRatio == null) {
-      // Return default layout if aspect ratio not calculated yet
       return LayoutCalculationResult(
         headerHeight: constraints.maxHeight * 0.15,
         contentHeight: constraints.maxHeight * 0.70,
@@ -230,16 +209,13 @@ class FlipbookViewModel extends ChangeNotifier {
     final availableWidth = constraints.maxWidth;
     final availableHeight = constraints.maxHeight;
 
-    // Hitung tinggi content berdasarkan lebar dan aspect ratio
     final contentHeight = availableWidth / _imageAspectRatio!;
 
-    // Pastikan content tidak melebihi 70% dari tinggi layar
     final maxContentHeight = availableHeight * 0.7;
     final finalContentHeight = contentHeight > maxContentHeight
         ? maxContentHeight
         : contentHeight;
 
-    // Hitung sisa tinggi untuk header dan footer
     final remainingHeight = availableHeight - finalContentHeight;
     final headerHeight = remainingHeight * 0.3;
     final footerHeight = remainingHeight * 0.7;
@@ -252,7 +228,6 @@ class FlipbookViewModel extends ChangeNotifier {
     );
   }
 
-  // Check if we're on special pages
   bool get isOnSenaraiKataPage => _story != null && _currentPage == _story!.pages.length;
   bool get isOnCompletionPage => _story != null && _currentPage > _story!.pages.length;
   bool get isOnFinalCompletionPage => _story != null && _currentPage > _story!.pages.length;
@@ -309,17 +284,14 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   List<Map<String, String>> standarSenaraiKata() {
-    // Return a default set or empty list
     return [
       {'indonesia': 'Ditunggu', 'sunda': 'Diantos'},
     ];
   }
 
-  // Helper to resolve paths based on bundle status
   String _resolvePath(String? path) {
     if (path == null || path.isEmpty) return '';
     if (_story!.isBundled) return path;
-    // Jika path sudah mengandung localDirectoryPath (absolut), jangan tambahkan lagi
     if (path.startsWith(_story!.localDirectoryPath!)) return path;
     return '${_story!.localDirectoryPath}/$path';
   }
@@ -337,7 +309,6 @@ class FlipbookViewModel extends ChangeNotifier {
 
     final currentStorypage = _story!.pages[_currentPage];
 
-    // Jika page saat ini tidak ada backsound
     if (currentStorypage.backsound == null || currentStorypage.backsound!.isEmpty) {
       debugPrint("No backsound available for page ${_currentPage + 1}");
       if (_isPlayingBacksoundAudio) {
@@ -349,13 +320,11 @@ class FlipbookViewModel extends ChangeNotifier {
     final currentBacksoundPath = _resolvePath(currentStorypage.backsound);
 
     try {
-      // AudioService handles idempotency, but we keep state here for UI
       _currentBacksoundPath = currentBacksoundPath;
       _setPlayingBacksound(true);
 
       debugPrint('Playing backsound for page ${_currentPage + 1}: $currentBacksoundPath');
 
-      // Gunakan AudioService yang sudah ada untuk play audio loop
       await _audioService.playAudioLoop(currentBacksoundPath, isBundled: _story!.isBundled);
     } catch (e) {
       debugPrint('Backsound playback error: $e');
@@ -365,21 +334,18 @@ class FlipbookViewModel extends ChangeNotifier {
     }
   }
 
-// Update method stopBacksoundAudio untuk clear tracking path
   void stopBacksoundAudio() {
     if (_isPlayingBacksoundAudio) {
       debugPrint("Stopping backsound: $_currentBacksoundPath");
       _audioService.stopBacksoundAudio();
       _setPlayingBacksound(false);
-      _currentBacksoundPath = ''; // Clear tracking path
+      _currentBacksoundPath = '';
     }
   }
 
-  // Audio control methods
   Future<void> playPageAudio(String storyId) async {
     if (_isPlayingPageAudio || _isPlayingFullBook || _story == null) return;
 
-    // Guard against additional pages (Senarai Kata or Completion Page)
     if (_currentPage >= _story!.pages.length) {
       debugPrint('No narration audio for special page index: $_currentPage');
       return;
@@ -440,7 +406,6 @@ class FlipbookViewModel extends ChangeNotifier {
         final page = _story!.pages[i];
         final List<String> audioPaths = [];
 
-        // Ambil path berdasarkan bahasa
         switch (_selectedLanguage) {
           case Language.indonesia:
             if (page.narationId != null) audioPaths.add(_resolvePath(page.narationId));
@@ -467,10 +432,8 @@ class FlipbookViewModel extends ChangeNotifier {
           await _audioService.playAudio(audioPaths.first, isBundled: _story!.isBundled);
         }
 
-        // Delay kecil agar tidak tumpang tindih
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Navigasi otomatis ke halaman berikutnya
         _currentPage = i + 1;
         notifyListeners();
         _onAutoNavigate?.call();
@@ -497,7 +460,6 @@ class FlipbookViewModel extends ChangeNotifier {
       return;
     }
 
-    // Move to next page
     _currentPage++;
     notifyListeners();
 
@@ -505,17 +467,14 @@ class FlipbookViewModel extends ChangeNotifier {
       _onAutoNavigate!();
     }
 
-    // Small delay after page flip
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (_currentPage >= _story!.pages.length) {
-      // Kita sudah sampai di last page, stop full book audio karena last page tidak memiliki audio
       debugPrint('Reached last page, stopping full book audio');
       _setPlayingFullBook(false);
       return;
     }
 
-    // Hanya lanjutkan playFullBookAudio jika masih ada story pages yang tersisa
     await playFullBookAudio(storyId);
   }
 
@@ -525,7 +484,6 @@ class FlipbookViewModel extends ChangeNotifier {
   }
 
   Future<void> playObjectAudio(String storyId, String audioFile) async {
-    // Hentikan audio sebelumnya bila ada yang sedang dimainkan
     if (_isPlayingObjectAudio && _currentPlayingObjectAudio != null) {
       _audioService.stopAudio();
       _setPlayingObjectAudio(false);
@@ -535,30 +493,26 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingObjectAudio(true);
 
     try {
-      // Pastikan story sudah dimuat
       if (_story == null) {
         debugPrint('Story not loaded. Cannot play object audio.');
         return;
       }
 
-      // Cari semua object interaktif di seluruh halaman
       final allObjects = _story!.pages.expand((page) => page.interactiveObjects).toList();
 
-      // Temukan objek berdasarkan audioFile yang dikirim dari UI
       final matchedObject = allObjects.firstWhere(
             (obj) => obj.audioObjectId == audioFile || obj.audioObjectSd == audioFile,
         orElse: () => throw Exception('Interactive object not found for $audioFile'),
       );
 
-      // Kumpulkan path audio yang akan diputar
       final List<String> audioPaths = [];
 
       if (matchedObject.audioObjectSd != null) {
-        audioPaths.add(_resolvePath(matchedObject.audioObjectSd)); // Sunda dulu
+        audioPaths.add(_resolvePath(matchedObject.audioObjectSd));
       }
 
       if (matchedObject.audioObjectId != null) {
-        audioPaths.add(_resolvePath(matchedObject.audioObjectId)); // Indonesia kemudian
+        audioPaths.add(_resolvePath(matchedObject.audioObjectId));
       }
 
       if (audioPaths.isEmpty) {
@@ -569,7 +523,6 @@ class FlipbookViewModel extends ChangeNotifier {
       _currentPlayingObjectAudio = audioFile;
       debugPrint('Playing object audios sequentially (Sunda → Indonesia): $audioPaths');
 
-      // Selalu mainkan dua bahasa berurutan
       await _audioService.playSequentialAudio(audioPaths, isBundled: _story!.isBundled);
 
       await Future.delayed(const Duration(milliseconds: 300));
@@ -594,8 +547,7 @@ class FlipbookViewModel extends ChangeNotifier {
   Future<void> nextPage() async {
     if (_isNavigating || _story == null) return;
 
-    // Allow navigation to completion page (one page beyond story pages and senarai kata)
-    final maxAllowedPage = _story!.pages.length + 1; // +1 untuk completion page
+    final maxAllowedPage = _story!.pages.length + 1;
     if (_currentPage >= maxAllowedPage) return;
 
     _setNavigating(true);
@@ -639,10 +591,9 @@ class FlipbookViewModel extends ChangeNotifier {
     _setPlayingObjectAudio(false);
     _setPlayingFullBook(false);
     _currentPlayingObjectAudio = null;
-    _currentBacksoundPath = ''; // Clear tracking path
+    _currentBacksoundPath = '';
   }
 
-  // Layout calculation methods for interactive objects
   PageLayout calculatePageLayout(StoryPage page, BoxConstraints constraints) {
     return _bookService.calculatePageLayout(page, constraints);
   }
@@ -651,7 +602,6 @@ class FlipbookViewModel extends ChangeNotifier {
     return _bookService.calculateInteractiveObjectsLayout(page, constraints);
   }
 
-  // Helper methods for interactive objects
   bool hasInteractiveObjects(StoryPage page) {
     return _bookService.hasInteractiveObjects(page);
   }
@@ -664,7 +614,6 @@ class FlipbookViewModel extends ChangeNotifier {
     _setError(null);
   }
 
-  // Private methods
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -702,10 +651,8 @@ class FlipbookViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Stop semua audio yang sedang berjalan
     stopAudio();
 
-    // Reset semua state
     _currentPage = 0;
     _isPlayingPageAudio = false;
     _isPlayingObjectAudio = false;
@@ -714,7 +661,6 @@ class FlipbookViewModel extends ChangeNotifier {
     _imageAspectRatio = null;
     _story = null;
 
-    // Dispose audio service
     _audioService.dispose();
 
     super.dispose();

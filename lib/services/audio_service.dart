@@ -10,9 +10,8 @@ class AudioService {
 
   String? _currentBacksoundPath;
   String? _currentAudioPath;
-  bool _isCancelled = false; // Flag untuk membatalkan antrean sekuensial
+  bool _isCancelled = false;
 
-  // Helper untuk resolusi path karena audioplayers membaca folder 'assets/' secara implisit
   Source _getSource(String path, bool isBundled) {
     if (isBundled) {
       final assetPath = path.startsWith('assets/') ? path.substring(7) : path;
@@ -22,7 +21,6 @@ class AudioService {
     }
   }
 
-  // --- Backsound Control ---
   Future<void> playAudioLoop(String audioPath, {bool isBundled = true}) async {
     if (_currentBacksoundPath == audioPath && _audioBacksound.state == PlayerState.playing) {
       return;
@@ -52,7 +50,6 @@ class AudioService {
     }
   }
 
-  // --- Narration / SFX Control ---
   Future<void> playAudio(String path, {bool isBundled = true}) async {
     if (_currentAudioPath == path && _audioPlayer.state == PlayerState.playing) {
       return;
@@ -61,12 +58,11 @@ class AudioService {
     _isCancelled = false;
     try {
       await _audioPlayer.stop();
-      await _audioBacksound.setVolume(0.2); // Manual ducking
+      await _audioBacksound.setVolume(0.2);
 
       if (await _audioExists(path, isBundled)) {
         _currentAudioPath = path;
 
-        // Completer memastikan sistem menunggu audio selesai
         Completer<void> completer = Completer<void>();
         StreamSubscription? completeSub;
 
@@ -76,7 +72,6 @@ class AudioService {
 
         await _audioPlayer.play(_getSource(path, isBundled));
 
-        // Tunggu hingga pemutaran selesai, atau jika dibatalkan secara eksternal
         await completer.future;
         completeSub.cancel();
       }
@@ -97,12 +92,11 @@ class AudioService {
       await _audioBacksound.setVolume(0.2);
 
       for (String path in paths) {
-        if (_isCancelled) break; // Berhenti jika user menekan tombol lain
+        if (_isCancelled) break;
 
         if (await _audioExists(path, isBundled)) {
           _currentAudioPath = path;
 
-          // Completer memastikan sistem menunggu audio selesai 100%
           Completer<void> completer = Completer<void>();
           StreamSubscription? completeSub;
 
@@ -112,7 +106,6 @@ class AudioService {
 
           await _audioPlayer.play(_getSource(path, isBundled));
 
-          // Tunggu hingga pemutaran selesai, atau jika dibatalkan secara eksternal
           await completer.future;
           completeSub.cancel();
 
@@ -130,17 +123,16 @@ class AudioService {
   }
 
   Future<void> stopAudio() async {
-    _isCancelled = true; // Batalkan antrean sekuensial yang mungkin sedang berjalan
+    _isCancelled = true;
     try {
       await _audioPlayer.stop();
       _currentAudioPath = null;
-      await _audioBacksound.setVolume(0.7); // Kembalikan volume backsound
+      await _audioBacksound.setVolume(0.7);
     } catch (e) {
       debugPrint('Error stopping audio: $e');
     }
   }
 
-  // --- Utilities ---
   Future<bool> _audioExists(String path, bool isBundled) async {
     if (isBundled) {
       try {

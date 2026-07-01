@@ -60,10 +60,10 @@ class FlipbookHeader extends StatelessWidget {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         final bool isAudioPlaying = viewModel.isPlayingPageAudio || viewModel.isPlayingFullBook;
-        final bool isDisabled = isAudioPlaying || isFlipping; // ADD FLIPPING CHECK
+        final bool isDisabled = isAudioPlaying || isFlipping;
 
         return GestureDetector(
-          onTap: isDisabled ? null : onLanguageDropdownToggle, // MODIFY CONDITION
+          onTap: isDisabled ? null : onLanguageDropdownToggle,
           child: Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -113,7 +113,6 @@ class FlipbookHeader extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
       child: IconButton(
         onPressed: () {
-          // TODO: Implement settings
         },
         icon: Image.asset(
           'assets/logo/hade.png',

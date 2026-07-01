@@ -25,7 +25,7 @@ class BookModelBundle {
     required this.pages,
     required this.primaryColor,
     required this.secondaryColor,
-    this.isBundled = true, // Default true agar buku lama Janiti tidak error
+    this.isBundled = true,
     this.localDirectoryPath,
   });
 
@@ -43,7 +43,6 @@ class BookModelBundle {
       },
       author: json['author']?.toString() ?? 'Unknown',
       illustrator: json['illustrator']?.toString() ?? 'Unknown',
-      // Mengakomodasi format API lama dan baru
       coverImagePath: json['coverImage']?.toString() ?? json['coverImagePath']?.toString() ?? '',
       pages: (json['pages'] as List?)
           ?.map((e) => StoryPage.fromJson(e as Map<String, dynamic>))
@@ -109,7 +108,6 @@ class StoryPage {
   factory StoryPage.fromJson(Map<String, dynamic> json) {
     List<InteractiveObject> objects = [];
     
-    // Handle new format - multiple interactive objects
     if (json['interactiveObjects'] != null) {
       objects = (json['interactiveObjects'] as List)
           .map((e) => InteractiveObject.fromJson(e as Map<String, dynamic>))
@@ -117,7 +115,6 @@ class StoryPage {
     }
 
     return StoryPage(
-      // Paksa konversi ke String secara aman
       image: json['image']?.toString(),
       backsound: json['backsound']?.toString(),
       narationId: json['narationId']?.toString(),
@@ -177,7 +174,6 @@ class InteractiveObject {
   }
 }
 
-// Language enum
 enum Language {
   indonesia('indonesia', {
     'indonesia': 'Bahasa Indonesia',
@@ -201,7 +197,6 @@ enum Language {
   }
 }
 
-// PageLayout data class
 class PageLayout {
   final double interactiveLeft;
   final double interactiveTop;
@@ -263,13 +258,11 @@ class BookSummaryModel {
   });
   factory BookSummaryModel.fromJson(Map<String, dynamic> json) {
     return BookSummaryModel(
-      // Tambahkan pelindung ?.toString() di setiap variabel bertipe String
       idBuku: json['id_buku']?.toString() ?? json['id']?.toString() ?? '',
       judulBukuIndonesia: json['judulBukuIndonesia']?.toString() ?? '',
       judulBukuSunda: json['judulBukuSunda']?.toString() ?? '',
       penulis: json['penulis']?.toString() ?? '',
       illustrator: json['illustrator']?.toString() ?? '',
-      // Antisipasi perubahan key gambar sampul dari CMS
       coverImagePath: json['coverImage']?.toString() ?? json['coverImagePath']?.toString() ?? '',
       descriptionsIndonesia: json['descriptionsIndonesia']?.toString() ?? '',
       descriptionsSunda: json['descriptionsSunda']?.toString() ?? '',

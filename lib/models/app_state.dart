@@ -6,13 +6,11 @@ class AppState extends ChangeNotifier {
   bool _isInitialized = false;
   String? _lastError;
 
-  // Getters
   String? get currentStoryId => _currentStoryId;
   List<String> get availableStories => List.unmodifiable(_availableStories);
   bool get isInitialized => _isInitialized;
   String? get lastError => _lastError;
 
-  // Setters
   void setCurrentStory(String storyId) {
     if (_currentStoryId != storyId) {
       _currentStoryId = storyId;
@@ -40,7 +38,6 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Methods
   bool hasStory(String storyId) {
     return _availableStories.contains(storyId);
   }

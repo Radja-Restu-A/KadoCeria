@@ -36,7 +36,6 @@ class FlipbookFooter extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Row 1 - Full Book Button or Empty Space (50% of footer height)
           Expanded(
             flex: 5,
             child: Container(
@@ -48,7 +47,6 @@ class FlipbookFooter extends StatelessWidget {
             ),
           ),
 
-          // Row 2 - Navigation Controls (50% of footer height)
           Expanded(
             flex: 5,
             child: _buildNavigationRow(context),
@@ -98,7 +96,6 @@ class FlipbookFooter extends StatelessWidget {
   }
 
   Widget _buildPageAudioButton(BuildContext context) {
-    // Show completion button on final completion page
     if (viewModel.isOnCompletionPage) {
       return Consumer2<FlipbookViewModel, LanguageProvider>(
           builder: (context, flipbookViewModel, languageProvider, child) {
@@ -141,12 +138,10 @@ class FlipbookFooter extends StatelessWidget {
       );
     }
 
-    // Hide page audio button on Senarai Kata page
     if (viewModel.isOnSenaraiKataPage) {
       return const SizedBox.shrink();
     }
 
-    // Normal page audio button for regular story pages
     return Consumer2<FlipbookViewModel, LanguageProvider>(
         builder: (context, viewModel, languageProvider, child) {
           final bool isPlayingPageAudio = viewModel.isPlayingPageAudio;
@@ -198,7 +193,6 @@ class FlipbookFooter extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Audio button in center
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.55,
@@ -207,7 +201,6 @@ class FlipbookFooter extends StatelessWidget {
             ),
           ),
 
-          // Previous button
           Positioned(
             left: -45,
             top: 0,

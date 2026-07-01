@@ -82,7 +82,7 @@ class BookDescriptionModalWidget extends StatelessWidget {
                             height: 1.5,
                           ),
                           children: [
-                            const WidgetSpan(child: SizedBox(width: 20)), // indent
+                            const WidgetSpan(child: SizedBox(width: 20)),
                             TextSpan(text: paragraph.trim()),
                           ],
                         ),

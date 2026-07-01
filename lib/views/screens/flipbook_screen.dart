@@ -42,21 +42,17 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
   void initState() {
     super.initState();
 
-    // Initialize view model
     _viewModel = FlipbookViewModel();
     _viewModel.stopAudio();
 
-    // Set callbacks
     _viewModel.setAutoNavigationCallback(_handleAutoNavigation);
     _viewModel.setAudioErrorCallback(_showAudioErrorModal);
     _viewModel.setStoryLoadedCallback(_onStoryLoaded);
 
-    // Load story
     _viewModel.loadStory(widget.bookId);
   }
 
   void _initializeAdditionalPages() {
-    // Get the senarai kata from viewModel using the bookId
     final kataDataSenarai = _viewModel.getSenaraiKata(widget.bookId);
 
     _additionalPages = FlipbookAdditionalPages(
@@ -88,13 +84,11 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
 
   void _onStoryLoaded() {
     if (mounted) {
-      // Initialize additional pages after story is loaded
       _initializeAdditionalPages();
 
       _startBacksoundAudio();
 
       setState(() {
-        // Force rebuild to show the content
       });
     }
   }
@@ -160,7 +154,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
       _isFlipping = isFlipping;
     });
 
-    // Set timer untuk reset flipping state
     if (isFlipping) {
       _flipTimer?.cancel();
       _flipTimer = Timer(const Duration(milliseconds: 800), () {
@@ -182,7 +175,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           onTap: _closeLanguageDropdown,
           child: Consumer<FlipbookViewModel>(
             builder: (context, viewModel, child) {
-              // 1. Cek apakah masih dalam proses memuat
               if (viewModel.isLoading) {
                 return Container(
                   color: widget.bookPrimaryColor,
@@ -192,7 +184,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 );
               }
 
-              // 2. Cek apakah ada error dari latar belakang
               if (viewModel.error != null) {
                 return Container(
                   color: widget.bookPrimaryColor,
@@ -205,7 +196,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 );
               }
 
-              // 3. Cek apakah data buku gagal dimuat
               if (viewModel.story == null) {
                 return Container(
                   color: widget.bookPrimaryColor,
@@ -218,7 +208,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                 );
               }
 
-              // 4. Jika siap, render UI buku
               return Container(
                 color: widget.bookPrimaryColor,
                 child: SafeArea(
@@ -241,7 +230,6 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
           children: [
             Column(
               children: [
-                // AREA HEADER
                 SizedBox(
                   width: double.infinity,
                   height: layout.headerHeight,
@@ -250,13 +238,12 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     bookSecondaryColor: widget.bookSecondaryColor,
                     viewModel: viewModel,
                     isLanguageDropdownOpen: _isLanguageDropdownOpen,
-                    isFlipping: _isFlipping, // ADD THIS LINE
+                    isFlipping: _isFlipping,
                     onLanguageDropdownToggle: _toggleLanguageDropdown,
                     onLanguageSelect: _selectLanguage,
                   ),
                 ),
 
-                // AREA CONTENT
                 SizedBox(
                   width: double.infinity,
                   height: layout.contentHeight,
@@ -267,7 +254,7 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     viewModel: viewModel,
                     controller: _controller,
                     additionalPages: _additionalPages,
-                    isFlipping: _isFlipping, // ADD THIS LINE
+                    isFlipping: _isFlipping,
                     onPageFlipped: _handlePageFlipped,
                   ),
                 ),
@@ -282,15 +269,14 @@ class _FlipbookScreenState extends State<FlipbookScreen> {
                     bookSecondaryColor: widget.bookSecondaryColor,
                     viewModel: viewModel,
                     controller: _controller,
-                    isFlipping: _isFlipping, // ADD THIS LINE
+                    isFlipping: _isFlipping,
                     onFlippingStateChanged: _setFlippingState,
                   ),
                 ),
               ],
             ),
 
-            // Language dropdown overlay
-            if (_isLanguageDropdownOpen && !_isFlipping) // MODIFY THIS CONDITION
+            if (_isLanguageDropdownOpen && !_isFlipping)
               FlipbookLanguageDropdown(
                 bookPrimaryColor: widget.bookPrimaryColor,
                 headerHeight: layout.headerHeight,

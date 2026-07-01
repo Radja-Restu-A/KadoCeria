@@ -1,4 +1,3 @@
-// lib/widgets/language_card.dart
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,6 @@ class LanguageCardWidget extends StatelessWidget {
   final double? borderRadius;
   final Color? backgroundColor;
   final Color? textColor;
-  // Tambahan parameter untuk styling italic
   final TextStyle? descriptionStyle;
   final TextStyle? languageStyle;
 
@@ -32,8 +30,8 @@ class LanguageCardWidget extends StatelessWidget {
     this.borderRadius = 20,
     this.backgroundColor,
     this.textColor = Colors.white,
-    this.descriptionStyle, // Parameter baru untuk style description
-    this.languageStyle,    // Parameter baru untuk style language
+    this.descriptionStyle,
+    this.languageStyle,
   }) : super(key: key);
 
   @override

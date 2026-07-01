@@ -30,13 +30,11 @@ class BookViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. OFFLINE-FIRST: Muat data lokal sebagai fondasi absolut
       debugPrint('[BookViewModel] Fetching local bundled catalog...');
       List<BookSummaryModel> localBooks = await _bookService.fetchLocalBundledCatalog();
       _books = List.from(localBooks);
       debugPrint('[BookViewModel] Local books loaded: ${_books.length}');
 
-      // 1b. Muat buku yang sudah diunduh dari local storage
       debugPrint('[BookViewModel] Fetching downloaded books from storage...');
       List<BookSummaryModel> downloadedBooks = await _bookService.fetchDownloadedBooksMetadata();
       for (var downloadedBook in downloadedBooks) {
@@ -46,10 +44,8 @@ class BookViewModel extends ChangeNotifier {
       }
       debugPrint('[BookViewModel] Total books after including downloaded: ${_books.length}');
 
-      // Render layar secepat mungkin dengan data lokal (Dongeng Janiti & Sakeclak + Downloaded)
       notifyListeners();
 
-      // 2. NETWORK SYNC: Coba sinkronisasi dengan data API CMS
       try {
         debugPrint('[BookViewModel] Fetching network book catalog...');
         List<BookSummaryModel> networkBooks = await _bookService.fetchNetworkBookCatalog();
@@ -65,13 +61,11 @@ class BookViewModel extends ChangeNotifier {
           String netTitleId = netBook.judulBukuIndonesia.toLowerCase().trim();
           String netTitleSu = netBook.judulBukuSunda.toLowerCase().trim();
 
-          // 1. Eksklusi eksplisit untuk buku yang sudah ada di bundled assets
           if (excludedTitles.contains(netTitleId) || excludedTitles.contains(netTitleSu)) {
             debugPrint("[BookViewModel] Skipping bundled book from network: ${netBook.judulBukuIndonesia}");
             continue;
           }
 
-          // 2. Deduplikasi berdasarkan judul (bukan ID)
           bool alreadyExists = _books.any((b) {
             String bTitleId = b.judulBukuIndonesia.toLowerCase().trim();
             String bTitleSu = b.judulBukuSunda.toLowerCase().trim();
@@ -86,12 +80,9 @@ class BookViewModel extends ChangeNotifier {
           }
         }
       } catch (networkError) {
-        // SILENT CATCH: Jika API mati atau belum dibuat, aplikasi hanya mencetak log
-        // dan TETAP HIDUP dengan data lokal.
         debugPrint("[BookViewModel] API CMS gagal atau offline: $networkError");
       }
 
-      // 3. RESOLUSI STATUS UNDUHAN UI
       debugPrint('[BookViewModel] Resolving download states for ${_books.length} books...');
       for (var book in _books) {
         if (book.judulBukuIndonesia == "Setetes Air Hujan Ingin ke Samudra" || book.judulBukuIndonesia == "Dongeng Janiti") {
@@ -122,7 +113,6 @@ class BookViewModel extends ChangeNotifier {
       await _bookService.downloadAndExtractBookArchive(bookId);
       await _storageService.saveBookDownloadStatus(bookId, version);
       
-      // Update state secara eksplisit agar UI langsung berubah ke "BACA"
       bookStates[bookId] = "READY";
       
       debugPrint("Download success for book: $bookId");
@@ -145,7 +135,6 @@ class BookViewModel extends ChangeNotifier {
     }
   }
 
-  // Menemukan buku lokal yang sesuai berdasarkan judul jika ID tidak cocok
   BookSummaryModel? findLocalCounterpart(BookSummaryModel netBook) {
     try {
       return _books.firstWhere((b) =>

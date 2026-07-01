@@ -101,13 +101,10 @@ class FlipbookContent extends StatelessWidget {
       );
     }
 
-    // Ambil flag status dan path folder ekstraksi dari ViewModel
-    // Pastikan BookModelBundle sudah memiliki properti isBundled dan localDirectoryPath
     final bool isBundled = viewModel.story!.isBundled;
     final String? localDir = viewModel.story!.localDirectoryPath;
 
     if (isBundled) {
-      // 1. JALUR LAMA: Buku bawaan (Dongeng Janiti) menggunakan Image.asset
       return Positioned.fill(
         child: Image.asset(
           imagePath,
@@ -129,8 +126,6 @@ class FlipbookContent extends StatelessWidget {
         ),
       );
     } else {
-      // 2. JALUR BARU: Buku hasil unduhan CMS menggunakan Image.file
-      // Menggabungkan direktori penempatan buku di HP dengan relative path gambar
       final String fullLocalImagePath = '$localDir/$imagePath';
 
       return Positioned.fill(

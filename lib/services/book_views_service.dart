@@ -10,29 +10,25 @@ class BookViewsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _localStorageKey = 'book_views';
   final String _syncedViewsKey = 'synced_views';
-  final String _lastKnownViewsKey = 'last_known_views'; // 🆕 NEW: Store last known total views
+  final String _lastKnownViewsKey = 'last_known_views'; 
   final Connectivity _connectivity = Connectivity();
 
   bool _isOnline = true;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _isInitialized = false;
 
-  // Initialize connectivity monitoring
   Future<void> _initializeConnectivity() async {
     if (_isInitialized) return;
 
-    // Check initial connectivity
     final result = await _connectivity.checkConnectivity();
     _isOnline = result != ConnectivityResult.none;
 
-    // Listen for connectivity changes
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) async {
       final wasOffline = !_isOnline;
       _isOnline = result != ConnectivityResult.none;
 
       print('Connectivity changed: ${_isOnline ? "Online" : "Offline"}');
 
-      // If we just came back online, sync all pending views
       if (wasOffline && _isOnline) {
         await _syncAllPendingViews();
       }
@@ -44,17 +40,14 @@ class BookViewsService {
   Future<void> incrementBookViews(String bookId) async {
     await _initializeConnectivity();
 
-    // Always increment local views first
     await _incrementLocalViews(bookId);
 
     if (_isOnline) {
-      // Try to sync immediately if online
       try {
         await _syncWithFirebase(bookId);
         print('Successfully synced view for $bookId');
       } catch (e) {
         print('Error syncing with Firebase: $e');
-        // Don't worry, it will be synced when back online
       }
     } else {
       print('Offline: View for $bookId will be synced when back online');
@@ -83,16 +76,13 @@ class BookViewsService {
     await prefs.setString(_localStorageKey,
         json.encode(viewsMap.map((key, value) => MapEntry(key, value.toJson()))));
 
-    // 🆕 NEW: Update last known total views whenever we increment
     final currentTotal = await _getCurrentTotalViews(bookId);
     await _updateLastKnownViews(bookId, currentTotal);
   }
 
-  // 🆕 NEW: Get current total views (local + any cached Firebase data)
   Future<int> _getCurrentTotalViews(String bookId) async {
     int total = 0;
 
-    // Get local views
     final prefs = await SharedPreferences.getInstance();
     final String? storedData = prefs.getString(_localStorageKey);
 
@@ -107,7 +97,6 @@ class BookViewsService {
     return total;
   }
 
-  // 🆕 NEW: Store the last known total view count for offline display
   Future<void> _updateLastKnownViews(String bookId, int totalViews) async {
     final prefs = await SharedPreferences.getInstance();
     final String? lastKnownData = prefs.getString(_lastKnownViewsKey);
@@ -122,7 +111,6 @@ class BookViewsService {
     print('Updated last known views for $bookId: $totalViews');
   }
 
-  // 🆕 NEW: Get the last known total view count
   Future<int> _getLastKnownViews(String bookId) async {
     final prefs = await SharedPreferences.getInstance();
     final String? lastKnownData = prefs.getString(_lastKnownViewsKey);
@@ -149,11 +137,10 @@ class BookViewsService {
 
     final BookViews localViews = viewsMap[bookId]!;
 
-    // Get already synced count for this book
     final syncedViews = await _getSyncedViews(bookId);
     final viewsToSync = localViews.views - syncedViews;
 
-    if (viewsToSync <= 0) return; // Nothing to sync
+    if (viewsToSync <= 0) return;
 
     try {
       await _firestore.runTransaction((transaction) async {
@@ -173,10 +160,8 @@ class BookViewsService {
         }
       });
 
-      // Mark these views as synced instead of removing them
       await _markViewsAsSynced(bookId, localViews.views);
 
-      // 🆕 NEW: After successful sync, update last known views with fresh Firebase data
       final updatedFirebaseViews = await _getFirebaseViews(bookId);
       if (updatedFirebaseViews > 0) {
         await _updateLastKnownViews(bookId, updatedFirebaseViews);
@@ -190,7 +175,6 @@ class BookViewsService {
     }
   }
 
-  // 🆕 NEW: Helper method to get Firebase views
   Future<int> _getFirebaseViews(String bookId) async {
     try {
       final doc = await _firestore.collection('book_views').doc(bookId).get();
@@ -201,7 +185,6 @@ class BookViewsService {
     }
   }
 
-  // Get the number of views already synced for a book
   Future<int> _getSyncedViews(String bookId) async {
     final prefs = await SharedPreferences.getInstance();
     final String? syncedData = prefs.getString(_syncedViewsKey);
@@ -212,7 +195,6 @@ class BookViewsService {
     return syncedMap[bookId] ?? 0;
   }
 
-  // Mark views as synced
   Future<void> _markViewsAsSynced(String bookId, int totalSyncedViews) async {
     final prefs = await SharedPreferences.getInstance();
     final String? syncedData = prefs.getString(_syncedViewsKey);
@@ -226,7 +208,6 @@ class BookViewsService {
     await prefs.setString(_syncedViewsKey, json.encode(syncedMap));
   }
 
-  // Sync all pending views when coming back online
   Future<void> _syncAllPendingViews() async {
     final prefs = await SharedPreferences.getInstance();
     final String? storedData = prefs.getString(_localStorageKey);
@@ -240,7 +221,6 @@ class BookViewsService {
 
       print('Syncing ${viewsMap.length} books with pending views');
 
-      // Sync each book's pending views
       for (final bookId in viewsMap.keys) {
         try {
           await _syncWithFirebase(bookId);
@@ -255,21 +235,17 @@ class BookViewsService {
     }
   }
 
-  // 🔧 MODIFIED: Enhanced getBookViews method with offline persistence
   Future<int> getBookViews(String bookId) async {
     await _initializeConnectivity();
 
     try {
       if (_isOnline) {
-        // Online: Get the most up-to-date data
         int firebaseViews = 0;
         int localPendingViews = 0;
 
-        // Get views from Firebase
         final doc = await _firestore.collection('book_views').doc(bookId).get();
         firebaseViews = doc.exists ? (doc.data()?['views'] ?? 0) : 0;
 
-        // Get local pending views (views not yet synced)
         final prefs = await SharedPreferences.getInstance();
         final String? storedData = prefs.getString(_localStorageKey);
 
@@ -284,20 +260,17 @@ class BookViewsService {
 
         final totalViews = firebaseViews + (localPendingViews > 0 ? localPendingViews : 0);
 
-        // 🆕 NEW: Update last known views when online
         await _updateLastKnownViews(bookId, totalViews);
 
         print('getBookViews($bookId): ONLINE - Firebase=$firebaseViews, LocalPending=$localPendingViews, Total=$totalViews');
         return totalViews;
 
       } else {
-        // 🆕 OFFLINE: Use last known views + any new local increments
         print('OFFLINE: Getting views for $bookId from local storage');
 
         final lastKnownViews = await _getLastKnownViews(bookId);
         int additionalLocalViews = 0;
 
-        // Get any additional views that were added while offline
         final prefs = await SharedPreferences.getInstance();
         final String? storedData = prefs.getString(_localStorageKey);
 
@@ -307,8 +280,6 @@ class BookViewsService {
             final localViews = BookViews.fromJson(decoded[bookId]);
             final syncedViews = await _getSyncedViews(bookId);
 
-            // Calculate views added since we went offline
-            // This would be total local views minus what was already synced before going offline
             additionalLocalViews = localViews.views - syncedViews;
             if (additionalLocalViews < 0) additionalLocalViews = 0;
           }
@@ -323,8 +294,6 @@ class BookViewsService {
     } catch (e) {
       print('Failed to get book views: $e');
 
-      // 🔧 MODIFIED: Better fallback logic
-      // Try to get last known views first, then fall back to local only
       final lastKnownViews = await _getLastKnownViews(bookId);
 
       if (lastKnownViews > 0) {
@@ -332,7 +301,6 @@ class BookViewsService {
         return lastKnownViews;
       }
 
-      // Final fallback: local data only
       final prefs = await SharedPreferences.getInstance();
       final String? storedData = prefs.getString(_localStorageKey);
 
@@ -349,7 +317,6 @@ class BookViewsService {
     }
   }
 
-  // Method to manually trigger sync (useful for testing or manual sync buttons)
   Future<void> forceSyncAll() async {
     if (_isOnline) {
       await _syncAllPendingViews();
@@ -358,7 +325,6 @@ class BookViewsService {
     }
   }
 
-  // Check if there are pending views to sync
   Future<bool> hasPendingViews() async {
     final prefs = await SharedPreferences.getInstance();
     final String? storedData = prefs.getString(_localStorageKey);
@@ -374,7 +340,7 @@ class BookViewsService {
         final syncedViews = await _getSyncedViews(bookId);
 
         if (localViews.views > syncedViews) {
-          return true; // Has pending views
+          return true;
         }
       }
 
