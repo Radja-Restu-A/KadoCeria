@@ -51,32 +51,37 @@ class BookViewModel extends ChangeNotifier {
         List<BookSummaryModel> networkBooks = await _bookService.fetchNetworkBookCatalog();
         debugPrint('[BookViewModel] Network books received: ${networkBooks.length}');
         
-        final excludedTitles = {
-          "dongeng janiti",
-          "sakeclak cihujan hayang ka sagara",
-          "setetes air hujan ingin ke samudra"
-        };
-
         for (var netBook in networkBooks) {
-          String netTitleId = netBook.judulBukuIndonesia.toLowerCase().trim();
-          String netTitleSu = netBook.judulBukuSunda.toLowerCase().trim();
-
-          if (excludedTitles.contains(netTitleId) || excludedTitles.contains(netTitleSu)) {
-            debugPrint("[BookViewModel] Skipping bundled book from network: ${netBook.judulBukuIndonesia}");
-            continue;
-          }
-
-          bool alreadyExists = _books.any((b) {
+          bool idMatch = _books.any((b) => b.idBuku == netBook.idBuku);
+          bool titleMatch = _books.any((b) {
             String bTitleId = b.judulBukuIndonesia.toLowerCase().trim();
             String bTitleSu = b.judulBukuSunda.toLowerCase().trim();
+            String netTitleId = netBook.judulBukuIndonesia.toLowerCase().trim();
+            String netTitleSu = netBook.judulBukuSunda.toLowerCase().trim();
             return bTitleId == netTitleId || bTitleSu == netTitleSu;
           });
 
-          if (!alreadyExists) {
+          if (idMatch && titleMatch) {
+            debugPrint("[BookViewModel] Skipping exact duplicate from network: ${netBook.judulBukuIndonesia} (ID: ${netBook.idBuku})");
+            continue;
+          }
+
+          if (idMatch && !titleMatch) {
+            debugPrint("[BookViewModel] ID collision detected for ${netBook.judulBukuIndonesia} (ID: ${netBook.idBuku}). Assigning new ID...");
+            
+            // Find max numeric ID among current books
+            int maxId = 0;
+            for (var b in _books) {
+              int currentId = int.tryParse(b.idBuku) ?? 0;
+              if (currentId > maxId) maxId = currentId;
+            }
+            String newId = (maxId + 1).toString();
+            debugPrint("[BookViewModel] Assigned pending ID: $newId");
+            
+            _books.add(netBook.copyWith(pendingId: newId));
+          } else {
             debugPrint("[BookViewModel] Adding new network book: ${netBook.judulBukuIndonesia} (ID: ${netBook.idBuku})");
             _books.add(netBook);
-          } else {
-            debugPrint("[BookViewModel] Skipping duplicate title from network: ${netBook.judulBukuIndonesia}");
           }
         }
       } catch (networkError) {
@@ -85,13 +90,14 @@ class BookViewModel extends ChangeNotifier {
 
       debugPrint('[BookViewModel] Resolving download states for ${_books.length} books...');
       for (var book in _books) {
-        if (book.judulBukuIndonesia == "Setetes Air Hujan Ingin ke Samudra" || book.judulBukuIndonesia == "Dongeng Janiti") {
+        bool isLocal = book.fileSize == 'Bundled' || book.fileSize == 'Downloaded';
+        if (isLocal) {
           bookStates[book.idBuku] = "READY";
         } else {
           bool isDownloaded = await _storageService.isBookDownloaded(book.idBuku);
           bookStates[book.idBuku] = isDownloaded ? "READY" : "NOT_DOWNLOADED";
-          debugPrint('[BookViewModel] Book ${book.judulBukuIndonesia} (ID: ${book.idBuku}) state: ${bookStates[book.idBuku]}');
         }
+        debugPrint('[BookViewModel] Book ${book.judulBukuIndonesia} (ID: ${book.idBuku}) state: ${bookStates[book.idBuku]}');
       }
     } catch (e) {
       debugPrint('[BookViewModel] FATAL ERROR in loadDashboardCatalog: $e');
@@ -106,16 +112,28 @@ class BookViewModel extends ChangeNotifier {
   Future<bool> triggerDownloadBook(String bookId, int version, BuildContext context) async {
     if (bookStates[bookId] == "DOWNLOADING") return false;
 
+    // Temukan model buku untuk mengecek pendingId
+    BookSummaryModel? bookModel = getBookById(bookId);
+    String? pendingId = bookModel?.pendingId;
+    String finalId = pendingId ?? bookId;
+
     bookStates[bookId] = "DOWNLOADING";
     notifyListeners();
 
     try {
-      await _bookService.downloadAndExtractBookArchive(bookId);
-      await _storageService.saveBookDownloadStatus(bookId, version);
+      await _bookService.downloadAndExtractBookArchive(bookId, overrideId: pendingId);
+      await _storageService.saveBookDownloadStatus(finalId, version);
       
-      bookStates[bookId] = "READY";
+      // Jika ID berubah, kita perlu mengupdate state untuk ID baru
+      if (pendingId != null) {
+        bookStates[finalId] = "READY";
+        // Opsional: bersihkan state ID lama jika diperlukan
+        // bookStates.remove(bookId);
+      } else {
+        bookStates[bookId] = "READY";
+      }
       
-      debugPrint("Download success for book: $bookId");
+      debugPrint("Download success for book: $finalId");
       notifyListeners();
       return true;
     } catch (e) {

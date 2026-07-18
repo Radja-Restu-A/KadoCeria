@@ -10,7 +10,7 @@ import 'package:archive/archive.dart';
 class BookService {
   static BookModelBundle? _cachedBook;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.13/cms-kadoceria/public/api',
+    baseUrl: 'http://54.179.175.167/api',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
@@ -73,8 +73,8 @@ class BookService {
     }
     return downloadedBooks;
   }
-  Future<String> downloadAndExtractBookArchive(String bookId) async {
-    debugPrint('[BookService] Starting download for bookId: $bookId');
+  Future<String> downloadAndExtractBookArchive(String bookId, {String? overrideId}) async {
+    debugPrint('[BookService] Starting download for bookId: $bookId (overrideId: $overrideId)');
     try {
       final response = await _dio.get('/get/kontenBuku?id=$bookId');
       if (response.statusCode != 200 || response.data == null) {
@@ -85,7 +85,8 @@ class BookService {
 
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String savePath = '${appDocDir.path}/tmp_$bookId.zip';
-      String targetExtractionPath = '${appDocDir.path}/books/buku_$bookId';
+      String finalId = overrideId ?? bookId;
+      String targetExtractionPath = '${appDocDir.path}/books/buku_$finalId';
 
       debugPrint('[BookService] Save Path: $savePath');
       debugPrint('[BookService] Extraction Path: $targetExtractionPath');
@@ -117,10 +118,26 @@ class BookService {
           debugPrint('[BookService] Created directory: $filename');
         }
       }
+
+      if (overrideId != null) {
+        debugPrint('[BookService] Overriding book ID in data.json to $overrideId');
+        File dataFile = File('$targetExtractionPath/data.json');
+        if (await dataFile.exists()) {
+          String content = await dataFile.readAsString();
+          Map<String, dynamic> data = json.decode(content);
+          data['id'] = overrideId;
+          await dataFile.writeAsString(json.encode(data));
+          debugPrint('[BookService] data.json updated successfully');
+        } else {
+          debugPrint('[BookService] WARNING: data.json NOT found during ID override');
+        }
+      }
+
       final tempZipFile = File(savePath);
       if (tempZipFile.existsSync()) tempZipFile.deleteSync();
       
       debugPrint('[BookService] Extraction complete. Folder path: $targetExtractionPath');
+      clearCache();
       return targetExtractionPath;
     } catch (e) {
       debugPrint('[BookService] CRITICAL ERROR during download/extract: $e');
@@ -255,6 +272,10 @@ class BookService {
     }
   }
 
+  static void clearCache() {
+    _cachedBook = null;
+  }
+
   static Future<BookModelBundle?> getBook(String bookId) async {
     debugPrint('[BookService] Attempting to get book data for ID: $bookId');
     if (_cachedBook != null && _cachedBook!.id == bookId) {
@@ -263,30 +284,7 @@ class BookService {
     }
 
     try {
-      if (bookId == "1" || bookId == "2") {
-        debugPrint('[BookService] Loading BUNDLED book $bookId from metadata.json');
-        final List<BookModelBundle> bundledBooks = await loadBooks();
-        try {
-          _cachedBook = bundledBooks.firstWhere((b) => b.id == bookId);
-          debugPrint('[BookService] Successfully loaded from BUNDLED metadata');
-          return _cachedBook;
-        } catch (e) {
-          debugPrint('[BookService] Book ID $bookId not found in metadata.json');
-        }
-      }
-
-      try {
-        final assetPath = 'assets/books/$bookId/data.json';
-        debugPrint('[BookService] Checking assets at: $assetPath');
-        final String response = await rootBundle.loadString(assetPath);
-        final Map<String, dynamic> data = json.decode(response);
-        _cachedBook = BookModelBundle.fromJson(data);
-        debugPrint('[BookService] Successfully loaded from ASSETS');
-        return _cachedBook;
-      } catch (e) {
-        debugPrint('[BookService] Not found in assets or error: $e');
-      }
-
+      // 1. Check Local Storage (Downloaded Content)
       Directory appDocDir = await getApplicationDocumentsDirectory();
       File localDataFile = File('${appDocDir.path}/books/buku_$bookId/data.json');
       debugPrint('[BookService] Checking local storage at: ${localDataFile.path}');
@@ -303,8 +301,30 @@ class BookService {
         _cachedBook = BookModelBundle.fromJson(modData);
         debugPrint('[BookService] Successfully loaded from LOCAL STORAGE');
         return _cachedBook;
-      } else {
-        debugPrint('[BookService] Local data file NOT found');
+      }
+
+      // 2. Check Individual Assets (Pre-installed in APK)
+      try {
+        final assetPath = 'assets/books/$bookId/data.json';
+        debugPrint('[BookService] Checking assets at: $assetPath');
+        final String response = await rootBundle.loadString(assetPath);
+        final Map<String, dynamic> data = json.decode(response);
+        _cachedBook = BookModelBundle.fromJson(data);
+        debugPrint('[BookService] Successfully loaded from ASSETS');
+        return _cachedBook;
+      } catch (e) {
+        debugPrint('[BookService] Not found in assets/books/$bookId: $e');
+      }
+
+      // 3. Fallback to Bundled Metadata (assets/metadata.json)
+      debugPrint('[BookService] Checking BUNDLED metadata for $bookId');
+      final List<BookModelBundle> bundledBooks = await loadBooks();
+      try {
+        _cachedBook = bundledBooks.firstWhere((b) => b.id == bookId);
+        debugPrint('[BookService] Successfully loaded from BUNDLED metadata');
+        return _cachedBook;
+      } catch (e) {
+        debugPrint('[BookService] Book ID $bookId not found in metadata.json');
       }
       
       return null;

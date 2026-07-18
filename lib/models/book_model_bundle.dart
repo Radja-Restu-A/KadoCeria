@@ -242,6 +242,8 @@ class BookSummaryModel {
   final String secondaryColor;
   final int version;
   final String fileSize;
+  final String? pendingId;
+
   BookSummaryModel({
     required this.idBuku,
     required this.judulBukuIndonesia,
@@ -255,7 +257,40 @@ class BookSummaryModel {
     required this.secondaryColor,
     required this.version,
     required this.fileSize,
+    this.pendingId,
   });
+
+  BookSummaryModel copyWith({
+    String? idBuku,
+    String? judulBukuIndonesia,
+    String? judulBukuSunda,
+    String? penulis,
+    String? illustrator,
+    String? coverImagePath,
+    String? descriptionsIndonesia,
+    String? descriptionsSunda,
+    String? primaryColor,
+    String? secondaryColor,
+    int? version,
+    String? fileSize,
+    String? pendingId,
+  }) {
+    return BookSummaryModel(
+      idBuku: idBuku ?? this.idBuku,
+      judulBukuIndonesia: judulBukuIndonesia ?? this.judulBukuIndonesia,
+      judulBukuSunda: judulBukuSunda ?? this.judulBukuSunda,
+      penulis: penulis ?? this.penulis,
+      illustrator: illustrator ?? this.illustrator,
+      coverImagePath: coverImagePath ?? this.coverImagePath,
+      descriptionsIndonesia: descriptionsIndonesia ?? this.descriptionsIndonesia,
+      descriptionsSunda: descriptionsSunda ?? this.descriptionsSunda,
+      primaryColor: primaryColor ?? this.primaryColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      version: version ?? this.version,
+      fileSize: fileSize ?? this.fileSize,
+      pendingId: pendingId ?? this.pendingId,
+    );
+  }
   factory BookSummaryModel.fromJson(Map<String, dynamic> json) {
     return BookSummaryModel(
       idBuku: json['id_buku']?.toString() ?? json['id']?.toString() ?? '',
