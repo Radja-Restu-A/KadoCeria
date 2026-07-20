@@ -108,7 +108,7 @@ class FlipbookContent extends StatelessWidget {
       return Positioned.fill(
         child: Image.asset(
           imagePath,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
@@ -131,7 +131,7 @@ class FlipbookContent extends StatelessWidget {
       return Positioned.fill(
         child: Image.file(
           File(fullLocalImagePath),
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
