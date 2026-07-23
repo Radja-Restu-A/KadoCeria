@@ -10,7 +10,7 @@ import 'package:archive/archive.dart';
 class BookService {
   static BookModelBundle? _cachedBook;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://54.179.175.167/api',
+    baseUrl: 'http://13.229.82.172//api',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
