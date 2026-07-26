@@ -286,7 +286,7 @@ class BookService {
     try {
       // 1. Check Local Storage (Downloaded Content)
       Directory appDocDir = await getApplicationDocumentsDirectory();
-      File localDataFile = File('${appDocDir.path}/books/buku_$bookId/data.json');
+      File localDataFile = File('${appDocDir.path}/books/buku_$bookId/metadata.json');
       debugPrint('[BookService] Checking local storage at: ${localDataFile.path}');
       
       if (await localDataFile.exists()) {
